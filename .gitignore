@@ -1,0 +1,13 @@
+/vendor/
+
+.idea/
+
+composer.lock
+/temp/cache
+/config/local.neon
+web.config
+/assets/images/profile-photo/
+
+log/
+
+session/

@@ -1,0 +1,31 @@
+{block content}
+<div class="container">
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center vh-100">
+            <div id="login" class="card">
+                <div class="card-body">
+                    <p class="mb-5 text-center">
+                        <img src="{$basePath}/assets/images/logo-2022.png" alt="logo"><br>
+                        <span class="text-secondary text-uppercase fw-semibold">Business intelligence</span>
+                    </p>
+                    <form>
+                        <div class="alert alert-success" role="alert">
+                            You have been successfully logged out
+                        </div>
+
+                        <!-- Submit button -->
+                        <div class="d-grid gap-2">
+                            <a n:href="Auth:login" class="btn btn-primary">Back to sign in</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #login {
+        width: 350px;
+    }
+</style>

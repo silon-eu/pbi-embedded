@@ -1,0 +1,42 @@
+{block content}
+<div class="container">
+    <div class="row">
+        <div class="col d-flex flex-column justify-content-center align-items-center vh-100">
+            <div id="login" class="card">
+                <div class="card-body">
+                    <p class="mb-5 text-center">
+                        <img src="{$basePath}/assets/images/logo-2022.png" alt="logo"><br>
+                        <span class="text-secondary text-uppercase fw-semibold">Business intelligence</span>
+                    </p>
+                    <form n:name="loginForm">
+                        <div n:foreach="$form->getErrors() as $error" class="alert alert-warning" role="alert">
+                            {$error}
+                        </div>
+                        <!-- Email input -->
+                        <div class="form-outline mb-3">
+                            <label n:name="username" class="form-label">Username</label>
+                            <input n:name="username" class="form-control" />
+                        </div>
+
+                        <!-- Password input -->
+                        <div class="form-outline mb-3">
+                            <label n:name="password" class="form-label">Password</label>
+                            <input n:name="password" class="form-control" />
+                        </div>
+
+                        <!-- Submit button -->
+                        <div class="d-grid gap-2">
+                            <button n:name="send" class="btn btn-primary">Sign in</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #login {
+        width: 350px;
+    }
+</style>

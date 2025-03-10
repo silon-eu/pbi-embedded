@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="{$basePath}/favicon.ico" />
+
+    <title>{ifset title}{include title|stripHtml} | {/ifset}SILON</title>
+
+    {ifset header}{include header}{/ifset}
+
+    <link rel="stylesheet" href="{$basePath}/assets/styles/bs-custom.css" type="text/css" />
+    <link rel="stylesheet" href="{$basePath}/assets/styles/custom-style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <script src="{$basePath}/assets/js/jquery.js"></script>
+    <script src="{$basePath}/assets/js/nette.ajax.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/nette.ajax.js@2.3.0/nette.ajax.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/ublaboo-datagrid@6.9.1/assets/datagrid.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/nette-forms@3.0.4/src/assets/netteForms.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/ublaboo-datagrid@6.9.1/assets/datagrid-spinners.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.15/dist/js/bootstrap-select.js"></script>
+
+    <script type="text/javascript">
+    $(function () {
+    	$.nette.init();
+    });
+    </script>
+
+</head>
+
+<body>
+{if $user->isLoggedIn()}
+    {control frontMenu}
+{/if}
+<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+
+    {include content}
+
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="managerUsersModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="example2ModalLabel"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</body>
+<footer>
+    <div class="footer">
+        &copy; {="now"|date:'Y'} SILON {if !$user->isLoggedIn()}| <a class="text-light" n:href="Auth:login">login</a>{/if}
+    </div>
+</footer>
+{ifset footer}{include footer}{/ifset}
+</html>

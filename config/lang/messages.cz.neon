@@ -1,0 +1,33 @@
+contacts: kontakty
+company: Firma
+show_all: Zobrazit všechny
+explanations: Vysvětlivky
+on: přítomen
+off: nepřítomen
+homeoffice: homeoffice
+lunch: oběd
+doctor: odchod k lékaři
+holidays: dovolená
+time_off: náhradní volno
+business_trip: služební cesta
+unknown: stav nezjištěný
+personal_number: Osobní číslo
+email_address: Emailová adresa
+prague: Praha
+department: Oddělení
+office: Kancelář
+manager_name: Nadřízený
+attendance: Docházka
+last_record: Poslední záznam
+place: Místo
+close: Zavřít
+phone: Telefon
+mobile_phone: Mobil
+email: Email
+job_title: Pracovní pozice
+fullname: Přijmení a jméno
+filter_placeholder: 'Vyhledat podle jména, telefonního čísla, pozice ...'
+last_updated: Azure synchronizace
+planned_vacation: Mimo kancelář
+short_phone: Zkrácená volba
+scan_vcard: Naskenuj vizitku

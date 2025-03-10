@@ -1,0 +1,22 @@
+
+{block #title}{_messages.contacts|firstUpper}{/block}
+
+{block #content}
+<div class="container-fluid bg-white py-3">
+    <div class="row" style="width:100%;">
+        <div class="col-2 col-md-2 purple-block">
+            <div class="sticky-div">
+                <div class="header-title">
+                    <img src="assets/images/logo-white.png" class="head-logo"><br>
+                    <span class="head-title">{_messages.contacts}</span>
+                </div>
+                <div class="langs">
+                    {varType Contributte\Translation\Translator $translator }
+                    {foreach $translator->getAvailableLocales() as $locale}
+                        <a n:href="changeLocale!, locale=>$locale" n:class="$locale === $translator->getLocale()?active"><img src="assets/images/{$locale}.png" class="lang-img"></a>
+                    {/foreach}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

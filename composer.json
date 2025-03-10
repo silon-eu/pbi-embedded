@@ -1,0 +1,31 @@
+{
+    "name": "silon-eu/user-sync",
+    "type": "project",
+    "platform": {
+        "php": "8.3"
+    },
+    "require": {
+        "nette/application": ">=3.2",
+        "nette/bootstrap": ">=3.2",
+        "nette/caching": ">=3.2",
+        "nette/database": ">=3.2",
+        "nette/forms": ">=3.2",
+        "nette/security": ">=3.2",
+        "directorytree/ldaprecord": "^2.19",
+        "league/oauth2-client": "^2.0",
+        "microsoft/microsoft-graph": "^2.27.0",
+        "dibi/dibi": ">=5.0",
+        "ublaboo/datagrid": "^6.10",
+        "contributte/translation": ">=2.0",
+        "contributte/forms-bootstrap": "^0.8.1",
+        "contributte/menu-control": ">=3.2",
+        "tracy/tracy": "^2.10",
+        "nette/mail": "^4.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "tbachert/spi": true
+        }
+    }
+}

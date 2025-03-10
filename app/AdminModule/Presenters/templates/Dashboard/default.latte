@@ -1,0 +1,131 @@
+{block header_tmpl}
+{/block}
+
+{block header}
+{/block}
+
+{block content}
+    {var $today = new DateTime()}
+    <div class="row mt-3">
+        <div class="col">
+            <h1 class="h3">{_"Dashboard"}</h1>
+            {control adminMenu:breadcrumbs}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <h3 class="h4">Missing employee numbers in AD</h3>
+            {if count($adMissingEmployeeId) === 0}
+                <p class="alert alert-info">There are no missing employee numbers</p>
+            {else}
+                <table class="table table-sm table-bordered table-hover">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>DN</th>
+                            <th style="width:120px">Employeeid</th>
+                            <th style="width:40px">Ignore</th>
+                            <th style="width:60px">&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $adMissingEmployeeId as $empAd}
+                            {control updateEidForm $empAd->dn}
+                        {/foreach}
+                        {*<tr n:foreach="$adMissingEmployeeId as $empAd">
+                            <td>{$empAd->dn}</td>
+                            <td>{$empAd->created_at|date:'d.m.Y'}</td>
+                        </tr>*}
+                    </tbody>
+                </table>
+            {/if}
+
+            <hr>
+
+            <h3 class="h4">Inactive employees with active accounts in JDE</h3>
+            {if count($inactiveJdeEmployes) === 0}
+                <p class="alert alert-info">There are no or future exits of employees</p>
+            {else}
+                <table class="table table-sm table-bordered table-hover">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>Username</th>
+                            <th>AN8</th>
+                            <th>Os.&nbsp;číslo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr n:foreach="$inactiveJdeEmployes as $emp">
+                            <td>{$emp->username}</td>
+                            <td>{$emp->an8}</td>
+                            <td>{$emp->employeeid}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {/if}
+
+        </div>
+
+        <div class="col-6">
+            <h3 class="h4">Active AD users which are inactive in payroll system</h3>
+            {if count($adEnabledExitedEmployees) === 0}
+                <p class="alert alert-info">There are no employees that needs correction</p>
+            {else}
+                {foreach $adEnabledExitedEmployees as $emp}
+                    <table class="table table-sm table-bordered table-hover">
+                        <tr>
+                            <th class="bg-secondary text-white">DN</th><td>{$emp->dn}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-secondary text-white">Employee ID</th><td>{$emp->employeeid}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-secondary text-white">Name</th><td>{$emp->name} {$emp->surname}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-secondary text-white">Onboard</th><td>{$emp->onboarded}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-secondary text-white">Exit</th><td>{$emp->exited}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-secondary text-white">Sync to AD</th><td>{if $emp->sync === 0}Not synchronized{else}Synchronized{/if}</td>
+                        </tr>
+                    </table>
+                    {sep}<br><br>{/sep}
+                {/foreach}
+            {/if}
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col">
+            <h3 class="h4">Future exits of employees</h3>
+            {if count($payrollExit) === 0}
+                <p class="alert alert-info">There are no future exits of employees</p>
+            {else}
+                <table class="table table-sm table-bordered table-hover">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>Výstup</th>
+                            <th>Os.&nbsp;číslo</th>
+                            <th>Jméno</th>
+                            <th>Oddělení</th>
+                            <th>DN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr n:foreach="$payrollExit as $emp">
+                            <td n:class="$emp->exited < $today?'text-danger'">{$emp->exited|date:j.n.Y}</td>
+                            <td>{$emp->employeeid}</td>
+                            <td>{$emp->name} {$emp->surname}</td>
+                            <td>{$emp->department_name}</td>
+                            <td>{$emp->dn}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {/if}
+        </div>
+    </div>
+
+
+{/block}

@@ -1,0 +1,227 @@
+{block header_tmpl}
+{/block}
+
+{block pageHeading}
+    <span class="text-secondary d-inline-block px-2">/</span>
+    <a n:href=":Reporting:Dashboard:default#content-00011" class="text-white">SILON CZ</a>
+    <span class="text-secondary d-inline-block px-2">/</span>
+    {$reportConfig->name}
+{/block}
+
+{block header}
+    <style>
+        iframe {
+            border: 0;
+        }
+    </style>
+{/block}
+
+{block content}
+    {var $today = new DateTime()}
+    <div class="row mt-3">
+        <div class="col">
+            {*<h1 class="h3">{$reportConfig->name}</h1>*}
+            {*<button class="btn btn-sm btn-outline-secondary" id="setPage-btn">Set page</button>*}
+            <div id="report-nav"></div>
+            {*control adminMenu:breadcrumbs*}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div id="report-container" style="height: 800px;"></div>
+            {dump $reportConfig}
+        </div>
+    </div>
+
+
+    <script src="{$basePath}/assets/js/powerbi.min.js"></script>
+    <script>
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log('ready');
+
+            let models = window["powerbi-client"].models;
+            let reportContainer = $("#report-container").get(0);
+
+            // Initialize iframe for embedding report
+            powerbi.bootstrap(reportContainer, { type: "report" });
+
+            // Create a config object with type of the object, Embed details and Token Type
+            let reportLoadConfig = {
+                type: "report",
+                tokenType: models.TokenType.Embed,
+                accessToken: {$reportConfig->embedToken},
+
+                // Use other embed report config based on the requirement. We have used the first one for demo purpose
+                embedUrl: {$reportConfig->embedUrl},
+
+                // Enable this setting to remove gray shoulders from embedded report
+                // settings: {
+                //     background: models.BackgroundType.Transparent
+                // }
+
+                settings: {
+                    // https://learn.microsoft.com/en-us/javascript/api/overview/powerbi/configure-report-settings#configure-edit-mode
+                    permissions: models.Permissions.Read,
+                    viewMode: models.ViewMode.View,
+
+                    panes: {
+                        bookmarks: {
+                            visible: false
+                        },
+                        fields: {
+                            expanded: false
+                        },
+                        filters: {
+                            expanded: false,
+                            visible: false
+                        },
+                        pageNavigation: {
+                            visible: false
+                        },
+                        selection: {
+                            visible: false
+                        },
+                        syncSlicers: {
+                            visible: false
+                        },
+                        visualizations: {
+                            expanded: false
+                        }
+                    },
+                    bars: {
+                        actionBar: {
+                            visible: true
+                        },
+                        statusBar: {
+                            visible: true
+                        }
+                    },
+                    localeSettings: {
+                        language: "en-us"
+                    },
+                    hideErrors: false,
+
+                    /*Initial page*/
+                    //pageName: 'ReportSection3',
+
+                    //filters: [...], // https://learn.microsoft.com/en-us/javascript/api/overview/powerbi/control-report-filters
+                    //slicers: slicerArray, // https://learn.microsoft.com/en-us/javascript/api/overview/powerbi/control-report-slicers
+
+                    // onload bookmark - https://learn.microsoft.com/en-us/javascript/api/overview/powerbi/configure-report-settings#on-load-bookmark
+                }
+
+            };
+
+            // Use the token expiry to regenerate Embed token for seamless end user experience
+            // Refer https://aka.ms/RefreshEmbedToken
+            tokenExpiry = {$reportConfig->expiration};
+
+            // Embed Power BI report when Access token and Embed URL are available
+            let report = powerbi.embed(reportContainer, reportLoadConfig);
+
+            // Clear any other loaded handler events
+            report.off("loaded");
+
+            // Triggers when a report schema is successfully loaded
+            report.on("loaded", function () {
+                console.log("Report load successful");
+                report.getPages().then(function (pages) {
+                    console.log(pages);
+
+                    // generate nav into #report-nav
+                    let nav = document.getElementById("report-nav");
+                    let ul = document.createElement("ul");
+                    ul.classList.add("nav", "nav-underline");
+                    pages.forEach(function(page,index) {
+                        if (page.visibility === 0) {
+                            let li = document.createElement("li");
+                            li.classList.add("nav-item");
+
+                            let a = document.createElement("a");
+                            a.classList.add("nav-link");
+                            if (index === 0) {
+                                a.classList.add("active");
+                            }
+                            a.href = "#";
+                            a.innerText = page.displayName;
+                            a.addEventListener("click", function () {
+                                report.setPage(page.name);
+                                // remove active class from all nav items
+                                ul.querySelectorAll("a.nav-link.active").forEach(function(a) {
+                                    a.classList.remove("active");
+                                });
+                                // add active class to clicked nav item
+                                a.classList.add("active");
+                            });
+
+                            li.appendChild(a);
+                            ul.appendChild(li);
+                        }
+                    });
+                    nav.appendChild(ul);
+
+
+                    // generate nav into #report-nav and if display name starts with "-" then show it as a submenu item
+                    let ul2 = document.createElement("ul");
+                    ul2.classList.add("nav", "nav-tabs");
+                    pages.forEach(function(page) {
+                        if (page.visibility === 0) {
+                            if (page.displayName.startsWith("-")) {
+                                let li = document.createElement("li");
+                                li.classList.add("nav-item");
+                                let a = document.createElement("a");
+                                a.classList.add("nav-link");
+                                a.href = "#";
+                                a.innerText = page.displayName.replace("-", "");
+                                a.addEventListener("click", function () {
+                                    report.setPage(page.name);
+                                });
+                                li.appendChild(a);
+                                ul2.appendChild(li);
+                            }
+                        }
+                    });
+                    nav.appendChild(ul2);
+
+
+                });
+
+                report.getSlicers().then(function(slicers) {
+                    console.log(slicers);
+                });
+
+                report.getFilters().then(function(filters) {
+                    console.log(filters);
+                });
+
+            });
+
+            // Clear any other rendered handler events
+            report.off("rendered");
+
+            // Triggers when a report is successfully embedded in UI
+            report.on("rendered", function () {
+                console.log("Report render successful");
+            });
+
+            // Clear any other error handler events
+            report.off("error");
+
+            // Handle embed errors
+            report.on("error", function (event) {
+                let errorMsg = event.detail;
+                console.error(errorMsg);
+                return;
+            });
+
+
+            /*document.getElementById("setPage-btn").addEventListener("click", function() {
+                report.setPage("ReportSection49ce4843d47777a3548a");
+            });*/
+
+
+        });
+    </script>
+{/block}

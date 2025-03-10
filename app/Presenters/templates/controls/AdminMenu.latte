@@ -1,0 +1,36 @@
+{varType Contributte\MenuControl\IMenu $menu}
+{varType Contributte\MenuControl\MenuItem $item}
+{varType Contributte\MenuControl\MenuItem $submenu}
+
+<nav id="sidebar" style="min-height: calc(100vh - 57px)">
+    <div class="px-3 pt-2">
+        <ul class="nav navbar-expand flex-column" id="menu">
+            {foreach $menu->getVisibleItemsOnMenu() as $submenu}
+                {if $submenu->isAllowed()}
+                    <li n:class="nav-item,$submenu->isActive() ? active">
+                        {if $submenu->hasVisibleItemsOnMenu()}
+                            <a href="#submenu{$iterator->counter}" data-toggle="collapse" class="nav-link align-middle px-0 text-white" role="button">
+                                <i class="align-middle pr-2 bi bi-{$submenu->getData()['icon']}"></i>{$submenu->getRealTitle()}
+                            </a>
+                            <ul n:class="!$submenu->isActive() ? 'collapse', 'nav flex-column flex-nowrap overflow-hidden ml-3'" id="submenu{$iterator->counter}" data-parent="#menu">
+                                {foreach $submenu->getVisibleItemsOnMenu() as $item}
+                                    {if $item->isAllowed()}
+                                        <li n:class="nav-item,$item->isActive() ? active">
+                                            <a href="{$item->getRealLink()}" class="nav-link px-0 text-white">
+                                                <i class="align-middle pr-2 bi bi-{$item->getData()['icon']}"></i>{$item->getRealTitle()}
+                                            </a>
+                                        </li>
+                                    {/if}
+                                {/foreach}
+                            </ul>
+                        {else}
+                            <a href="{$submenu->getRealLink()}" class="nav-link align-middle px-0 text-white" role="button">
+                                <i class="align-middle pr-2 bi bi-{$submenu->getData()['icon']}"></i><span class="ms-1 d-none align-middle d-sm-inline">{$submenu->getRealTitle()}</span>
+                            </a>
+                        {/if}
+                    </li>
+                {/if}
+            {/foreach}
+        </ul>
+    </div>
+</nav>

@@ -1,0 +1,20 @@
+services:
+	cache: Nette\Caching\Cache()
+	- App\Router\RouterFactory::createRouter
+	- App\Models\EmailService(%globals.email%)
+
+	ldapConnection:
+	    create: LdapRecord\Connection(%ldap%)
+	    setup:
+	        - LdapRecord\Container::addConnection(@ldapConnection)
+
+	- App\Model\Authenticator(@database.default.explorer, @ldapConnection, @cache, %authenticator%)
+	- App\Model\MenuAuthorizator
+
+
+	- App\AdminModule\Models\Service\AdminService(@database.default.connection)
+	- App\AdminModule\Models\Service\UsersService(@database.default.explorer)
+	- App\AdminModule\Models\Service\RolesService(@database.default.explorer)
+	- App\AdminModule\Models\Service\GroupsService(@database.default.explorer)
+
+	- App\Models\Service\AzureService(%azure%, @cache)

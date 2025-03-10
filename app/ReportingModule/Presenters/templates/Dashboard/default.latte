@@ -1,0 +1,186 @@
+{block header_tmpl}
+{/block}
+
+{block pageHeading}
+    <span class="text-secondary d-inline-block px-2">/</span>
+    Entry point
+{/block}
+
+{block header}
+    <style>
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+            height: 126px;
+        }
+
+        .card-link:hover {
+            text-decoration: none;
+            color: inherit;
+            background-color: #ebebeb;
+        }
+
+        .card-link .row,
+        .card-link .card-icon {
+            height: 124px;
+        }
+
+        .card-icon {
+            text-align: center;
+            background-color: #ebebeb;
+        }
+
+        .card-icon i.bi {
+            font-size: 4rem;
+        }
+
+        .card-link:hover .card-icon {
+            text-decoration: none;
+            color: inherit;
+            background-color: #cccccc;
+        }
+    </style>
+{/block}
+
+{block content}
+    {*<div class="row mt-3 mb-3">
+        <div class="col">
+            <h1 class="h3">{_"Entry point"}</h1>
+            *}{*{control adminMenu:breadcrumbs}*}{*
+        </div>
+    </div>*}
+
+    <ul class="nav nav-tabs my-2" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-00016" data-bs-toggle="tab" data-bs-target="#content-00016" type="button" role="tab" aria-controls="00016" aria-selected="true">SILON Group</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-00011" data-bs-toggle="tab" data-bs-target="#content-00011" type="button" role="tab" aria-controls="00011" aria-selected="false">SILON CZ</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-00019" data-bs-toggle="tab" data-bs-target="#content-00019" type="button" role="tab" aria-controls="00019" aria-selected="false">SILON CZ Recycling</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+
+        <div class="tab-pane show active" id="content-00016" role="tabpanel" aria-labelledby="tab-00016">
+            {include tiles}
+        </div>
+
+        <div class="tab-pane" id="content-00011" role="tabpanel" aria-labelledby="tab-00011">
+            {include tiles}
+        </div>
+
+        <div class="tab-pane" id="content-00019" role="tabpanel" aria-labelledby="tab-00019">
+            {include tiles}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // switch tab based on url hashtag param
+            const hash = window.location.hash;
+            console.log(hash);
+            if (hash) {
+                const triggerEl = document.querySelector('#myTab button[data-bs-target="'+hash+'"]');
+                console.log(triggerEl);
+                //bootstrap.Tab.getInstance(triggerEl).show(); // Select tab by name
+            }
+
+
+        });
+    </script>
+
+{/block}
+
+{block tiles}
+<div class="row mb-4">
+    {* Production *}
+        <div class="col-4">
+            <a href="#" class="card card-link">
+                <div class="row g-0">
+                    <div class="col-4 card-icon">
+                        <i class="bi bi-buildings"></i>
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Production</h5>
+                            <p class="card-text">Manufacturing data, planning, etc..</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {* Contracts *}
+        <div class="col-4">
+            <a n:href="contracts" class="card card-link">
+                <div class="row g-0">
+                    <div class="col-4 card-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Contracts</h5>
+                            <p class="card-text">Sales data, forecasts, etc..</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {* Profitability *}
+    <div class="col-4">
+        <a href="#" class="card card-link">
+            <div class="row g-0">
+                <div class="col-4 card-icon">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <div class="col-8">
+                    <div class="card-body">
+                        <h5 class="card-title">Profitability</h5>
+                        <p class="card-text">...</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+
+    {* KPI *}
+        <div class="col-4">
+            <a href="#" class="card card-link">
+                <div class="row g-0">
+                    <div class="col-4 card-icon">
+                        <i class="bi bi-clipboard-data"></i>
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body">
+                            <h5 class="card-title">KPI</h5>
+                            <p class="card-text">Key Performance Indicatiors</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {* Inventory *}
+    <div class="col-4">
+        <a href="#" class="card card-link">
+            <div class="row g-0">
+                <div class="col-4 card-icon">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <div class="col-8">
+                    <div class="card-body">
+                        <h5 class="card-title">Inventory</h5>
+                        <p class="card-text">Warehouse data, stock, etc..</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+{/block}

@@ -1,0 +1,17 @@
+{varType Contributte\MenuControl\IMenu $menu}
+{varType Contributte\MenuControl\MenuItem $item}
+
+<nav aria-label="breadcrumb">
+    <ol n:inner-foreach="$menu->getPath() as $item" class="breadcrumb">
+        <li n:if="$iterator->isFirst()" class="breadcrumb-item">
+            <a href="{plink :Admin:Dashboard:default}">
+                <i class="bi bi-house-fill"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a n:tag-if="!$iterator->isLast()" href="{$item->getRealLink()}">
+                {$item->getRealTitle()}
+            </a>
+        </li>
+    </ol>
+</nav>

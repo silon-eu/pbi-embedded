@@ -1,0 +1,33 @@
+contacts: contacts
+company: Company
+show_all: Show all
+explanations: Explanations
+on: present
+off: absent
+homeoffice: homeoffice
+lunch: lunch
+doctor: doctor
+holidays: holidays
+time_off: time off
+business_trip: business trip
+unknown: unknown
+personal_number: Personal number
+email_address: Email address
+prague: Prague
+department: Department
+office: Office location
+manager_name: Manager name
+attendance: Attendance
+last_record: Last record
+place: Place
+close: Close
+phone: Business phone
+mobile_phone: Mobile phone
+email: Email
+job_title: Job title
+fullname: Surname and name
+filter_placeholder: Search for a person
+last_updated: Last azure sync
+planned_vacation: Out of office
+short_phone: Short phone
+scan_vcard: Scan VCARD

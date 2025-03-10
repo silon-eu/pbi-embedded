@@ -1,0 +1,78 @@
+menu:
+    admin:
+        authorizator: @App\Model\MenuAuthorizator
+        templates:
+            menu: %appDir%/Presenters/templates/controls/AdminMenu.latte
+            breadcrumbs: %appDir%/Presenters/templates/controls/AdminMenu-breadcrumbs.latte
+        items:
+            Dashboard:
+                action: Admin:Dashboard:default
+                data:
+                    roles:
+                        - admin
+                    icon: house
+            Settings:
+                action: Admin:Settings:default
+                data:
+                    roles:
+                        - admin
+                    icon: gear
+                items:
+                    Users:
+                        action: Admin:Users:default
+                        include: '^Admin\:Users\:[a-zA-Z\:]+$'
+                        data:
+                            roles:
+                                - admin
+                            icon: person
+                        items:
+                            Editace:
+                                action: Admin:Users:edit
+                                include: '^Admin\:Users\:edit'
+                                visibility:
+                                    menu: false
+                    Groups:
+                        action: Admin:Groups:default
+                        include: '^Admin\:Groups\:[a-zA-Z\:]+$'
+                        data:
+                            roles:
+                                - admin
+                            icon: people
+                        items:
+                            Editace:
+                                action: Admin:Groups:edit
+                                include: '^Admin\:Groups\:edit'
+                                visibility:
+                                    menu: false
+                    Roles:
+                        action: Admin:Roles:default
+                        include: '^Admin\:Roles\:[a-zA-Z\:]+$'
+                        data:
+                            roles:
+                                - admin
+                            icon: key
+                        items:
+                            Editace:
+                                action: Admin:Roles:edit
+                                include: '^Admin\:Roles\:edit'
+                                visibility:
+                                    menu: false
+    front:
+        authorizator: @App\Model\MenuAuthorizator
+        templates:
+            menu: %appDir%/Presenters/templates/controls/FrontMenu.latte
+        items:
+            Dashboard:
+                action: Reporting:Dashboard:default
+                data:
+                    icon: house
+            Favorites:
+                action: Reporting:Dashboard:default
+                data:
+                    icon: star
+            Administration:
+                action: Admin:Dashboard:default
+                data:
+                    roles:
+                        - admin
+                    icon: gear
