@@ -18,9 +18,7 @@ abstract class BasePresenter extends \App\Presenters\BasePresenter {
     public function startup(): void
     {
         parent::startup();
-        if (!$this->user->isLoggedIn()) {
-            $this->redirect(':Auth:login');
-        }
+        $this->allowOnlyRoles(['admin']);
         DataGrid::$iconPrefix = 'bi bi-';
     }
 }

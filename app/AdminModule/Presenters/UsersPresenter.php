@@ -2,22 +2,18 @@
 
 namespace App\AdminModule\Presenters;
 
+use Nette\Security\SimpleIdentity;
+
 class UsersPresenter extends BasePresenter {
 
-    protected \App\AdminModule\Models\Service\AdminService $service;
-    protected \App\AdminModule\Models\Service\UsersService $usersService;
-    protected \App\AdminModule\Models\Service\GroupsService $groupsService;
-    protected \Nette\Caching\Cache $cache;
-
-    public function __construct(\App\AdminModule\Models\Service\AdminService $service,
-                                \App\AdminModule\Models\Service\UsersService $usersService,
-                                \App\AdminModule\Models\Service\GroupsService $groupsService,
-                                \Nette\Caching\Cache $cache)
+    public function __construct(
+        protected \App\AdminModule\Models\Service\AdminService $service,
+        protected \App\AdminModule\Models\Service\UsersService $usersService,
+        protected \App\AdminModule\Models\Service\GroupsService $groupsService,
+        protected \App\AdminModule\Models\Service\RolesService $rolesService,
+        protected \Nette\Caching\Cache $cache)
     {
-        $this->service = $service;
-        $this->usersService = $usersService;
-        $this->groupsService = $groupsService;
-        $this->cache = $cache;
+
     }
 
     /**
@@ -49,6 +45,31 @@ class UsersPresenter extends BasePresenter {
         } else {
             $this->redirect('this');
         }
+    }
+
+    public function handleSignInAsUser(int $id)
+    {
+        try {
+            $row = $this->usersService->getUser($id);
+            if (!$row) {
+                throw new \Nette\Security\AuthenticationException('Account is not created.');
+            } else {
+                $identity = new SimpleIdentity(
+                    $row->id,
+                    $this->authenticator->getRoles($row->id),
+                    [
+                        'username' => $row->username,
+                        'name' => $row->name,
+                        'surname' => $row->surname
+                    ],
+                );
+                $this->getUser()->login($identity);
+            }
+        } catch (\Nette\Security\AuthenticationException $e) {
+            $this->flashMessage($e->getMessage(),'danger');
+        }
+
+        $this->redirect('Dashboard:');
     }
 
     public function renderEdit(?int $id = null) {

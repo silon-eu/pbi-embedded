@@ -27,6 +27,11 @@ class UsersDatagrid extends \Ublaboo\DataGrid\DataGrid
         $this->addColumnText('surname', 'Surname');
         $this->addColumnText('group', 'Group','groups.name');
 
+        $this->addAction('this', 'Sign in', 'signInAsUser!', ['id' => 'id'])
+            ->setIcon('lock')
+            ->setClass('btn btn-sm btn-secondary')
+            ->setConfirmation(new StringConfirmation('Do you really want to login as this user?'));
+
         $this->addAction('edit', 'Edit', 'edit', ['id' => 'id'])
             ->setIcon('pencil')
             ->setClass('btn btn-sm btn-secondary');

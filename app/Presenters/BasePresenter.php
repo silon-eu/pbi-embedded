@@ -68,7 +68,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
     protected function beforeRender(): void {
         $this->template->setTranslator($this->translator);
         $this->template->translator = $this->translator;
-        $this->template->userData = $this->getUser()->getIdentity()?->getData();
+        $this->template->userIdentityData = $this->getUser()->getIdentity()?->getData();
     }
 
     public function processLogin(\Nette\Application\UI\Form $form, $values): void {
@@ -78,6 +78,13 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             $this->redirect(':Reporting:Dashboard:default');
         } catch (\Nette\Security\AuthenticationException $e) {
             $form->addError($e->getMessage());
+        }
+    }
+
+    protected function allowOnlyRoles(array $roles): void
+    {
+        if (count(array_intersect($this->getUser()->getRoles(),$roles)) === 0) {
+            throw new \Nette\Application\ForbiddenRequestException('Insufficient privileges');
         }
     }
 

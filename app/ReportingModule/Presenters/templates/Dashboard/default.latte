@@ -50,7 +50,7 @@
         </div>
     </div>*}
 
-    <ul class="nav nav-tabs my-2" id="myTab" role="tablist">
+    <ul class="nav nav-underline my-2" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="tab-00016" data-bs-toggle="tab" data-bs-target="#content-00016" type="button" role="tab" aria-controls="00016" aria-selected="true">SILON Group</button>
         </li>
@@ -63,16 +63,205 @@
     </ul>
     <div class="tab-content" id="myTabContent">
 
+        {* SILON Group *}
         <div class="tab-pane show active" id="content-00016" role="tabpanel" aria-labelledby="tab-00016">
-            {include tiles}
+            <div class="row mb-4">
+                {* Production *}
+                <div class="col-4">
+                    {control tile 'this#', 'buildings', 'Production', 'Manufacturing data, planning, ...'}
+                </div>
+
+                {* Contracts *}
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:contractsSide', 'people', 'Contracts', 'Sales data, forecasts, ...'}
+                </div>
+
+                {* Profitability *}
+                <div class="col-4">
+                    {control tile 'this#', 'graph-up-arrow', 'Profitability', '...'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                {* KPI *}
+                <div class="col-4">
+                    {control tile 'this#', 'clipboard-data', 'KPI', 'Key Performance Indicatiors'}
+                </div>
+
+                {* Inventory *}
+                <div class="col-4">
+                    {control tile 'this#', 'box-seam', 'Inventory', 'Warehouse data, stock, etc..'}
+                </div>
+
+                {* Cash in bank accounts *}
+                <div class="col-4">
+                    {control tile,'this#', 'bank', 'Cash in bank accounts', 'Cash in bank accounts for this entity, refreshed once a day'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                {* Marketing *}
+                <div class="col-4">
+                    {control tile 'this#', 'chat-quote', 'Marketing overview', 'Marketing costs, data, ...'}
+                </div>
+            </div>
         </div>
 
+        {* SILON CZ *}
         <div class="tab-pane" id="content-00011" role="tabpanel" aria-labelledby="tab-00011">
-            {include tiles}
+            <div class="row mb-4">
+                {* Production *}
+                <div class="col-4">
+                    {control tile 'this#', 'buildings', 'Production', 'Manufacturing data, planning, ...'}
+                </div>
+
+                {* Contracts *}
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:contracts', 'people', 'Contracts', 'Sales data, forecasts, ...'}
+                </div>
+
+                {* Profitability *}
+                <div class="col-4">
+                    {control tile 'this#', 'graph-up-arrow', 'Profitability', '...'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                {* KPI *}
+                <div class="col-4">
+                    {control tile 'this#', 'funnel', 'Material consumption', 'Based on JD Edwards data. Indicators are counted continuosly. Information is perhaps 1 hour delayed'}
+                </div>
+
+                {* Inventory *}
+                <div class="col-4">
+                    {control tile 'this#', 'box-seam', 'Inventory', 'Warehouse data, stock, etc..'}
+                </div>
+
+                {* Cash in bank accounts *}
+                <div class="col-4">
+                    {control tile,'this#', 'bank', 'Cash in bank accounts', 'Cash in bank accounts for this entity, refreshed once a day'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                {* Q Reports *}
+                <div class="col-4">
+                    {control tile 'this#', 'clipboard-check', 'Q Reports', 'Check and analyse current document statuses, verify the items, receiptes, X items etc..'}
+                </div>
+
+                {* Credit management *}
+                <div class="col-4">
+                    {control tile 'this#', 'credit-card', 'Credit management', 'Based on JD Edwards data. Indicators are counted JIT.'}
+                </div>
+
+                {* Finance *}
+                <div class="col-4">
+                    {control tile 'this#', 'cash-coin', 'Finance', 'General ledger analyses. Accounting department analyses.'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                {* Planning *}
+                <div class="col-4">
+                    {control tile 'this#', 'calendar-week', 'Planning', 'Production planning, ...'}
+                </div>
+
+                {* Quality *}
+                <div class="col-4">
+                    {control tile 'this#', 'journal-bookmark', 'Quality', 'Based on JD Edwards data. Report is validated daily. Cardex records IZ and IC analyses.'}
+                </div>
+
+                {* Procurement *}
+                <div class="col-4">
+                    {control tile 'this#', 'cart3', 'Procurement', 'Based on JD Edwards data. Report is validated daily. Received and invoiced receipts amount calculation.'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                {* Energy management *}
+                <div class="col-4">
+                    {control tile 'this#', 'lightning', 'Energy management', 'Energy consumption - overal, by line, ...'}
+                </div>
+            </div>
         </div>
 
+        {* SILON CZ Recycling *}
         <div class="tab-pane" id="content-00019" role="tabpanel" aria-labelledby="tab-00019">
-            {include tiles}
+            <div class="row mb-4">
+                {* Production *}
+                <div class="col-4">
+                        {control tile 'this#', 'buildings', 'Production', 'Manufacturing data, planning, ...'}
+                </div>
+
+                {* Contracts *}
+                <div class="col-4">
+                        {control tile ':Reporting:Dashboard:contractsSide', 'people', 'Contracts', 'Sales data, forecasts, ...'}
+                </div>
+
+                {* Profitability *}
+                <div class="col-4">
+                    {control tile 'this#', 'graph-up-arrow', 'Profitability', '...'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                {* KPI *}
+                <div class="col-4">
+                        {control tile 'this#', 'funnel', 'Material consumption', 'Based on JD Edwards data. Indicators are counted continuosly. Information is perhaps 1 hour delayed'}
+                </div>
+
+                {* Inventory *}
+                <div class="col-4">
+                        {control tile 'this#', 'box-seam', 'Inventory', 'Warehouse data, stock, etc..'}
+                </div>
+
+                {* Cash in bank accounts *}
+                <div class="col-4">
+                    {control tile,'this#', 'bank', 'Cash in bank accounts', 'Cash in bank accounts for this entity, refreshed once a day'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+
+                {* Credit management *}
+                <div class="col-4">
+                        {control tile 'this#', 'credit-card', 'Credit management', 'Based on JD Edwards data. Indicators are counted JIT.'}
+                </div>
+
+                {* Finance *}
+                <div class="col-4">
+                    {control tile 'this#', 'cash-coin', 'Finance', 'General ledger analyses. Accounting department analyses.'}
+                </div>
+
+                {* Planning *}
+                <div class="col-4">
+                    {control tile 'this#', 'calendar-week', 'Planning', 'Production planning, ...'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                {* Quality *}
+                <div class="col-4">
+                    {control tile 'this#', 'journal-bookmark', 'Quality', 'Based on JD Edwards data. Report is validated daily. Cardex records IZ and IC analyses.'}
+                </div>
+
+                {* Procurement *}
+                <div class="col-4">
+                    {control tile 'this#', 'cart3', 'Procurement', 'Based on JD Edwards data. Report is validated daily. Received and invoiced receipts amount calculation.'}
+                </div>
+
+                {* Capex *}
+                <div class="col-4">
+                    {control tile 'this#', 'calculator', 'CAPEX', ''}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                {* Energy management *}
+                <div class="col-4">
+                    {control tile 'this#', 'exclamation-triangle', 'Critical items', ''}
+                </div>
+            </div>
         </div>
     </div>
 
@@ -91,96 +280,4 @@
         });
     </script>
 
-{/block}
-
-{block tiles}
-<div class="row mb-4">
-    {* Production *}
-        <div class="col-4">
-            <a href="#" class="card card-link">
-                <div class="row g-0">
-                    <div class="col-4 card-icon">
-                        <i class="bi bi-buildings"></i>
-                    </div>
-                    <div class="col-8">
-                        <div class="card-body">
-                            <h5 class="card-title">Production</h5>
-                            <p class="card-text">Manufacturing data, planning, etc..</p>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        {* Contracts *}
-        <div class="col-4">
-            <a n:href="contracts" class="card card-link">
-                <div class="row g-0">
-                    <div class="col-4 card-icon">
-                        <i class="bi bi-people"></i>
-                    </div>
-                    <div class="col-8">
-                        <div class="card-body">
-                            <h5 class="card-title">Contracts</h5>
-                            <p class="card-text">Sales data, forecasts, etc..</p>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        {* Profitability *}
-    <div class="col-4">
-        <a href="#" class="card card-link">
-            <div class="row g-0">
-                <div class="col-4 card-icon">
-                    <i class="bi bi-graph-up-arrow"></i>
-                </div>
-                <div class="col-8">
-                    <div class="card-body">
-                        <h5 class="card-title">Profitability</h5>
-                        <p class="card-text">...</p>
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div>
-</div>
-
-<div class="row mb-4">
-
-    {* KPI *}
-        <div class="col-4">
-            <a href="#" class="card card-link">
-                <div class="row g-0">
-                    <div class="col-4 card-icon">
-                        <i class="bi bi-clipboard-data"></i>
-                    </div>
-                    <div class="col-8">
-                        <div class="card-body">
-                            <h5 class="card-title">KPI</h5>
-                            <p class="card-text">Key Performance Indicatiors</p>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        {* Inventory *}
-    <div class="col-4">
-        <a href="#" class="card card-link">
-            <div class="row g-0">
-                <div class="col-4 card-icon">
-                    <i class="bi bi-box-seam"></i>
-                </div>
-                <div class="col-8">
-                    <div class="card-body">
-                        <h5 class="card-title">Inventory</h5>
-                        <p class="card-text">Warehouse data, stock, etc..</p>
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div>
-</div>
 {/block}

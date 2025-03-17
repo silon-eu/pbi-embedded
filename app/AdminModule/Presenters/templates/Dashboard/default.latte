@@ -12,7 +12,7 @@
             {control adminMenu:breadcrumbs}
         </div>
     </div>
-    <div class="row">
+    {*<div class="row">
         <div class="col-6">
             <h3 class="h4">Missing employee numbers in AD</h3>
             {if count($adMissingEmployeeId) === 0}
@@ -31,10 +31,10 @@
                         {foreach $adMissingEmployeeId as $empAd}
                             {control updateEidForm $empAd->dn}
                         {/foreach}
-                        {*<tr n:foreach="$adMissingEmployeeId as $empAd">
+                        <tr n:foreach="$adMissingEmployeeId as $empAd">
                             <td>{$empAd->dn}</td>
                             <td>{$empAd->created_at|date:'d.m.Y'}</td>
-                        </tr>*}
+                        </tr>
                     </tbody>
                 </table>
             {/if}
@@ -125,7 +125,7 @@
                 </table>
             {/if}
         </div>
-    </div>
+    </div>*}
 
 
 {/block}

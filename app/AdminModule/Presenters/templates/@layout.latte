@@ -48,8 +48,8 @@
                   <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <i class="bi bi-person-circle"></i>&nbsp;
                       {if $presenter->getUser()->isLoggedIn()}
-                          {if $userData}
-                            {$userData['name']}&nbsp;{$userData['surname']}
+                          {if $userIdentityData}
+                            {$userIdentityData['name']}&nbsp;{$userIdentityData['surname']}
                           {else}
                             {_"---"}
                           {/if}
