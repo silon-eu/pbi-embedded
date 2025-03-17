@@ -19,20 +19,23 @@ class AzureService extends BaseService
 
     protected function getToken(): ?object
     {
-        $guzzle = new \GuzzleHttp\Client();
-        $url = $this->config['authorityUrl'] . $this->config['tenantId'] . '/oauth2/v2.0/token';
-        $token = json_decode($guzzle->post($url, [
-            'form_params' => [
-                'client_id' => $this->config['clientId'],
-                'client_secret' => $this->config['clientSecret'],
-                'scope' => $this->config['scopeBase'],
-                'grant_type' => 'client_credentials',
-            ],
-        ])->getBody()->getContents());
-        //Debugger::barDump($token,'authToken');
+        return $this->cache->load('azureAuthToken', function (&$dependencies) {
 
-        return $token;
+            $guzzle = new \GuzzleHttp\Client();
+            $url = $this->config['authorityUrl'] . $this->config['tenantId'] . '/oauth2/v2.0/token';
+            $token = json_decode($guzzle->post($url, [
+                'form_params' => [
+                    'client_id' => $this->config['clientId'],
+                    'client_secret' => $this->config['clientSecret'],
+                    'scope' => $this->config['scopeBase'],
+                    'grant_type' => 'client_credentials',
+                ],
+            ])->getBody()->getContents());
 
+            $dependencies[Cache::Expire] = $token->expires_in - 2 . ' seconds';
+
+            return $token;
+        });
     }
 
     public function getReportConfig(string $workspaceId, string $reportId): ?object

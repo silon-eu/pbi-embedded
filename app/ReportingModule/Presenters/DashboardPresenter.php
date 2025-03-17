@@ -31,4 +31,8 @@ class DashboardPresenter extends BasePresenter {
     public function actionContractsSide() {
         $this->template->reportConfig = $this->azureService->getReportConfig('d0376018-b3b3-4cdd-abfe-7d32558eddb4','2a619b73-92fc-4c4f-b350-6b116f8e0448');
     }
+
+    public function actionProfitability() {
+        $this->template->reportConfig = $this->azureService->getReportConfig('d0376018-b3b3-4cdd-abfe-7d32558eddb4','e93122d8-1a51-47c2-8654-c868ac516360');
+    }
 }

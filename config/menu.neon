@@ -62,7 +62,7 @@ menu:
         templates:
             menu: %appDir%/Presenters/templates/controls/FrontMenu.latte
         items:
-            Dashboard:
+            Entry point:
                 action: Reporting:Dashboard:default
                 data:
                     icon: house
@@ -76,3 +76,12 @@ menu:
                     roles:
                         - admin
                     icon: gear
+    adminTop:
+            authorizator: @App\Model\MenuAuthorizator
+            templates:
+                menu: %appDir%/Presenters/templates/controls/AdminTopMenu.latte
+            items:
+                Entry point:
+                    action: Reporting:Dashboard:default
+                    data:
+                        icon: house

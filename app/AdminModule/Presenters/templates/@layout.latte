@@ -24,7 +24,7 @@
         }
     </style>
 
-    <title>User management</title>
+    <title>SILON BI Admin</title>
     {snippet header_tmplSnippet}
         {include #header_tmpl}
     {/snippet}
@@ -40,9 +40,10 @@
   <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
           <a class="navbar-brand text-light" n:href=":Admin:Dashboard:default">
               <img src="{$basePath}/assets/images/logo-white.png" alt="Logo" height="30px" class="d-inline-block align-text-top mr-3">
-              User management
+              BI Admin
           </a>
           <ul class="nav nav-pills mr-0 ml-auto d-flex">
+              {control adminTopMenu}
               {* user *}
               <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

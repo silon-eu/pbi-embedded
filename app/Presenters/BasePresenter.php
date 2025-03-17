@@ -29,6 +29,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         switch($name) {
             case 'adminMenu':
                 return $this->menuFactory->create('admin');
+            case 'adminTopMenu':
+                return $this->menuFactory->create('adminTop');
             case 'frontMenu':
                 return $this->menuFactory->create('front');
             case 'loginForm':
