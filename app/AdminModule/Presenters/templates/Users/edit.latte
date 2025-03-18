@@ -8,7 +8,7 @@
     <div class="row mt-3">
         <div class="col">
             <h1 class="h3">{_"User"}{if $userData} - {$userData->username}{/if}
-                <div class="ms-auto">
+                <div n:if="$userData" class="ms-auto">
                     <a n:href="signInAsUser! $userData->id" class="btn btn-outline-secondary">
                         {_"Sign in as user"}
                     </a>
