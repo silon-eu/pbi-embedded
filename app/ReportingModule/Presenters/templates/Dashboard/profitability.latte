@@ -3,7 +3,7 @@
 
 {block pageHeading}
     <span class="text-secondary d-inline-block px-2">/</span>
-    <a n:href=":Reporting:Dashboard:default#content-00011" class="text-white">SILON CZ</a>
+    <a n:href=":Reporting:Dashboard:default, 'activeTab' => '00011'" class="text-white">SILON CZ</a>
     <span class="text-secondary d-inline-block px-2">/</span>
     {*{$reportConfig->name}*}
     Profitability
@@ -55,7 +55,7 @@
             </ul>
         </div>
         <div class="col-10">
-            <div id="report-container" style="height: calc(100vh - 68px);"></div>
+            <div id="report-container" class="with-sidebar"></div>
             {dump $reportConfig}
         </div>
     </div>

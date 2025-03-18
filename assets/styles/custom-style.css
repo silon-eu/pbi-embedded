@@ -1,0 +1,26 @@
+/* datagrid fix */
+.bi-cog::before {
+    content: "\F3E5";
+}
+
+:root {
+    --sil-primary-color: #01589f;
+    --sil-primary-light-color: #bfcee0;
+}
+
+body {
+    font-size: 16px;
+}
+
+#report-container {
+    background: url('./../images/loader.svg') no-repeat center center;
+    background-size: 250px;
+    margin-top: 1rem;
+    height: calc(100vh - 140px);
+    width: calc(calc(100vh - 140px) / 9 * 15);
+}
+
+#report-container.with-sidebar {
+    height: calc(100vh - 83px);
+    width: calc(calc(100vh - 83px) / 9 * 15);
+}

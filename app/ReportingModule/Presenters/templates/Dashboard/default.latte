@@ -52,19 +52,19 @@
 
     <ul class="nav nav-underline my-2" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="tab-00016" data-bs-toggle="tab" data-bs-target="#content-00016" type="button" role="tab" aria-controls="00016" aria-selected="true">SILON Group</button>
+            <button n:class="$activeTab === null || $activeTab === '00016' ? 'active','nav-link'" id="tab-00016" data-bs-toggle="tab" data-bs-target="#content-00016" type="button" role="tab" aria-controls="00016" aria-selected="true">SILON Group</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-00011" data-bs-toggle="tab" data-bs-target="#content-00011" type="button" role="tab" aria-controls="00011" aria-selected="false">SILON CZ</button>
+            <button n:class="$activeTab === '00011' ? 'active','nav-link'" id="tab-00011" data-bs-toggle="tab" data-bs-target="#content-00011" type="button" role="tab" aria-controls="00011" aria-selected="false">SILON CZ</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-00019" data-bs-toggle="tab" data-bs-target="#content-00019" type="button" role="tab" aria-controls="00019" aria-selected="false">SILON CZ Recycling</button>
+            <button n:class="$activeTab === '00019' ? 'active','nav-link'" id="tab-00019" data-bs-toggle="tab" data-bs-target="#content-00019" type="button" role="tab" aria-controls="00019" aria-selected="false">SILON CZ Recycling</button>
         </li>
     </ul>
     <div class="tab-content" id="myTabContent">
 
         {* SILON Group *}
-        <div class="tab-pane show active" id="content-00016" role="tabpanel" aria-labelledby="tab-00016">
+        <div n:class="$activeTab === null || $activeTab === '00016' ? 'show active','tab-pane'" id="content-00016" role="tabpanel" aria-labelledby="tab-00016">
             <div class="row mb-4">
                 {* Production *}
                 <div class="col-4">
@@ -108,7 +108,7 @@
         </div>
 
         {* SILON CZ *}
-        <div class="tab-pane" id="content-00011" role="tabpanel" aria-labelledby="tab-00011">
+        <div n:class="$activeTab === '00011' ? 'show active','tab-pane'" id="content-00011" role="tabpanel" aria-labelledby="tab-00011">
             <div class="row mb-4">
                 {* Production *}
                 <div class="col-4">
@@ -186,7 +186,7 @@
         </div>
 
         {* SILON CZ Recycling *}
-        <div class="tab-pane" id="content-00019" role="tabpanel" aria-labelledby="tab-00019">
+        <div n:class="$activeTab === '00019' ? 'show active','tab-pane'" id="content-00019" role="tabpanel" aria-labelledby="tab-00019">
             <div class="row mb-4">
                 {* Production *}
                 <div class="col-4">

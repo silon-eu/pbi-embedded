@@ -19,6 +19,13 @@ class DashboardPresenter extends BasePresenter {
         return new DashboardTile;
     }
 
+    public function beforeRender(): void
+    {
+        parent::beforeRender();
+        // get fragment from url
+        $this->template->activeTab = $this->getHttpRequest()->getUrl()->getQueryParameter('activeTab');
+    }
+
     public function actionDefault() {
         //$this->template->reportConfig = $this->azureService->getReportConfig('7b38db08-4f79-475b-ae9b-304abbcd9cc5','c78f621e-bc9b-4a15-9cfd-03fa8ca4be19');
     }
