@@ -49,6 +49,48 @@ class AzureService extends BaseService
         return $embedParams;
     }
 
+    public function getAvailableFeatures(): ?object
+    {
+        $guzzle = new \GuzzleHttp\Client();
+        $url = $this->config['powerBiApiUrl'] . 'v1.0/myorg/availableFeatures';
+        $headers = $this->getRequestHeader();
+
+        $result = $guzzle->get($url, [
+            'headers' => $headers,
+        ]);
+        $data = null;
+
+        try {
+            $data = Json::decode($result->getBody()->getContents());
+            //Debugger::barDump
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            Debugger::barDump($e->getResponse(),'error');
+        }
+
+        return $data;
+    }
+
+    public function getCapacities(): ?object
+    {
+        $guzzle = new \GuzzleHttp\Client();
+        $url = $this->config['powerBiApiUrl'] . 'v1.0/myorg/capacities';
+        $headers = $this->getRequestHeader();
+
+        $result = $guzzle->get($url, [
+            'headers' => $headers,
+        ]);
+        $data = null;
+
+        try {
+            $data = Json::decode($result->getBody()->getContents());
+            //Debugger::barDump
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            Debugger::barDump($e->getResponse(),'error');
+        }
+
+        return $data;
+    }
+
     protected function getEmbedParamsForSingleReport(string $workspaceId, string $reportId): ?object
     {
         $guzzle = new \GuzzleHttp\Client();

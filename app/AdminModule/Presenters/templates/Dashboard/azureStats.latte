@@ -1,0 +1,71 @@
+{block header_tmpl}
+{/block}
+
+{block header}
+{/block}
+
+{block content}
+    {var $today = new DateTime()}
+    <div class="row mt-3">
+        <div class="col">
+            <h1 class="h3">{_"Azure stats"}</h1>
+            {control adminMenu:breadcrumbs}
+        </div>
+    </div>
+    <div class="row">
+        <div n:if="isset($availableFeatures->features)" class="col">
+            <h3>Available features</h3>
+            <table class="table table-bordered table-striped table-sm">
+                <thead>
+                    <tr>
+                        <th>{_"Feature"}</th>
+                        <th>{_"State"}</th>
+                        <th>{_"Extended state"}</th>
+                        <th>{_"Additional info"}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {foreach $availableFeatures->features as $feature}
+                        <tr>
+                            <td>{$feature->name}</td>
+                            <td>{$feature->state}</td>
+                            <td>{$feature->extendedState}</td>
+                            <td>
+                                {if isset($feature->additionalInfo)}
+                                    {foreach $feature->additionalInfo as $key => $value}
+                                        <strong>{$key}:</strong> {$value}{sep}<br>{/sep}
+                                    {/foreach}
+                                {/if}
+                            </td>
+                        </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+        </div>
+        {dump $availableFeatures}
+    </div>
+
+    <div class="row">
+        <div n:if="isset($capacities->value)" class="col">
+            <h3>Capacities</h3>
+            {foreach $capacities->value as $capacity}
+                <h4>{$capacity->displayName}</h4>
+                <table class="table table-bordered table-striped table-sm">
+                    <tbody>
+                        {foreach $capacity as $key => $value}
+                            <tr>
+                                <th>{$key}</th>
+                                <td>{if is_string($value)}{$value}{else}{gettype($value)}{/if}</td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            {/foreach}
+        </div>
+        {dump $capacities}
+    </div>
+
+
+
+
+{/block}

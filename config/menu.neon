@@ -11,6 +11,12 @@ menu:
                     roles:
                         - admin
                     icon: house
+            Azure stats:
+                action: Admin:Dashboard:azureStats
+                data:
+                    roles:
+                        - admin
+                    icon: bar-chart-line
             Settings:
                 action: Admin:Settings:default
                 data:
