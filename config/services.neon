@@ -10,7 +10,7 @@ services:
 
 	- App\Model\Authenticator(@database.default.explorer, @ldapConnection, @cache, %authenticator%)
 	- App\Model\MenuAuthorizator
-	- App\Models\Service\ViteAssets(http://localhost:3008, %wwwDir%/assets/dist/manifest.json, not(%debugMode%), '/pbi-embedded/')
+	- App\Models\Service\ViteAssets(http://localhost:3008, %wwwDir%/assets/dist/manifest.json, %vite.production%, '/pbi-embedded/')
 
 
 	- App\AdminModule\Models\Service\AdminService(@database.default.connection)
