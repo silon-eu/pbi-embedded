@@ -22,7 +22,7 @@
                     {/foreach}
                 </ul>
             {else}
-                <a href="{$submenu->getRealLink()}" class="nav-link text-white" role="button">
+                <a href="{$submenu->getRealLink()}" class="nav-link text-white d-inline-flex" role="button">
                     <i class="align-middle bi bi-{$submenu->getData()['icon']}"></i><span class="ms-1 d-none align-middle d-sm-inline">{$submenu->getRealTitle()}</span>
                 </a>
             {/if}

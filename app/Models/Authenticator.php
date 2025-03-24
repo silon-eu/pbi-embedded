@@ -107,7 +107,7 @@ class Authenticator implements Nette\Security\Authenticator, \Nette\Security\Ide
 
         $roles = $this->cache->load('sys_authenticator_roles_'.$userId, function(&$dependencies) use ($userId) {
             $dependencies[\Nette\Caching\Cache::Expire] = '24 hour';
-            $dependencies[\Nette\Caching\Cache::TAGS] = ['sys_authenticator_roles'];
+            $dependencies[\Nette\Caching\Cache::Tags] = ['sys_authenticator_roles'];
             return $this->getRoles($userId);
         });
         $identity->setRoles($roles);

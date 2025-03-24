@@ -1,0 +1,67 @@
+// Bootstrap rewrites
+$primary: #a20f3b;
+$secondary: #005854;
+$light: #efefea;
+
+// Import all of Bootstrap's CSS
+@import "bootstrap/scss/bootstrap";
+
+
+
+/* datagrid fix */
+.bi-cog::before {
+  content: "\F3E5";
+}
+
+body {
+  font-size: 14px;
+  --bs-body-font-size: 14px;
+}
+
+/* Report container styles */
+
+#report-container {
+  background: url('./../images/loader.svg') no-repeat center center;
+  background-size: 250px;
+  margin-top: 1rem;
+  height: calc(100vh - 140px);
+  width: calc(calc(100vh - 140px) / 9 * 15);
+}
+
+#report-container.with-sidebar {
+  height: calc(100vh - 83px);
+  width: calc(calc(100vh - 83px) / 9 * 15);
+}
+
+#report-container iframe {
+  border: 0;
+}
+
+/* Report left menu */
+
+#left-report-nav .nav-link {
+  color: #000;
+  font-weight: bold;
+  background-color: var(--bs-light);
+}
+
+#left-report-nav .nav-link.active,
+#left-report-nav .nav-link:has(+ ul .nav-link.active) {
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
+}
+
+/* Report left submenu */
+
+#left-report-nav ul .nav-link {
+  background-color: transparent;
+}
+
+#left-report-nav ul .nav-link.active {
+  background-color: var(--bs-primary-bg-subtle);
+  color: var(--bs-text);
+}
+
+
+
+

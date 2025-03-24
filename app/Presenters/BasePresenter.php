@@ -9,21 +9,25 @@ use Contributte\Translation\Translator;
 use Nette;
 use App\TokenStore\TokenCache;
 use GraphHelper;
+use Tracy\Debugger;
 use Ublaboo\DataGrid\DataGrid;
 
 abstract class BasePresenter extends Nette\Application\UI\Presenter {
 
-    /** @var \Contributte\MenuControl\UI\MenuComponentFactory @inject  */
-    public $menuFactory;
+    #[Nette\DI\Attributes\Inject]
+    public \Contributte\MenuControl\UI\MenuComponentFactory $menuFactory;
 
-    /** @var \App\Model\Authenticator @inject */
-    public $authenticator;
+    #[Nette\DI\Attributes\Inject]
+    public \App\Model\Authenticator $authenticator;
 
-    /** @var Translator @inject */
-    public $translator;
+    #[Nette\DI\Attributes\Inject]
+    public Translator $translator;
 
-    /** @var \Contributte\Translation\LocalesResolvers\Session @inject */
-    public $translatorSessionResolver;
+    #[Nette\DI\Attributes\Inject]
+    public \Contributte\Translation\LocalesResolvers\Session $translatorSessionResolver;
+
+    #[Nette\DI\Attributes\Inject]
+    public \App\Models\Service\ViteAssets $viteAssets;
 
     protected function createComponent($name): \Nette\ComponentModel\IComponent {
         switch($name) {
@@ -71,6 +75,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         $this->template->setTranslator($this->translator);
         $this->template->translator = $this->translator;
         $this->template->userIdentityData = $this->getUser()->getIdentity()?->getData();
+        $this->template->viteAssets = $this->viteAssets;
+        Debugger::barDump($this->viteAssets);
     }
 
     public function processLogin(\Nette\Application\UI\Form $form, $values): void {

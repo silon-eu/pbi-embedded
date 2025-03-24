@@ -6,8 +6,9 @@ composer.lock
 /temp/cache
 /config/local.neon
 web.config
-/assets/images/profile-photo/
 
 log/
+
+node_modules/
 
 session/

@@ -6,30 +6,37 @@
     <a n:href=":Reporting:Dashboard:default, 'activeTab' => '00011'" class="text-white">SILON CZ</a>
     <span class="text-secondary d-inline-block px-2">/</span>
     {*{$reportConfig->name}*}
-    Contracts
+    {$reportName}
 {/block}
 
 {block header}
-    <style>
-        iframe {
-            border: 0;
-        }
-    </style>
 {/block}
 
 {block content}
     {var $today = new DateTime()}
-    <div class="row mt-3">
-        <div class="col">
-            {*<h1 class="h3">{$reportConfig->name}</h1>*}
-            {*<button class="btn btn-sm btn-outline-secondary" id="setPage-btn">Set page</button>*}
-            <div id="report-nav"></div>
-            {*control adminMenu:breadcrumbs*}
-        </div>
-    </div>
     <div class="row">
-        <div class="col">
-            <div id="report-container"></div>
+        <div class="col-2 pt-3">
+            <ul id="left-report-nav" class="nav flex-column" n:inner-foreach="$navigation as $navItemKey => $navItem">
+                <li class="nav-item mb-1">
+                    <a n:class="$iterator->first ? 'active', 'nav-link'" href="#" data-page="{$navItemKey}">
+                        {$navItem['name']}
+                    </a>
+                    <ul
+                        n:if="isset($navItem['items']) && count($navItem['items']) > 0"
+                        n:inner-foreach="$navItem['items'] as $subNavItemKey => $subNavItem"
+                        class="nav flex-column mb-2"
+                    >
+                        <li class="nav-item">
+                            <a n:class="$iterator->parent->first && $iterator->first ? 'active', 'nav-link'" href="#" data-page="{$subNavItemKey}">
+                                {$subNavItem}
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="col-10">
+            <div id="report-container" class="with-sidebar"></div>
         </div>
     </div>
 
@@ -42,7 +49,7 @@
             console.log('ready');
 
             let models = window["powerbi-client"].models;
-            let reportContainer = $("#report-container").get(0);
+            let reportContainer = document.getElementById("report-container");
 
             // Initialize iframe for embedding report
             powerbi.bootstrap(reportContainer, { type: "report" });
@@ -127,77 +134,37 @@
             // Triggers when a report schema is successfully loaded
             report.on("loaded", function () {
                 console.log("Report load successful");
-                report.getPages().then(function (pages) {
+                /*report.getPages().then(function (pages) {
                     console.log(pages);
-
-                    // generate nav into #report-nav
-                    let nav = document.getElementById("report-nav");
-                    let ul = document.createElement("ul");
-                    ul.classList.add("nav", "nav-underline");
-                    pages.forEach(function(page,index) {
-                        //if (page.visibility === 0) {
-                            let li = document.createElement("li");
-                            li.classList.add("nav-item");
-
-                            let a = document.createElement("a");
-                            a.classList.add("nav-link");
-                            if (index === 0) {
-                                a.classList.add("active");
-                            }
-                            a.href = "#";
-                            a.dataset.page = page.name;
-                            a.innerText = page.displayName;
-                            a.addEventListener("click", function () {
-                                report.setPage(page.name);
-                                // remove active class from all nav items
-                                ul.querySelectorAll("a.nav-link.active").forEach(function(a) {
-                                    a.classList.remove("active");
-                                });
-                                // add active class to clicked nav item
-                                a.classList.add("active");
-                            });
-
-                            li.appendChild(a);
-                            ul.appendChild(li);
-                       // }
-                    });
-                    nav.appendChild(ul);
-
-
-                    // generate nav into #report-nav and if display name starts with "-" then show it as a submenu item
-                    let ul2 = document.createElement("ul");
-                    ul2.classList.add("nav", "nav-tabs");
-                    pages.forEach(function(page) {
-                        if (page.visibility === 0) {
-                            if (page.displayName.startsWith("-")) {
-                                let li = document.createElement("li");
-                                li.classList.add("nav-item");
-                                let a = document.createElement("a");
-                                a.classList.add("nav-link");
-                                a.href = "#";
-                                a.innerText = page.displayName.replace("-", "");
-                                a.addEventListener("click", function () {
-                                    report.setPage(page.name);
-                                });
-                                li.appendChild(a);
-                                ul2.appendChild(li);
-                            }
-                        }
-                    });
-                    nav.appendChild(ul2);
-
-
                 });
 
                 report.getSlicers().then(function(slicers) {
-                    console.log("Slicers");
                     console.log(slicers);
                 });
 
                 report.getFilters().then(function(filters) {
-                    console.log("Filters");
                     console.log(filters);
+                });*/
+
+                const navigation = document.querySelectorAll("#left-report-nav .nav-link");
+                navigation.forEach(function (link) {
+                    link.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        let page = e.target.getAttribute("data-page");
+                        if(page) {
+                            report.setPage(page);
+                            // set all link to inactive
+                            navigation.forEach(function (link) {
+                                link.classList.remove("active");
+                            });
+                            // set clicked link to active
+                            e.target.classList.add("active");
+                        }
+                    });
                 });
+
+                // Set the first page as active
+                report.setPage({key($navigation)});
 
             });
 
@@ -218,11 +185,6 @@
                 console.error(errorMsg);
                 return;
             });
-
-
-            /*document.getElementById("setPage-btn").addEventListener("click", function() {
-                report.setPage("ReportSection49ce4843d47777a3548a");
-            });*/
 
 
         });
