@@ -7,7 +7,7 @@
     {$viteAssets->printTags()}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-    <title>SILON Reporting</title>
+    <title>{ifset title}{include #title} | {/ifset}SILON Reporting</title>
     {snippet header_tmplSnippet}
         {include #header_tmpl}
     {/snippet}

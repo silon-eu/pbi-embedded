@@ -2,7 +2,7 @@
 {/block}
 
 {block pageHeading}
-    <span class="text-secondary d-inline-block px-2">/</span>
+    <span class="text-light d-inline-block px-2">/</span>
     Entry point
 {/block}
 
@@ -52,7 +52,10 @@
 
     <ul class="nav nav-underline my-2" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button n:class="$activeTab === null || $activeTab === '00016' ? 'active','nav-link'" id="tab-00016" data-bs-toggle="tab" data-bs-target="#content-00016" type="button" role="tab" aria-controls="00016" aria-selected="true">SILON Group</button>
+            <button n:class="$activeTab === null || $activeTab === 'demo' ? 'active','nav-link'" id="tab-demo" data-bs-toggle="tab" data-bs-target="#content-demo" type="button" role="tab" aria-controls="demo" aria-selected="true">DEMO</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button n:class="$activeTab === '00016' ? 'active','nav-link'" id="tab-00016" data-bs-toggle="tab" data-bs-target="#content-00016" type="button" role="tab" aria-controls="00016" aria-selected="false">SILON Group</button>
         </li>
         <li class="nav-item" role="presentation">
             <button n:class="$activeTab === '00011' ? 'active','nav-link'" id="tab-00011" data-bs-toggle="tab" data-bs-target="#content-00011" type="button" role="tab" aria-controls="00011" aria-selected="false">SILON CZ</button>
@@ -63,8 +66,73 @@
     </ul>
     <div class="tab-content" id="myTabContent">
 
+        {* DEMO *}
+        <div n:class="$activeTab === null || $activeTab === 'demo' ? 'show active','tab-pane'" id="content-demo" role="tabpanel" aria-labelledby="tab-demo">
+            <div class="row mb-4">
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:cardex', 'boxes', 'Cardex', 'Inventory ledger'}
+                </div>
+
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:contracts', 'people', 'Contracts', 'Sales data, forecasts, ...'}
+                </div>
+
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:profitability', 'graph-up-arrow', 'Profitability', '...'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:salesAcquisitionMatrix', 'ui-checks-grid', 'Sales acquisition matrix', '...'}
+                </div>
+
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:cmDb', 'coin', 'CM1 and DB', '...'}
+                </div>
+
+                <div class="col-4">
+                    {control tile,':Reporting:Dashboard:salesForecast', 'bar-chart-steps', 'Sales Forecast', '...'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:gledger', 'bar-chart', 'GLedger', '...'}
+                </div>
+
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:lineMonitoringUs', 'buildings', 'Line Monitoring 43L001', '...'}
+                </div>
+
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:salesForecastUs', 'bar-chart-steps', 'Sales Forecast US', '...'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:salesDod', 'calendar-week', 'Sales DoD', 'Production planning, ...'}
+                </div>
+
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:salesDodUs', 'calendar2-week', 'Sales DoD US', '...'}
+                </div>
+
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:procurement', 'cart3', 'Procurement', 'Based on JD Edwards data. Report is validated daily. Received and invoiced receipts amount calculation.'}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-4">
+                    {control tile ':Reporting:Dashboard:cardexProcurement', 'cart-dash', 'Cardex Procurement', '...'}
+                </div>
+            </div>
+        </div>
+
         {* SILON Group *}
-        <div n:class="$activeTab === null || $activeTab === '00016' ? 'show active','tab-pane'" id="content-00016" role="tabpanel" aria-labelledby="tab-00016">
+        <div n:class="$activeTab === '00016' ? 'show active','tab-pane'" id="content-00016" role="tabpanel" aria-labelledby="tab-00016">
             <div class="row mb-4">
                 {* Production *}
                 <div class="col-4">
@@ -108,7 +176,8 @@
         </div>
 
         {* SILON CZ *}
-        <div n:class="$activeTab === '00011' ? 'show active','tab-pane'" id="content-00011" role="tabpanel" aria-labelledby="tab-00011">
+        <div n:class="'tab-pane'" id="content-00011" role="tabpanel" aria-labelledby="tab-00011">
+        {*<div n:class="$activeTab === '00011' ? 'show active','tab-pane'" id="content-00011" role="tabpanel" aria-labelledby="tab-00011">*}
             <div class="row mb-4">
                 {* Production *}
                 <div class="col-4">

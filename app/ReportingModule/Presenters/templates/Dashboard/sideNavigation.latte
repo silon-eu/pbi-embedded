@@ -1,10 +1,11 @@
+{block title}{$reportName}{/block}
 {block header_tmpl}
 {/block}
 
 {block pageHeading}
-    <span class="text-secondary d-inline-block px-2">/</span>
-    <a n:href=":Reporting:Dashboard:default, 'activeTab' => '00011'" class="text-white">SILON CZ</a>
-    <span class="text-secondary d-inline-block px-2">/</span>
+    <span class="text-light d-inline-block px-2">/</span>
+    <a n:href=":Reporting:Dashboard:default, 'activeTab' => 'demo'" class="text-white">SILON CZ</a>
+    <span class="text-light d-inline-block px-2">/</span>
     {*{$reportConfig->name}*}
     {$reportName}
 {/block}
