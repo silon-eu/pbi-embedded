@@ -53,13 +53,22 @@ body {
 
 /* Report left submenu */
 
+#left-report-nav ul {
+  border-color: var(--bs-gray-200);
+  border-width: 0 1px 1px 1px;
+  border-style: solid;
+}
+
 #left-report-nav ul .nav-link {
   background-color: transparent;
+  font-size: 0.75rem;
 }
 
 #left-report-nav ul .nav-link.active {
-  background-color: var(--bs-primary-bg-subtle);
-  color: var(--bs-text);
+  //background-color: var(--bs-gray-200);
+  //color: var(--bs-text);
+  background-color: transparent;
+  color: var(--bs-primary);
 }
 
 
