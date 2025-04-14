@@ -36,21 +36,24 @@
                 </li>
             </ul>
         </div>
-        <div class="col-10">
+        <div class="col-10 position-relative">
             <div id="report-container" class="with-sidebar"></div>
+            <div id="report-toolbar" class="d-flex flex-column justify-content-between align-items-center position-absolute pt-3 pe-3" style="top:0;right:0;">
+                <button type="button" id="set-default-filters" class="btn btn-primary"><i class="bi bi-arrow-counterclockwise me-2"></i><span>Reset</span></button>
+            </div>
         </div>
     </div>
 
 
     <script src="{$basePath}/assets/js/powerbi.min.js"></script>
     <script>
-
+        let defaultFilters = [];
+        let defaultSlicers = [];
+        let report = null;
+        let models = window["powerbi-client"].models;
+        let reportContainer = document.getElementById("report-container");
 
         document.addEventListener("DOMContentLoaded", function() {
-            console.log('ready');
-
-            let models = window["powerbi-client"].models;
-            let reportContainer = document.getElementById("report-container");
 
             // Initialize iframe for embedding report
             powerbi.bootstrap(reportContainer, { type: "report" });
@@ -127,7 +130,7 @@
             tokenExpiry = {$reportConfig->expiration};
 
             // Embed Power BI report when Access token and Embed URL are available
-            let report = powerbi.embed(reportContainer, reportLoadConfig);
+            report = powerbi.embed(reportContainer, reportLoadConfig);
 
             // Clear any other loaded handler events
             report.off("loaded");
@@ -164,6 +167,17 @@
                     });
                 });
 
+                // Get all pages in the report
+                report.getPages().then(function (pages) {
+                    // foreach page save filters
+                    pages.forEach(async function (page) {
+                        // save filters
+                        page.getFilters().then(function (filters) {
+                            defaultFilters[page.name] = filters;
+                        });
+                    });
+                });
+
                 // Set the first page as active
                 report.setPage({key($navigation)});
 
@@ -184,10 +198,66 @@
             report.on("error", function (event) {
                 let errorMsg = event.detail;
                 console.error(errorMsg);
-                return;
             });
 
+            // Clear any other pageChanged handler events
+            report.off("pageChanged");
 
+            // Save filters on page change
+            report.on("pageChanged", async function (event) {
+                let page = event.detail.newPage;
+                // save slicers
+                const visuals = await page.getVisuals();
+                console.log(visuals);
+
+                let slicers = visuals.filter(function (visual) {
+                    return visual.type === "slicer" || visual.type === "advancedSlicerVisual";
+                });
+
+                slicers.forEach(async function(slicer) {
+                    const state = await slicer.getSlicerState();
+                    // save slicer state
+                    if (defaultSlicers[slicer.name] === undefined) {
+                        defaultSlicers[slicer.name] = state;
+                    }
+                });
+
+            });
+
+            // set default filters for active page on button click
+            const setDefaultFiltersButton = document.getElementById("set-default-filters");
+            if(setDefaultFiltersButton) {
+                setDefaultFiltersButton.addEventListener("click", async function (e) {
+                    e.preventDefault();
+                    // Retrieve the page collection and then replace filters with the same target data field for the active page.
+                    try {
+                        const pages = await report.getPages();
+                        // Retrieve the active page.
+                        let page = pages.filter(function (page) {
+                            return page.isActive
+                        })[0];
+                        await page.updateFilters(models.FiltersOperations.Replace, defaultFilters[page.name]);
+
+                        const visuals = await page.getVisuals();
+
+                        let slicers = visuals.filter(function (visual) {
+                            return visual.type === "slicer" || visual.type === "advancedSlicerVisual";
+                        });
+
+                        slicers.forEach(async function(slicer) {
+                            if (defaultSlicers[slicer.name] !== undefined) {
+                                await slicer.setSlicerState(defaultSlicers[slicer.name]);
+                            } else {
+                                await slicer.setSlicerState({ filters: [] });
+                            }
+                        });
+
+                    }
+                    catch (errors) {
+                        console.log(errors);
+                    }
+                });
+            }
         });
     </script>
 {/block}
