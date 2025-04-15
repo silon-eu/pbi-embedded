@@ -45,6 +45,7 @@ class AzureService extends BaseService
 
         $embedParams->embedToken = $embedToken->token;
         $embedParams->expiration = $embedToken->expiration;
+        $embedParams->datasetLastRefreshDate = $this->getDatasetLastRefreshDate($embedParams->datasetId, $embedParams->datasetWorkspaceId);
 
         return $embedParams;
     }
@@ -156,7 +157,58 @@ class AzureService extends BaseService
         return $data;
     }
 
+    public function getDatasetRefreshes(string $datasetId, ?string $datasetWorkspaceId = null): ?object
+    {
+        $guzzle = new \GuzzleHttp\Client();
+        if ($datasetWorkspaceId) {
+            $url = $this->config['powerBiApiUrl'] . 'v1.0/myorg/groups/'. $datasetWorkspaceId . '/datasets/'. $datasetId . '/refreshes';
+        } else {
+            $url = $this->config['powerBiApiUrl'] . 'v1.0/myorg/datasets/'. $datasetId . '/refreshes';
+        }
 
+        $headers = $this->getRequestHeader();
+
+        $result = $guzzle->get($url, [
+            'headers' => $headers,
+        ]);
+        $data = null;
+
+        try {
+            $data = Json::decode($result->getBody()->getContents());
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            Debugger::barDump($e->getResponse(),'error');
+        }
+
+        return $data;
+    }
+
+    public function getDatasetLastRefreshDate(string $datasetId, ?string $datasetWorkspaceId = null): string|\DateTime
+    {
+        return $this->cache->load('datasetLastRefresh'.$datasetId.'_'.$datasetWorkspaceId, function (&$dependencies) use ($datasetId, $datasetWorkspaceId) {
+            $dependencies[Cache::Expire] = '5 minutes';
+
+            $refreshes = $this->getDatasetRefreshes($datasetId, $datasetWorkspaceId);
+            if (isset($refreshes->value)) {
+                if (count($refreshes->value) > 0) {
+                    // get first completed refresh
+                    foreach ($refreshes->value as $key => $refresh) {
+                        if ($refresh->status === 'Completed') {
+                            try {
+                                return \DateTime::createFromFormat('Y-m-d\TH:i:s.u\Z', $refresh->endTime);
+                            } catch (\Exception $e) {
+                                Debugger::log($e->getMessage(),'error');
+                                return 'error parsing date';
+                            }
+                        }
+                    }
+                } else {
+                    return 'no success refreshes found';
+                }
+            }
+
+            return 'never';
+        });
+    }
 
 
     protected function getRequestHeader()

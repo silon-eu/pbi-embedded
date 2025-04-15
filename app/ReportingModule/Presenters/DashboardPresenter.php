@@ -5,6 +5,7 @@ namespace App\ReportingModule\Presenters;
 use App\Models\Service\AzureService;
 use App\ReportingModule\Controls\DashboardTile;
 use Nette\Application\UI\Control;
+use Tracy\Debugger;
 
 class DashboardPresenter extends BasePresenter {
 
@@ -237,7 +238,7 @@ class DashboardPresenter extends BasePresenter {
 
     public function actionProcurement() {
         $this->setView('sideNavigation');
-        $this->template->reportConfig = $this->azureService->getReportConfig('e4e032b9-037a-4457-8690-3733ecf3918d','aea16227-918e-4368-886b-57a61f562a7c');
+        $this->template->reportConfig = $this->azureService->getReportConfig('d0376018-b3b3-4cdd-abfe-7d32558eddb4','6777137c-65bb-47c1-8a41-c76752396993');
         $this->template->reportName = 'Procurement';
         $this->template->navigation = [
             '9fc05f1c21e0021ed579' => [
