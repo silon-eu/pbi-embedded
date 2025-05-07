@@ -86,14 +86,38 @@
 
             </div>
             <div class="col col-md-10 col-xl-10">*}
-                {foreach $flashes as $flash}
-                    <div class="mt-2 alert alert-{$flash->type}">{$flash->message}</div>
-                {/foreach}
+                {snippet flashes}
+                    {foreach $flashes as $flash}
+                        <div class="mt-2 alert alert-{$flash->type}">{$flash->message}</div>
+                    {/foreach}
+                {/snippet}
                 {include header}
                 {include content}
             </div>
         </div>
     </div>
+      <!-- System Modal -->
+      <div n:snippet="systemModal">
+        <div class="modal fade" id="systemModal" tabindex="-1">
+          <div class="modal-dialog modal-dialog-scrollable modal-lg">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title">Loading ...</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                      {if isset($systemModalControl)}
+                          {control $systemModalControl}
+                      {/if}
+                  </div>
+                  {*<div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary">Save changes</button>
+                  </div>*}
+              </div>
+          </div>
+        </div>
+      </div>
     {block footer}{/block}
   </body>
 </html>

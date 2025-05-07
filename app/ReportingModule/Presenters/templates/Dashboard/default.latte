@@ -43,310 +43,72 @@
 {/block}
 
 {block content}
-    {*<div class="row mt-3 mb-3">
-        <div class="col">
-            <h1 class="h3">{_"Entry point"}</h1>
-            *}{*{control adminMenu:breadcrumbs}*}{*
-        </div>
-    </div>*}
+    <div n:snippet="dashboard">
+        <ul class="nav nav-underline my-2" id="dashboardTabs" role="tablist">
+            <li n:foreach="$tabs as $tab" n:class="'nav-item',$presenter->userIsAdmin() ? 'dropdown'">
+                <button n:class="($activeTab === null && $iterator->isFirst()) || $activeTab === $tab->id ? 'active','nav-link'"
+                        id="tab-{$tab->id}"
+                        data-bs-toggle="tab"
+                        data-bs-target="#content-{$tab->id}"
+                        type="button"
+                        role="tab" aria-controls="{$tab->id}" aria-selected="true">
+                    <span>{$tab->name}</span>
+                    {if $presenter->userIsAdmin()}
+                        <a n:class="'dropdown-toggle'"
+                                data-bs-toggle = "dropdown">
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item ajax" n:href="showTabsForm!,editTabId=>$tab->id">Edit</a></li>
+                            <li><a class="dropdown-item ajax" data-confirm="Do you really want to delete this tab?" n:href="deleteTab!,editTabId=>$tab->id">Delete</a></li>
+                            <li n:if="count($tabs)>1"><hr class="dropdown-divider"></li>
+                            <li n:if="!$iterator->isFirst()">
+                                <a class="dropdown-item ajax" n:href="changeTabPosition!,editTabId=>$tab->id,direction=>'decrease'" data-naja-history="off">
+                                    Move left
+                                </a>
+                            </li>
+                            <li n:if="!$iterator->isLast()">
+                                <a class="dropdown-item ajax" n:href="changeTabPosition!,editTabId=>$tab->id,direction=>'increase'" data-naja-history="off">
+                                    Move right
+                                </a>
+                            </li>
+                        </ul>
+                    {/if}
+                </button>
 
-    <ul class="nav nav-underline my-2" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button n:class="$activeTab === null || $activeTab === 'demo' ? 'active','nav-link'" id="tab-demo" data-bs-toggle="tab" data-bs-target="#content-demo" type="button" role="tab" aria-controls="demo" aria-selected="true">DEMO</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button n:class="$activeTab === '00016' ? 'active','nav-link'" id="tab-00016" data-bs-toggle="tab" data-bs-target="#content-00016" type="button" role="tab" aria-controls="00016" aria-selected="false">SILON Group</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button n:class="$activeTab === '00011' ? 'active','nav-link'" id="tab-00011" data-bs-toggle="tab" data-bs-target="#content-00011" type="button" role="tab" aria-controls="00011" aria-selected="false">SILON CZ</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button n:class="$activeTab === '00019' ? 'active','nav-link'" id="tab-00019" data-bs-toggle="tab" data-bs-target="#content-00019" type="button" role="tab" aria-controls="00019" aria-selected="false">SILON CZ Recycling</button>
-        </li>
-    </ul>
-    <div class="tab-content" id="myTabContent">
 
-        {* DEMO *}
-        <div n:class="$activeTab === null || $activeTab === 'demo' ? 'show active','tab-pane'" id="content-demo" role="tabpanel" aria-labelledby="tab-demo">
-            <div class="row mb-4">
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:cardex', 'boxes', 'Cardex', 'Inventory ledger'}
-                </div>
-
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:contractsSide', 'people', 'Contracts', 'Sales data, forecasts, ...'}
-                </div>
-
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:profitability', 'graph-up-arrow', 'Profitability', '...'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:salesAcquisitionMatrix', 'ui-checks-grid', 'Sales acquisition matrix', '...'}
-                </div>
-
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:cmDb', 'coin', 'CM1 and DB', '...'}
-                </div>
-
-                <div class="col-4">
-                    {control tile,':Reporting:Dashboard:salesForecast', 'bar-chart-steps', 'Sales Forecast', '...'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:gledger', 'bar-chart', 'GLedger', '...'}
-                </div>
-
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:lineMonitoringUs', 'buildings', 'Line Monitoring 43L001', '...'}
-                </div>
-
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:salesForecastUs', 'bar-chart-steps', 'Sales Forecast US', '...'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:salesDod', 'calendar-week', 'Sales DoD', 'Production planning, ...'}
-                </div>
-
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:salesDodUs', 'calendar2-week', 'Sales DoD US', '...'}
-                </div>
-
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:procurement', 'cart3', 'Procurement', 'Based on JD Edwards data. Report is validated daily. Received and invoiced receipts amount calculation.'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:cardexProcurement', 'cart-dash', 'Cardex Procurement', '...'}
-                </div>
-            </div>
-        </div>
-
-        {* SILON Group *}
-        <div n:class="$activeTab === '00016' ? 'show active','tab-pane'" id="content-00016" role="tabpanel" aria-labelledby="tab-00016">
-            <div class="row mb-4">
-                {* Production *}
-                <div class="col-4">
-                    {control tile 'this#', 'buildings', 'Production', 'Manufacturing data, planning, ...'}
-                </div>
-
-                {* Contracts *}
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:contractsSide', 'people', 'Contracts', 'Sales data, forecasts, ...'}
-                </div>
-
-                {* Profitability *}
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:profitability', 'graph-up-arrow', 'Profitability', '...'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                {* KPI *}
-                <div class="col-4">
-                    {control tile 'this#', 'clipboard-data', 'KPI', 'Key Performance Indicatiors'}
-                </div>
-
-                {* Inventory *}
-                <div class="col-4">
-                    {control tile 'this#', 'box-seam', 'Inventory', 'Warehouse data, stock, etc..'}
-                </div>
-
-                {* Cash in bank accounts *}
-                <div class="col-4">
-                    {control tile,'this#', 'bank', 'Cash in bank accounts', 'Cash in bank accounts for this entity, refreshed once a day'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                {* Marketing *}
-                <div class="col-4">
-                    {control tile 'this#', 'chat-quote', 'Marketing overview', 'Marketing costs, data, ...'}
-                </div>
-            </div>
-        </div>
-
-        {* SILON CZ *}
-        <div n:class="'tab-pane'" id="content-00011" role="tabpanel" aria-labelledby="tab-00011">
-        {*<div n:class="$activeTab === '00011' ? 'show active','tab-pane'" id="content-00011" role="tabpanel" aria-labelledby="tab-00011">*}
-            <div class="row mb-4">
-                {* Production *}
-                <div class="col-4">
-                    {control tile 'this#', 'buildings', 'Production', 'Manufacturing data, planning, ...'}
-                </div>
-
-                {* Contracts *}
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:contracts', 'people', 'Contracts', 'Sales data, forecasts, ...'}
-                </div>
-
-                {* Profitability *}
-                <div class="col-4">
-                    {control tile ':Reporting:Dashboard:profitability', 'graph-up-arrow', 'Profitability', '...'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                {* KPI *}
-                <div class="col-4">
-                    {control tile 'this#', 'funnel', 'Material consumption', 'Based on JD Edwards data. Indicators are counted continuosly. Information is perhaps 1 hour delayed'}
-                </div>
-
-                {* Inventory *}
-                <div class="col-4">
-                    {control tile 'this#', 'box-seam', 'Inventory', 'Warehouse data, stock, etc..'}
-                </div>
-
-                {* Cash in bank accounts *}
-                <div class="col-4">
-                    {control tile,'this#', 'bank', 'Cash in bank accounts', 'Cash in bank accounts for this entity, refreshed once a day'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                {* Q Reports *}
-                <div class="col-4">
-                    {control tile 'this#', 'clipboard-check', 'Q Reports', 'Check and analyse current document statuses, verify the items, receiptes, X items etc..'}
-                </div>
-
-                {* Credit management *}
-                <div class="col-4">
-                    {control tile 'this#', 'credit-card', 'Credit management', 'Based on JD Edwards data. Indicators are counted JIT.'}
-                </div>
-
-                {* Finance *}
-                <div class="col-4">
-                    {control tile 'this#', 'cash-coin', 'Finance', 'General ledger analyses. Accounting department analyses.'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                {* Planning *}
-                <div class="col-4">
-                    {control tile 'this#', 'calendar-week', 'Planning', 'Production planning, ...'}
-                </div>
-
-                {* Quality *}
-                <div class="col-4">
-                    {control tile 'this#', 'journal-bookmark', 'Quality', 'Based on JD Edwards data. Report is validated daily. Cardex records IZ and IC analyses.'}
-                </div>
-
-                {* Procurement *}
-                <div class="col-4">
-                    {control tile 'this#', 'cart3', 'Procurement', 'Based on JD Edwards data. Report is validated daily. Received and invoiced receipts amount calculation.'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                {* Energy management *}
-                <div class="col-4">
-                    {control tile 'this#', 'lightning', 'Energy management', 'Energy consumption - overal, by line, ...'}
-                </div>
-            </div>
-        </div>
-
-        {* SILON CZ Recycling *}
-        <div n:class="$activeTab === '00019' ? 'show active','tab-pane'" id="content-00019" role="tabpanel" aria-labelledby="tab-00019">
-            <div class="row mb-4">
-                {* Production *}
-                <div class="col-4">
-                        {control tile 'this#', 'buildings', 'Production', 'Manufacturing data, planning, ...'}
-                </div>
-
-                {* Contracts *}
-                <div class="col-4">
-                        {control tile ':Reporting:Dashboard:contractsSide', 'people', 'Contracts', 'Sales data, forecasts, ...'}
-                </div>
-
-                {* Profitability *}
-                <div class="col-4">
-                    {control tile 'this#', 'graph-up-arrow', 'Profitability', '...'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                {* KPI *}
-                <div class="col-4">
-                        {control tile 'this#', 'funnel', 'Material consumption', 'Based on JD Edwards data. Indicators are counted continuosly. Information is perhaps 1 hour delayed'}
-                </div>
-
-                {* Inventory *}
-                <div class="col-4">
-                        {control tile 'this#', 'box-seam', 'Inventory', 'Warehouse data, stock, etc..'}
-                </div>
-
-                {* Cash in bank accounts *}
-                <div class="col-4">
-                    {control tile,'this#', 'bank', 'Cash in bank accounts', 'Cash in bank accounts for this entity, refreshed once a day'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-
-                {* Credit management *}
-                <div class="col-4">
-                        {control tile 'this#', 'credit-card', 'Credit management', 'Based on JD Edwards data. Indicators are counted JIT.'}
-                </div>
-
-                {* Finance *}
-                <div class="col-4">
-                    {control tile 'this#', 'cash-coin', 'Finance', 'General ledger analyses. Accounting department analyses.'}
-                </div>
-
-                {* Planning *}
-                <div class="col-4">
-                    {control tile 'this#', 'calendar-week', 'Planning', 'Production planning, ...'}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                {* Quality *}
-                <div class="col-4">
-                    {control tile 'this#', 'journal-bookmark', 'Quality', 'Based on JD Edwards data. Report is validated daily. Cardex records IZ and IC analyses.'}
-                </div>
-
-                {* Procurement *}
-                <div class="col-4">
-                    {control tile 'this#', 'cart3', 'Procurement', 'Based on JD Edwards data. Report is validated daily. Received and invoiced receipts amount calculation.'}
-                </div>
-
-                {* Capex *}
-                <div class="col-4">
-                    {control tile 'this#', 'calculator', 'CAPEX', ''}
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                {* Energy management *}
-                <div class="col-4">
-                    {control tile 'this#', 'exclamation-triangle', 'Critical items', ''}
+            </li>
+            <li n:if="$presenter->userIsAdmin()" class="nav-item" role="presentation">
+                <a class="btn btn-sm btn-outline-dark ajax" data-toggle="systemModal" n:href="showTabsForm!">+</a>
+            </li>
+        </ul>
+        <div n:inner-foreach="$tabs as $tab" class="tab-content" id="dashboardTabsContent">
+            {* DEMO *}
+            <div n:class="($activeTab === null && $iterator->isFirst()) || $activeTab === $tab->id ? 'show active','tab-pane'" id="content-{$tab->id}" role="tabpanel" aria-labelledby="tab-{$tab->id}">
+                <div class="row mb-4">
+                    <div class="col-4">
+                        {control tile ':Reporting:Dashboard:cardex', 'boxes', 'Cardex', 'Inventory ledger'}
+                    </div>
+                    <div n:if="$presenter->userIsAdmin()" class="col-4 opacity-75">
+                        {control tile 'this', 'plus-circle-dotted', 'Add new tile', ''}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
+    {*<script>
         document.addEventListener("DOMContentLoaded", function() {
             // switch tab based on url hashtag param
             const hash = window.location.hash;
             console.log(hash);
             if (hash) {
-                const triggerEl = document.querySelector('#myTab button[data-bs-target="'+hash+'"]');
+                const triggerEl = document.querySelector('#dashboardTabs button[data-bs-target="'+hash+'"]');
                 console.log(triggerEl);
                 //bootstrap.Tab.getInstance(triggerEl).show(); // Select tab by name
             }
 
 
         });
-    </script>
+    </script>*}
 
 {/block}

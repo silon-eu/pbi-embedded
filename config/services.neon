@@ -19,3 +19,5 @@ services:
 	- App\AdminModule\Models\Service\GroupsService(@database.default.explorer)
 
 	- App\Models\Service\AzureService(%azure%, @cache)
+
+	- App\ReportingModule\Models\Service\DashboardService(@database.default.explorer, @cache)

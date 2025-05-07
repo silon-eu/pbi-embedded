@@ -17,7 +17,7 @@
         "dibi/dibi": ">=5.0",
         "ublaboo/datagrid": "^6.10",
         "contributte/translation": ">=2.0",
-        "contributte/forms-bootstrap": "^0.8.1",
+        "contributte/forms-bootstrap": "^0.8.4",
         "contributte/menu-control": ">=3.2",
         "tracy/tracy": "^2.10",
         "nette/mail": "^4.0"

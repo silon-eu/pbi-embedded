@@ -4,13 +4,17 @@ namespace App\ReportingModule\Presenters;
 
 use App\Models\Service\AzureService;
 use App\ReportingModule\Controls\DashboardTile;
+use App\ReportingModule\Models\Service\DashboardService;
+use Contributte\FormsBootstrap\BootstrapForm;
 use Nette\Application\UI\Control;
+use Nette\Application\UI\Form;
 use Tracy\Debugger;
 
 class DashboardPresenter extends BasePresenter {
 
     public function __construct(
-        protected AzureService $azureService
+        protected AzureService $azureService,
+        protected DashboardService $dashboardService
     )
     {
         parent::__construct();
@@ -20,6 +24,107 @@ class DashboardPresenter extends BasePresenter {
         return new DashboardTile;
     }
 
+    protected function createComponentTabForm(): Form {
+        $form = new BootstrapForm();
+        $form->setTranslator($this->translator);
+        $form->setAjax();
+        $form->addHidden('id');
+        $form->addText('name', 'Name')
+            ->setRequired('Please enter a name');
+
+        if ($this->getParameter('editTabId')) {
+            $tab = $this->dashboardService->getTabs()->get($this->getParameter('editTabId'));
+            $form->setDefaults([
+                'id' => $tab->id,
+                'name' => $tab->name,
+            ]);
+        }
+
+        $form->addSubmit('send', 'Save');
+        $form->onSuccess[] = [$this, 'processTabForm'];
+
+        return $form;
+    }
+
+    public function processTabForm(Form $form): void {
+        $this->allowOnlyRoles(['admin']);
+
+        try {
+            $values = $form->getValues();
+            if ($values->id) {
+                $this->dashboardService->editTab($values->id, $values->name);
+                $this->flashMessage('Tab updated successfully', 'success');
+            } else {
+                $this->dashboardService->addTab($values->name);
+                $this->flashMessage('Tab added successfully', 'success');
+            }
+        } catch (\Exception $e) {
+            Debugger::log($e, Debugger::EXCEPTION);
+            $this->flashMessage('Error occurred while saving the tab', 'danger');
+        }
+
+
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->redrawControl('dashboard');
+            $this->payload->closeModal = true;
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleShowTabsForm(?int $editTabId) {
+        $this->allowOnlyRoles(['admin']);
+
+        $this->template->editTabId = $editTabId;
+        $this->payload->modalTitle = 'Add or edit tab';
+        $this->template->systemModalControl = 'tabForm';
+        if ($this->isAjax()) {
+            $this->redrawControl('systemModal');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleDeleteTab(?int $editTabId) {
+        $this->allowOnlyRoles(['admin']);
+
+        if ($editTabId) {
+            $this->dashboardService->deleteTab($editTabId);
+            $this->flashMessage('Tab deleted successfully', 'success');
+        } else {
+            $this->flashMessage('Tab not specified', 'danger');
+        }
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->redrawControl('dashboard');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleChangeTabPosition(int $editTabId, string $direction) {
+        $this->allowOnlyRoles(['admin']);
+
+        if (!in_array($direction, ['increase', 'decrease'])) {
+            $this->flashMessage('Invalid direction', 'danger');
+        } else {
+            try {
+                $this->dashboardService->changeTabPosition($editTabId, $direction);
+            } catch (\Exception $e) {
+                Debugger::log($e, Debugger::EXCEPTION);
+                $this->flashMessage('Error occurred while changing the tab position', 'danger');
+            }
+        }
+
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->redrawControl('dashboard');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
     public function beforeRender(): void
     {
         parent::beforeRender();
@@ -27,7 +132,7 @@ class DashboardPresenter extends BasePresenter {
     }
 
     public function actionDefault() {
-
+        $this->template->tabs = $this->dashboardService->getTabs();
     }
 
     public function actionContracts() {

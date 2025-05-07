@@ -96,6 +96,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         }
     }
 
+    public function userIsAdmin(): bool
+    {
+        return in_array('admin',$this->getUser()->getRoles(),true);
+    }
+
     public function getTranslator(): Translator {
         return $this->translator;
     }
