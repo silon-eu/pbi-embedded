@@ -86,10 +86,10 @@
             <div n:class="($activeTab === null && $iterator->isFirst()) || $activeTab === $tab->id ? 'show active','tab-pane'" id="content-{$tab->id}" role="tabpanel" aria-labelledby="tab-{$tab->id}">
                 <div class="row mb-4">
                     <div class="col-4 position-relative mb-4" n:foreach="$tiles[$tab->id] as $tabTile">
-                        <a href="{plink 'this'}" class="card card-link">
+                        <a href="{plink ':Reporting:Report:detail',id=>$tabTile->id}" class="card card-link">
                             <div class="row g-0">
                                 <div class="col-4 card-icon pt-2 text-secondary">
-                                    <i class="bi bi-{$tabTile->icon ?? 'bar-chart'}"></i>
+                                    <i class="bi bi-{empty($tabTile->icon) ? 'bar-chart' : $tabTile->icon}"></i>
                                 </div>
                                 <div class="col-8">
                                     <div class="card-body">

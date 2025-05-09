@@ -1,21 +1,12 @@
-{block title}{$reportName}{/block}
+{block title}{$tile->ref(rep_tabs)->name} / {$tile->name}{/block}
 {block header_tmpl}
 {/block}
 
 {block pageHeading}
     <span class="text-light d-inline-block px-2">/</span>
-    <a n:href=":Reporting:Dashboard:default, 'activeTab' => 'demo'" class="text-white">SILON CZ</a>
+    <a n:href=":Reporting:Dashboard:default, activeTab => $tile->rep_tabs_id" class="text-white">{$tile->ref(rep_tabs)->name}</a>
     <span class="text-light d-inline-block px-2">/</span>
-    {*{$reportConfig->name}*}
-    {$reportName}
-    {*<span class="text-light d-inline-block px-2 text-opacity-75 text" style="font-size: 1rem">
-        Last refresh:
-        {if $reportConfig->datasetLastRefreshDate instanceof \DateTime}
-            {$reportConfig->datasetLastRefreshDate|date:'d.m.Y H:i:s'}
-        {else}
-            {$reportConfig->datasetLastRefreshDate}
-        {/if}
-    </span>*}
+    {$tile->name}
 {/block}
 
 {block header}
@@ -25,24 +16,50 @@
     {var $today = new DateTime()}
     <div class="row">
         <div class="col-2 pt-3 position-relative">
-            <ul id="left-report-nav" class="nav flex-column" n:inner-foreach="$navigation as $navItemKey => $navItem">
-                <li class="nav-item mb-1">
-                    <a n:class="$iterator->first ? 'active', 'nav-link'" href="#" data-page="{$navItemKey}">
-                        {$navItem['name']}
+            {snippet reportUserMenu}
+                <ul id="left-report-nav" class="nav flex-column">
+                    <li class="nav-item mb-1" n:foreach="$navigation as $navItemKey => $navItem">
+                        <a n:class="$iterator->first ? 'active', 'nav-link'" href="#" data-page="{$navItemKey}">
+                            {$navItem['name']}
+                        </a>
+                        <ul
+                            n:if="isset($navItem['items']) && count($navItem['items']) > 0"
+                            n:inner-foreach="$navItem['items'] as $subNavItemKey => $subNavItem"
+                            class="nav flex-column"
+                        >
+                            <li class="nav-item">
+                                <a n:class="$iterator->parent->first && $iterator->first ? 'active', 'nav-link'" href="#" data-page="{$subNavItemKey}">
+                                    {$subNavItem}
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li n:if="$presenter->userIsAdmin()" class="nav-item mb-1">
+                        <a class="btn btn-outline-secondary ajax" n:href="showPageForm!">
+                            <i class="bi bi-plus-circle-dotted me-2"></i>Add new page
+                        </a>
+                    </li>
+                </ul>
+            {/snippet}
+            {if $presenter->userIsAdmin()}
+                <p class="text-uppercase">Admin navigation</p>
+                <p>
+                    <a href="{$reportConfig->webUrl}" target="_blank">
+                        <i class="bi bi-box-arrow-up-right"></i> Open report in Power BI
                     </a>
-                    <ul
-                        n:if="isset($navItem['items']) && count($navItem['items']) > 0"
-                        n:inner-foreach="$navItem['items'] as $subNavItemKey => $subNavItem"
-                        class="nav flex-column"
-                    >
-                        <li class="nav-item">
-                            <a n:class="$iterator->parent->first && $iterator->first ? 'active', 'nav-link'" href="#" data-page="{$subNavItemKey}">
-                                {$subNavItem}
+                </p>
+                <div style="max-height: 400px; overflow-y: auto; overflow-x: hidden;">
+                    <ul id="left-report-nav" class="nav flex-column" n:inner-foreach="$adminNavigation as $adminNavItem">
+                        <li class="nav-item mb-1">
+                            <a n:class="'nav-link'" href="#" data-page="{$adminNavItem->name}">
+                                {$adminNavItem->displayName}<br>
+                                <small class="opacity-50">{$adminNavItem->name}</small>
                             </a>
                         </li>
                     </ul>
-                </li>
-            </ul>
+                </div>
+            {/if}
+
             <div class="position-absolute" style="bottom: 0; left: calc(var(--bs-gutter-x) * .5);">
                 <p class="text-muted">
                     Last refresh:
@@ -57,7 +74,10 @@
         <div class="col-10 position-relative">
             <div id="report-container" class="with-sidebar"></div>
             <div id="report-toolbar" class="d-flex flex-column justify-content-between align-items-center position-absolute pt-3 pe-3" style="top:0;right:0;">
-                <button type="button" id="set-default-filters" class="btn btn-secondary"><i class="bi bi-arrow-counterclockwise me-2"></i><span>Reset</span></button>
+                <button type="button" id="set-default-filters" class="btn btn-secondary"
+                        data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Reset filters">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -139,6 +159,23 @@
                     //slicers: slicerArray, // https://learn.microsoft.com/en-us/javascript/api/overview/powerbi/control-report-slicers
 
                     // onload bookmark - https://learn.microsoft.com/en-us/javascript/api/overview/powerbi/configure-report-settings#on-load-bookmark
+
+                    extensions: [
+                        {
+                            command: {
+                                name: "copyVisualId",
+                                title: "Copy visual ID",
+                                extend: {
+                                    // Define visualContextMenu to extend context menu.
+                                    visualContextMenu: {
+                                        // Define title to override default title.
+                                        //You can override default icon as well.
+                                        title: "Copy visual ID",
+                                    }
+                                }
+                            }
+                        }
+                    ]
                 }
 
             };
@@ -162,11 +199,11 @@
 
                 report.getSlicers().then(function(slicers) {
                     console.log(slicers);
-                });
+                });*/
 
                 report.getFilters().then(function(filters) {
-                    console.log(filters);
-                });*/
+                    console.log('Report filters',filters);
+                });
 
                 const navigation = document.querySelectorAll("#left-report-nav .nav-link");
                 navigation.forEach(function (link) {
@@ -248,6 +285,19 @@
 
             });
 
+            report.on("commandTriggered", function (event) {
+                let commandDetails = event.detail;
+                console.log("Event - commandTriggered:\n", commandDetails);
+                if (commandDetails.command === "copyVisualId") {
+                    // Copy the visual ID to clipboard
+                    navigator.clipboard.writeText(commandDetails.visual.name).then(function() {
+                        console.log("Visual ID copied to clipboard: " + commandDetails.visual.name);
+                    }, function(err) {
+                        console.error("Could not copy text: ", err);
+                    });
+                }
+            });
+
             // set default filters for active page on button click
             const setDefaultFiltersButton = document.getElementById("set-default-filters");
             if(setDefaultFiltersButton) {
@@ -284,7 +334,7 @@
             }
         });
 
-        async function getLastRefreshDate(datasetId,accessToken) {
+        /* async function getLastRefreshDate(datasetId,accessToken) {
 
             const apiUrl = 'https://api.powerbi.com/v1.0/myorg/datasets/'+datasetId+'/refreshes';
 
@@ -323,7 +373,7 @@
                 console.error("Error:", error);
                 return null;
             }
-        }
+        }*/
 
     </script>
 {/block}

@@ -282,6 +282,39 @@ class AzureService extends BaseService
         }
     }
 
+    public function getPages(string $workspaceId, string $reportId, bool $forSelect = false): ?array
+    {
+        $guzzle = new \GuzzleHttp\Client();
+        $url = $this->config['powerBiApiUrl'] . 'v1.0/myorg/groups/' . $workspaceId . '/reports/' . $reportId . '/pages';
+
+        $headers = $this->getRequestHeader();
+
+        $result = $guzzle->get($url, [
+            'headers' => $headers,
+        ]);
+        $data = null;
+
+        try {
+            $data = Json::decode($result->getBody()->getContents());
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            Debugger::barDump($e->getResponse(),'error');
+        }
+
+        if (!empty($data) && isset($data->value)) {
+            if ($forSelect) {
+                $pages = [];
+                foreach ($data->value as $page) {
+                    $pages[$page->name] = $page->displayName;
+                }
+                return $pages;
+            } else {
+                return $data->value;
+            }
+        } else {
+            return null;
+        }
+    }
+
 
     protected function getRequestHeader()
     {

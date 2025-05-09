@@ -17,4 +17,8 @@ import * as netteFormsDependency from './netteForms.dependency.js';
 document.addEventListener('DOMContentLoaded', function() {
     Naja.initialize();
     netteFormsDependency.initFormsDependecies();
+
+    // initialize Bootstrap tooltips
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 });
