@@ -9,7 +9,12 @@ import * as LiveFormValidation from 'live-form-validation';
 
 // https://doc.nette.org/cs/application/ajax#toc-naja
 import Naja from 'naja';
-Naja.initialize();
 
 import * as najaSystemModal from './naja.systemModal.js';
 import * as najaConfirm from './naja.confirm.js';
+import * as netteFormsDependency from './netteForms.dependency.js';
+
+document.addEventListener('DOMContentLoaded', function() {
+    Naja.initialize();
+    netteFormsDependency.initFormsDependecies();
+});

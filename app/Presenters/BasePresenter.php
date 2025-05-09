@@ -5,6 +5,7 @@
 namespace App\Presenters;
 
 use Contributte\FormsBootstrap\BootstrapForm;
+use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\Translation\Translator;
 use Nette;
 use App\TokenStore\TokenCache;
@@ -62,7 +63,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         }
 
         DataGrid::$iconPrefix = 'bi bi-';
-        BootstrapForm::switchBootstrapVersion(5);
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
     }
 
     public function handleChangeLocale(string $locale): void

@@ -1,5 +1,6 @@
 import Naja from 'naja';
 import * as bootstrap from 'bootstrap';
+import * as netteFormsDependency from './netteForms.dependency.js';
 document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelectorAll('[data-toggle="systemModal"]').forEach(function(element) {
@@ -14,17 +15,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });*/
 
     Naja.addEventListener('success', function (event) {
-        if (event.detail.payload.modalTitle !== undefined) {
-            changeTitle(event.detail.payload.modalTitle);
-        }
-        if (event.detail.payload.modalBody !== undefined) {
-            changeBody(event.detail.payload.modalBody);
+        if (event.detail.payload) {
+            if ('modalTitle' in event.detail.payload) {
+                changeTitle(event.detail.payload.modalTitle);
+            }
+            if ('modalBody' in event.detail.payload) {
+                changeBody(event.detail.payload.modalBody);
+            }
         }
     });
 
     Naja.addEventListener('error', function (event) {
         changeTitle('');
         changeBody('<div class="alert alert-danger">Can\'t load the content - Internal server error</div>');
+        console.error('Error loading modal content:', event.detail);
         //modalInstance.handleUpdate();
     });
 
@@ -32,9 +36,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const modalElement = document.getElementById('systemModal');
         const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
 
-        if (event.detail.payload.closeModal !== undefined && event.detail.payload.closeModal) {
+        if (event.detail.payload && 'closeModal' in event.detail.payload && event.detail.payload.closeModal) {
             modalInstance.hide();
-        } else if (event.detail.payload.modalTitle !== undefined || event.detail.payload.modalBody !== undefined || event.detail.payload.openModal !== undefined) {
+        } else if (event.detail.payload && ('modalTitle' in event.detail.payload || 'modalBody' in event.detail.payload || ('openModal' in event.detail.payload && event.detail.payload.openModal))) {
+            netteFormsDependency.initFormsDependecies();
             modalInstance.show();
         }
     });

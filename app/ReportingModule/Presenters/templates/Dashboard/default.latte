@@ -45,21 +45,21 @@
 {block content}
     <div n:snippet="dashboard">
         <ul class="nav nav-underline my-2" id="dashboardTabs" role="tablist">
-            <li n:foreach="$tabs as $tab" n:class="'nav-item',$presenter->userIsAdmin() ? 'dropdown'">
+            <li n:foreach="$tabs as $tab" n:class="'nav-item'">
                 <button n:class="($activeTab === null && $iterator->isFirst()) || $activeTab === $tab->id ? 'active','nav-link'"
                         id="tab-{$tab->id}"
                         data-bs-toggle="tab"
                         data-bs-target="#content-{$tab->id}"
                         type="button"
-                        role="tab" aria-controls="{$tab->id}" aria-selected="true">
-                    <span>{$tab->name}</span>
+                        role="tab" aria-controls="{$tab->id}">
+                    {$tab->name}
                     {if $presenter->userIsAdmin()}
                         <a n:class="'dropdown-toggle'"
                                 data-bs-toggle = "dropdown">
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item ajax" n:href="showTabsForm!,editTabId=>$tab->id">Edit</a></li>
-                            <li><a class="dropdown-item ajax" data-confirm="Do you really want to delete this tab?" n:href="deleteTab!,editTabId=>$tab->id">Delete</a></li>
+                            <li><a class="dropdown-item ajax" n:href="showTabsForm!,editTabId=>$tab->id" data-naja-history="off">Edit</a></li>
+                            <li><a class="dropdown-item ajax" data-confirm="Do you really want to delete this tab?" n:href="deleteTab!,editTabId=>$tab->id" data-naja-history="off">Delete</a></li>
                             <li n:if="count($tabs)>1"><hr class="dropdown-divider"></li>
                             <li n:if="!$iterator->isFirst()">
                                 <a class="dropdown-item ajax" n:href="changeTabPosition!,editTabId=>$tab->id,direction=>'decrease'" data-naja-history="off">
@@ -78,18 +78,63 @@
 
             </li>
             <li n:if="$presenter->userIsAdmin()" class="nav-item" role="presentation">
-                <a class="btn btn-sm btn-outline-dark ajax" data-toggle="systemModal" n:href="showTabsForm!">+</a>
+                <a class="btn btn-sm btn-outline-dark ajax" data-toggle="systemModal" n:href="showTabsForm!" data-naja-history="off">+</a>
             </li>
         </ul>
         <div n:inner-foreach="$tabs as $tab" class="tab-content" id="dashboardTabsContent">
             {* DEMO *}
             <div n:class="($activeTab === null && $iterator->isFirst()) || $activeTab === $tab->id ? 'show active','tab-pane'" id="content-{$tab->id}" role="tabpanel" aria-labelledby="tab-{$tab->id}">
                 <div class="row mb-4">
-                    <div class="col-4">
-                        {control tile ':Reporting:Dashboard:cardex', 'boxes', 'Cardex', 'Inventory ledger'}
+                    <div class="col-4 position-relative mb-4" n:foreach="$tiles[$tab->id] as $tabTile">
+                        <a href="{plink 'this'}" class="card card-link">
+                            <div class="row g-0">
+                                <div class="col-4 card-icon pt-2 text-secondary">
+                                    <i class="bi bi-{$tabTile->icon ?? 'bar-chart'}"></i>
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{$tabTile->name}</h5>
+                                        <p class="card-text">{$tabTile->description}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        {if $presenter->userIsAdmin()}
+                            <a class="dropdown-toggle tile-menu"
+                               data-bs-toggle="dropdown">
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item ajax" n:href="showTilesForm!,editTabId=>$tab->id,editTileId=>$tabTile->id" data-naja-history="off">Edit</a></li>
+                                <li><a class="dropdown-item ajax" data-confirm="Do you really want to delete this tile?" n:href="deleteTile!,editTileId=>$tabTile->id" data-naja-history="off">Delete</a></li>
+                                <li n:if="count($tiles[$tab->id])>1"><hr class="dropdown-divider"></li>
+                                <li n:if="!$iterator->isFirst()">
+                                    <a class="dropdown-item ajax" n:href="changeTilePosition!,editTileId=>$tabTile->id,direction=>'decrease'" data-naja-history="off">
+                                        Move left
+                                    </a>
+                                </li>
+                                <li n:if="!$iterator->isLast()">
+                                    <a class="dropdown-item ajax" n:href="changeTilePosition!,editTileId=>$tabTile->id,direction=>'increase'" data-naja-history="off">
+                                        Move right
+                                    </a>
+                                </li>
+                            </ul>
+                        {/if}
                     </div>
-                    <div n:if="$presenter->userIsAdmin()" class="col-4 opacity-75">
-                        {control tile 'this', 'plus-circle-dotted', 'Add new tile', ''}
+
+                    <div n:if="$presenter->userIsAdmin()" class="col-4 opacity-75 mb-4">
+                        <a n:href="showTilesForm!,editTabId=>$tab->id" class="card card-link ajax" data-naja-history="off">
+                            <div class="row g-0">
+                                <div class="col-4 card-icon pt-2 text-secondary">
+                                    <i class="bi bi-plus-circle-dotted"></i>
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Add new tile</h5>
+                                        <p class="card-text"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>

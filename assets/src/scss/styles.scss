@@ -18,6 +18,25 @@ body {
   --bs-body-font-size: 14px;
 }
 
+/* Dashboard */
+
+.tile-menu {
+  position: absolute;
+  right: 1.25rem;
+  top: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+
+  &:hover {
+    cursor: pointer;
+    background-color: var(--bs-light);
+    border-radius: var(--bs-border-radius);
+  }
+}
+
 /* Report container styles */
 
 #report-container {

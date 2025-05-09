@@ -210,6 +210,78 @@ class AzureService extends BaseService
         });
     }
 
+    /**
+     * @example https://learn.microsoft.com/en-us/rest/api/power-bi/groups/get-groups
+     */
+    public function getGroups($forSelectbox = false): ?array
+    {
+        $guzzle = new \GuzzleHttp\Client();
+        $url = $this->config['powerBiApiUrl'] . 'v1.0/myorg/groups';
+
+        $headers = $this->getRequestHeader();
+
+        $result = $guzzle->get($url, [
+            'headers' => $headers,
+        ]);
+        $data = null;
+
+        try {
+            $data = Json::decode($result->getBody()->getContents());
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            Debugger::barDump($e->getResponse(),'error');
+        }
+
+        if (!empty($data) && isset($data->value)) {
+            if ($forSelectbox) {
+                $workspaces = [];
+                foreach ($data->value as $workspace) {
+                    $workspaces[$workspace->id] = $workspace->name;
+                }
+                return $workspaces;
+            } else {
+                return $data->value;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @example https://learn.microsoft.com/en-us/rest/api/power-bi/reports/get-reports-in-group
+     */
+    public function getReports(string $workspaceId, $forSelectbox = false): ?array
+    {
+        $guzzle = new \GuzzleHttp\Client();
+        $url = $this->config['powerBiApiUrl'] . 'v1.0/myorg/groups/' . $workspaceId . '/reports';
+
+        $headers = $this->getRequestHeader();
+
+        $result = $guzzle->get($url, [
+            'headers' => $headers,
+        ]);
+        $data = null;
+
+        try {
+            $data = Json::decode($result->getBody()->getContents());
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            Debugger::barDump($e->getResponse(),'error');
+        }
+
+        if (!empty($data) && isset($data->value)) {
+            if ($forSelectbox) {
+                $reports = [];
+                foreach ($data->value as $report) {
+                    $reports[$report->id] = $report->name;
+                }
+                return $reports;
+            } else {
+                return $data->value;
+            }
+        } else {
+            return null;
+        }
+    }
+
 
     protected function getRequestHeader()
     {
