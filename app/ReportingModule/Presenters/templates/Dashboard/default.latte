@@ -85,41 +85,43 @@
             {* DEMO *}
             <div n:class="($activeTab === null && $iterator->isFirst()) || $activeTab === $tab->id ? 'show active','tab-pane'" id="content-{$tab->id}" role="tabpanel" aria-labelledby="tab-{$tab->id}">
                 <div class="row mb-4">
-                    <div class="col-4 position-relative mb-4" n:foreach="$tiles[$tab->id] as $tabTile">
-                        <a href="{plink ':Reporting:Report:detail',id=>$tabTile->id}" class="card card-link">
-                            <div class="row g-0">
-                                <div class="col-4 card-icon pt-2 text-secondary">
-                                    <i class="bi bi-{empty($tabTile->icon) ? 'bar-chart' : $tabTile->icon}"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{$tabTile->name}</h5>
-                                        <p class="card-text">{$tabTile->description}</p>
+                    {if isset($tiles[$tab->id])}
+                        <div class="col-4 position-relative mb-4" n:foreach="$tiles[$tab->id] as $tabTile">
+                            <a href="{plink ':Reporting:Report:detail',id=>$tabTile->id}" class="card card-link">
+                                <div class="row g-0">
+                                    <div class="col-4 card-icon pt-2 text-secondary">
+                                        <i class="bi bi-{empty($tabTile->icon) ? 'bar-chart' : $tabTile->icon}"></i>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{$tabTile->name}</h5>
+                                            <p class="card-text">{$tabTile->description}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </a>
-                        {if $presenter->userIsAdmin()}
-                            <a class="dropdown-toggle item-menu"
-                               data-bs-toggle="dropdown">
                             </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item ajax" n:href="showTilesForm!,editTabId=>$tab->id,editTileId=>$tabTile->id" data-naja-history="off">Edit</a></li>
-                                <li><a class="dropdown-item ajax" data-confirm="Do you really want to delete this tile?" n:href="deleteTile!,editTileId=>$tabTile->id" data-naja-history="off">Delete</a></li>
-                                <li n:if="count($tiles[$tab->id])>1"><hr class="dropdown-divider"></li>
-                                <li n:if="!$iterator->isFirst()">
-                                    <a class="dropdown-item ajax" n:href="changeTilePosition!,editTileId=>$tabTile->id,direction=>'decrease'" data-naja-history="off">
-                                        Move left
-                                    </a>
-                                </li>
-                                <li n:if="!$iterator->isLast()">
-                                    <a class="dropdown-item ajax" n:href="changeTilePosition!,editTileId=>$tabTile->id,direction=>'increase'" data-naja-history="off">
-                                        Move right
-                                    </a>
-                                </li>
-                            </ul>
-                        {/if}
-                    </div>
+                            {if $presenter->userIsAdmin()}
+                                <a class="dropdown-toggle item-menu"
+                                   data-bs-toggle="dropdown">
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item ajax" n:href="showTilesForm!,editTabId=>$tab->id,editTileId=>$tabTile->id" data-naja-history="off">Edit</a></li>
+                                    <li><a class="dropdown-item ajax" data-confirm="Do you really want to delete this tile?" n:href="deleteTile!,editTileId=>$tabTile->id" data-naja-history="off">Delete</a></li>
+                                    <li n:if="count($tiles[$tab->id])>1"><hr class="dropdown-divider"></li>
+                                    <li n:if="!$iterator->isFirst()">
+                                        <a class="dropdown-item ajax" n:href="changeTilePosition!,editTileId=>$tabTile->id,direction=>'decrease'" data-naja-history="off">
+                                            Move left
+                                        </a>
+                                    </li>
+                                    <li n:if="!$iterator->isLast()">
+                                        <a class="dropdown-item ajax" n:href="changeTilePosition!,editTileId=>$tabTile->id,direction=>'increase'" data-naja-history="off">
+                                            Move right
+                                        </a>
+                                    </li>
+                                </ul>
+                            {/if}
+                        </div>
+                    {/if}
 
                     <div n:if="$presenter->userIsAdmin()" class="col-4 opacity-75 mb-4">
                         <a n:href="showTilesForm!,editTabId=>$tab->id" class="card card-link ajax" data-naja-history="off">

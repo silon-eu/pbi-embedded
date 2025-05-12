@@ -19,4 +19,12 @@ abstract class BasePresenter extends \App\Presenters\BasePresenter {
     {
         parent::startup();
     }
+
+    protected function beforeRender(): void
+    {
+        parent::beforeRender();
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+        }
+    }
 }

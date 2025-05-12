@@ -247,6 +247,7 @@ class DashboardPresenter extends BasePresenter {
         $this->payload->modalTitle = 'Add or edit tile';
         $this->template->systemModalControl = 'tileForm';
         if ($this->isAjax()) {
+            $this->redrawControl('flashes');
             $this->redrawControl('systemModal');
         } else {
             $this->redirect('this');
