@@ -4,6 +4,7 @@ namespace App\ReportingModule\Presenters;
 
 use App\Models\Service\AzureService;
 use App\ReportingModule\Models\Service\DashboardService;
+use App\ReportingModule\Models\Service\ReportService;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Nette\Application\Attributes\Persistent;
 use Nette\Application\BadRequestException;
@@ -18,7 +19,8 @@ class ReportPresenter extends BasePresenter {
 
     public function __construct(
         protected AzureService $azureService,
-        protected DashboardService $dashboardService
+        protected DashboardService $dashboardService,
+        protected ReportService $reportService,
     )
     {
         parent::__construct();
@@ -63,19 +65,16 @@ class ReportPresenter extends BasePresenter {
             ->setPrompt('Select page')
             ->setItems($this->azureService->getPages($tile->workspace, $tile->report, true));
 
-        /*if ($this->getParameter('editTileId')) {
-            $tile = $this->dashboardService->getTiles()->get($this->getParameter('editTileId'));
-            $report->setItems($this->azureService->getReports($tile->workspace, true));
+        if ($this->getParameter('editPageId')) {
+            $pageData = $this->reportService->getPages()->get($this->getParameter('editPageId'));
             $form->setDefaults([
-                'rep_tabs_id' => $tile->rep_tabs_id,
-                'id' => $tile->id,
-                'name' => $tile->name,
-                'description' => $tile->description,
-                'icon' => $tile->icon,
-                'workspace' => $tile->workspace,
-                'report' => $tile->report,
+                'rep_tiles_id' => $pageData->rep_tiles_id,
+                'id' => $pageData->id,
+                'name' => $pageData->name,
+                'description' => $pageData->description,
+                'page' => $pageData->page,
             ]);
-        }*/
+        }
 
         $form->addSubmit('send', 'Save');
         $form->onSubmit[] = [$this, 'processPageForm'];
@@ -88,14 +87,13 @@ class ReportPresenter extends BasePresenter {
 
         try {
             $values = ArrayHash::from($form->getHttpData());
-            /*$this->activeTab = $values->rep_tabs_id;
             if ($values->id) {
-                $this->dashboardService->editTile($values);
-                $this->flashMessage('Tile updated successfully', 'success');
+                $this->reportService->editPage($values);
+                $this->flashMessage('Page updated successfully', 'success');
             } else {
-                $this->dashboardService->addTile($values);
-                $this->flashMessage('Tile added successfully', 'success');
-            }*/
+                $this->reportService->addPage($values);
+                $this->flashMessage('Page added successfully', 'success');
+            }
         } catch (\Exception $e) {
             Debugger::log($e, Debugger::EXCEPTION);
             $this->flashMessage('Error occurred while saving the page', 'danger');
@@ -111,13 +109,52 @@ class ReportPresenter extends BasePresenter {
         }
     }
 
-    public function handleShowPageForm(?int $pageId) {
+    public function handleShowPageForm(?int $editPageId) {
         $this->allowOnlyRoles(['admin']);
 
         $this->payload->modalTitle = 'Add or edit page';
         $this->template->systemModalControl = 'pageForm';
         if ($this->isAjax()) {
+            $this->redrawControl('flashes');
             $this->redrawControl('systemModal');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleDeletePage(int $editPageId) {
+        $this->allowOnlyRoles(['admin']);
+
+        try {
+            $this->reportService->deletePage($editPageId);
+            $this->flashMessage('Page deleted successfully', 'success');
+        } catch (\Exception $e) {
+            Debugger::log($e, Debugger::EXCEPTION);
+            $this->flashMessage('Error occurred while deleting the page', 'danger');
+        }
+
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->redrawControl('reportUserMenu');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleChangePagePosition(int $editPageId, string $direction) {
+        $this->allowOnlyRoles(['admin']);
+
+        try {
+            $this->reportService->changePagePosition($editPageId, $direction);
+            $this->flashMessage('Page position changed successfully', 'success');
+        } catch (\Exception $e) {
+            Debugger::log($e, Debugger::EXCEPTION);
+            $this->flashMessage('Error occurred while changing the page position', 'danger');
+        }
+
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->redrawControl('reportUserMenu');
         } else {
             $this->redirect('this');
         }
@@ -131,9 +168,15 @@ class ReportPresenter extends BasePresenter {
 
         $this->setView('sideNavigation');
 
-        $this->template->reportConfig = $this->azureService->getReportConfig($tile->workspace,$tile->report);
+        if ($this->getParameter('editPageId') !== null && !$this->isAjax()) {
+            $this->template->reportConfig = null;
+        } else {
+            $this->template->reportConfig = $this->azureService->getReportConfig($tile->workspace,$tile->report);
+        }
+
         $this->template->tile = $tile;
-        $this->template->navigation = [];/*[
+        $this->template->navigation = $this->reportService->getNavigationForTile($id);
+        /*[
             'ReportSectioncce5b109d49fdbf042c3' => [
                 'name' => 'Contracts by Categories',
                 'items' => [

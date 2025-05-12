@@ -12,11 +12,13 @@ import Naja from 'naja';
 
 import * as najaSystemModal from './naja.systemModal.js';
 import * as najaConfirm from './naja.confirm.js';
+import * as najaNotification from './naja.notification.js';
 import * as netteFormsDependency from './netteForms.dependency.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     Naja.initialize();
     netteFormsDependency.initFormsDependecies();
+    najaNotification.initNotifications();
 
     // initialize Bootstrap tooltips
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')

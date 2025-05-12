@@ -87,9 +87,22 @@
             </div>
             <div class="col col-md-10 col-xl-10">*}
                 {snippet flashes}
-                    {foreach $flashes as $flash}
+                    {*{foreach $flashes as $flash}
                         <div class="mt-2 alert alert-{$flash->type}">{$flash->message}</div>
-                    {/foreach}
+                    {/foreach}*}
+
+                <div aria-live="polite" aria-atomic="true" class="position-relative">
+                    <div class="toast-container top-0 start-50 translate-middle-x" n:inner-foreach="$flashes as $flash">
+                        <div class="toast flash-toast align-items-center text-bg-{$flash->type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    {$flash->message}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {/snippet}
                 {include header}
                 {include content}

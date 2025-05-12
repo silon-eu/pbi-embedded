@@ -18,10 +18,28 @@
         <div class="col-2 pt-3 position-relative">
             {snippet reportUserMenu}
                 <ul id="left-report-nav" class="nav flex-column">
-                    <li class="nav-item mb-1" n:foreach="$navigation as $navItemKey => $navItem">
+                    <li class="nav-item mb-1 position-relative" n:foreach="$navigation as $navItemKey => $navItem">
                         <a n:class="$iterator->first ? 'active', 'nav-link'" href="#" data-page="{$navItemKey}">
                             {$navItem['name']}
                         </a>
+                        {if $presenter->userIsAdmin()}
+                            <a class="dropdown-toggle item-menu" data-bs-toggle="dropdown"></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item ajax" n:href="showPageForm!,editPageId=>$navItem['id']" data-naja-history="off">Edit</a></li>
+                                <li><a class="dropdown-item ajax" data-confirm="Do you really want to delete this page?" n:href="deletePage!,editPageId=>$navItem['id']" data-naja-history="off">Delete</a></li>
+                                <li n:if="count($navigation)>1"><hr class="dropdown-divider"></li>
+                                <li n:if="!$iterator->isFirst()">
+                                    <a class="dropdown-item ajax" n:href="changePagePosition!,editPageId=>$navItem['id'],direction=>'decrease'" data-naja-history="off">
+                                        Move up
+                                    </a>
+                                </li>
+                                <li n:if="!$iterator->isLast()">
+                                    <a class="dropdown-item ajax" n:href="changePagePosition!,editPageId=>$navItem['id'],direction=>'increase'" data-naja-history="off">
+                                        Move down
+                                    </a>
+                                </li>
+                            </ul>
+                        {/if}
                         <ul
                             n:if="isset($navItem['items']) && count($navItem['items']) > 0"
                             n:inner-foreach="$navItem['items'] as $subNavItemKey => $subNavItem"
@@ -31,33 +49,59 @@
                                 <a n:class="$iterator->parent->first && $iterator->first ? 'active', 'nav-link'" href="#" data-page="{$subNavItemKey}">
                                     {$subNavItem}
                                 </a>
+
+                                {if $presenter->userIsAdmin()}
+                                    <a class="dropdown-toggle" data-bs-toggle="dropdown"></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item ajax" n:href="showPageForm!,editPageId=>$navItem['id']" data-naja-history="off">Edit</a></li>
+                                        <li><a class="dropdown-item ajax" data-confirm="Do you really want to delete this page?" n:href="deletePage!,editPageId=>$navItem['id']" data-naja-history="off">Delete</a></li>
+                                        <li n:if="count($navigation)>1"><hr class="dropdown-divider"></li>
+                                        <li n:if="!$iterator->isFirst()">
+                                            <a class="dropdown-item ajax" n:href="changePagePosition!,editPageId=>$navItem['id'],direction=>'decrease'" data-naja-history="off">
+                                                Move up
+                                            </a>
+                                        </li>
+                                        <li n:if="!$iterator->isLast()">
+                                            <a class="dropdown-item ajax" n:href="changePagePosition!,editPageId=>$navItem['id'],direction=>'increase'" data-naja-history="off">
+                                                Move down
+                                            </a>
+                                        </li>
+                                    </ul>
+                                {/if}
                             </li>
                         </ul>
                     </li>
-                    <li n:if="$presenter->userIsAdmin()" class="nav-item mb-1">
-                        <a class="btn btn-outline-secondary ajax" n:href="showPageForm!">
+                    <li n:if="$presenter->userIsAdmin()" class="nav-item mt-1 mb-1">
+                        <a class="btn btn-sm d-block btn-outline-dark ajax" n:href="showPageForm!">
                             <i class="bi bi-plus-circle-dotted me-2"></i>Add new page
                         </a>
                     </li>
                 </ul>
             {/snippet}
             {if $presenter->userIsAdmin()}
-                <p class="text-uppercase">Admin navigation</p>
-                <p>
-                    <a href="{$reportConfig->webUrl}" target="_blank">
-                        <i class="bi bi-box-arrow-up-right"></i> Open report in Power BI
+                <div class="mt-2 mb-1">
+                    <a id="toggleAdminMenu" class="text-body text-uppercase text-decoration-none fw-bold d-block pt-1" data-bs-toggle="collapse" href="#collapseAdminMenu" role="button" aria-expanded="false" aria-controls="collapseAdminMenu">
+                        Admin navigation <i class="bi bi-chevron-down float-end"></i><i class="bi bi-chevron-up float-end"></i>
                     </a>
-                </p>
-                <div style="max-height: 400px; overflow-y: auto; overflow-x: hidden;">
-                    <ul id="left-report-nav" class="nav flex-column" n:inner-foreach="$adminNavigation as $adminNavItem">
-                        <li class="nav-item mb-1">
-                            <a n:class="'nav-link'" href="#" data-page="{$adminNavItem->name}">
-                                {$adminNavItem->displayName}<br>
-                                <small class="opacity-50">{$adminNavItem->name}</small>
-                            </a>
-                        </li>
-                    </ul>
                 </div>
+                <div class="collapse" id="collapseAdminMenu">
+                    <div style="max-height: 400px; overflow-y: auto; overflow-x: hidden;">
+                        <p>
+                            <a href="{$reportConfig->webUrl}" target="_blank">
+                                <i class="bi bi-box-arrow-up-right"></i> Open report in Power BI
+                            </a>
+                        </p>
+                        <ul id="left-report-nav" class="nav flex-column" n:inner-foreach="$adminNavigation as $adminNavItem">
+                            <li class="nav-item mb-1">
+                                <a n:class="'nav-link'" href="#" data-page="{$adminNavItem->name}">
+                                    {$adminNavItem->displayName}<br>
+                                    <small class="opacity-50">{$adminNavItem->name}</small>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
             {/if}
 
             <div class="position-absolute" style="bottom: 0; left: calc(var(--bs-gutter-x) * .5);">

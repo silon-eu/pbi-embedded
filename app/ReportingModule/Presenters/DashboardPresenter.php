@@ -84,6 +84,7 @@ class DashboardPresenter extends BasePresenter {
         $this->payload->modalTitle = 'Add or edit tab';
         $this->template->systemModalControl = 'tabForm';
         if ($this->isAjax()) {
+            $this->redrawControl('flashes');
             $this->redrawControl('systemModal');
         } else {
             $this->redirect('this');

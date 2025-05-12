@@ -21,3 +21,4 @@ services:
 	- App\Models\Service\AzureService(%azure%, @cache)
 
 	- App\ReportingModule\Models\Service\DashboardService(@database.default.explorer, @cache)
+	- App\ReportingModule\Models\Service\ReportService(@database.default.explorer, @cache)
