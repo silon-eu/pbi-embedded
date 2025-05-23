@@ -170,4 +170,12 @@ class DashboardService extends BaseService
             }
         }
     }
+
+    public function updateReportFilters(int $id, string $filters): void
+    {
+        $tile = $this->getTiles()->get($id);
+        if ($tile) {
+            $tile->update(['filters' => $filters]);
+        }
+    }
 }

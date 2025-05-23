@@ -10,12 +10,16 @@ use Nette\Application\Attributes\Persistent;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\Arrays;
 use Tracy\Debugger;
 
 class ReportPresenter extends BasePresenter {
 
     #[Persistent]
     public int $id;
+
+    #[Persistent]
+    public ?int $activePageId = null;
 
     public function __construct(
         protected AzureService $azureService,
@@ -65,7 +69,23 @@ class ReportPresenter extends BasePresenter {
             ->setPrompt('Select page')
             ->setItems($this->azureService->getPages($tile->workspace, $tile->report, true));
 
+
+
         if ($this->getParameter('editPageId')) {
+
+            $row5 = $form->addRow();
+            $row5->addCell(10)
+                ->addTextArea('filters', 'Filters')
+                ->setHtmlAttribute('rows', 5)
+                ->setHtmlAttribute('placeholder', 'JSON filters configuration for the page');
+            $filterButtonsCell = $row5->addCell(2);
+            $filterButtonsCell->addButton('load_page_filters', 'Get filters')
+                ->setHtmlAttribute('class', 'btn-sm')
+                ->setHtmlAttribute('onclick', 'loadPageFilters(this)');
+            $filterButtonsCell->addButton('copy_page_filters', 'Copy filters')
+                ->setHtmlAttribute('class', 'btn-sm')
+                ->setHtmlAttribute('onclick', 'loadPageFilters(this,"clipboard")');
+
             $pageData = $this->reportService->getPages()->get($this->getParameter('editPageId'));
             $form->setDefaults([
                 'rep_tiles_id' => $pageData->rep_tiles_id,
@@ -73,6 +93,7 @@ class ReportPresenter extends BasePresenter {
                 'name' => $pageData->name,
                 'description' => $pageData->description,
                 'page' => $pageData->page,
+                'filters' => $pageData->filters,
             ]);
         }
 
@@ -94,6 +115,7 @@ class ReportPresenter extends BasePresenter {
                 $this->reportService->addPage($values);
                 $this->flashMessage('Page added successfully', 'success');
             }
+            $this->template->navigation = $this->reportService->getNavigationForTile($this->id);
         } catch (\Exception $e) {
             Debugger::log($e, Debugger::EXCEPTION);
             $this->flashMessage('Error occurred while saving the page', 'danger');
@@ -122,11 +144,71 @@ class ReportPresenter extends BasePresenter {
         }
     }
 
+    protected function createComponentReportFilterForm(): Form {
+        $form = new BootstrapForm();
+        $form->setTranslator($this->translator);
+        $form->setAjax();
+
+        $form->addHidden('id',$this->id);
+
+        $row1 = $form->addRow();
+        $row1->addCell(10)
+            ->addTextArea('filters', 'Filters')
+            ->setDefaultValue($this->dashboardService->getTiles()->get($this->id)->filters)
+            ->setHtmlAttribute('rows', 5);
+        $filterButtonsCell = $row1->addCell(2);
+        $filterButtonsCell->addButton('load_report_filters', 'Get filters')
+            ->setHtmlAttribute('class', 'btn-sm')
+            ->setHtmlAttribute('onclick', 'loadReportFilters(this)');
+        $filterButtonsCell->addButton('copy_page_filters', 'Copy filters')
+            ->setHtmlAttribute('class', 'btn-sm')
+            ->setHtmlAttribute('onclick', 'loadReportFilters(this,"clipboard")');
+
+        $form->addSubmit('send', 'Save');
+        $form->onSubmit[] = [$this, 'processReportFilterForm'];
+
+        return $form;
+    }
+
+    public function processReportFilterForm(Form $form): void {
+        $this->allowOnlyRoles(['admin']);
+
+        try {
+            $values = $form->getValues();
+            $this->dashboardService->updateReportFilters($values->id,$values->filters);
+            $this->flashMessage('Filters updated successfully', 'success');
+        } catch (\Exception $e) {
+            Debugger::log($e, Debugger::EXCEPTION);
+            $this->flashMessage('Error occurred while updating report filters', 'danger');
+        }
+
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->payload->closeModal = true;
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleShowReportFilterForm() {
+        $this->allowOnlyRoles(['admin']);
+
+        $this->payload->modalTitle = 'Report filters';
+        $this->template->systemModalControl = 'reportFilterForm';
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->redrawControl('systemModal');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
     public function handleDeletePage(int $editPageId) {
         $this->allowOnlyRoles(['admin']);
 
         try {
             $this->reportService->deletePage($editPageId);
+            $this->template->navigation = $this->reportService->getNavigationForTile($this->id);
             $this->flashMessage('Page deleted successfully', 'success');
         } catch (\Exception $e) {
             Debugger::log($e, Debugger::EXCEPTION);
@@ -141,11 +223,28 @@ class ReportPresenter extends BasePresenter {
         }
     }
 
+    public function handleChangePage(int $activePageId) {
+        if ($this->isAjax()) {
+            if ($page = $this->reportService->getPages()->get($activePageId)) {
+                $this->activePageId = $activePageId;
+                $this->template->activePage = $page;
+            } else {
+                $this->flashMessage('Page not found', 'danger');
+                $this->template->activePage = null;
+                $this->redrawControl('flashes');
+            }
+            $this->redrawControl('reportUserMenu');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
     public function handleChangePagePosition(int $editPageId, string $direction) {
         $this->allowOnlyRoles(['admin']);
 
         try {
             $this->reportService->changePagePosition($editPageId, $direction);
+            $this->template->navigation = $this->reportService->getNavigationForTile($this->id);
             $this->flashMessage('Page position changed successfully', 'success');
         } catch (\Exception $e) {
             Debugger::log($e, Debugger::EXCEPTION);
@@ -168,7 +267,7 @@ class ReportPresenter extends BasePresenter {
 
         $this->setView('sideNavigation');
 
-        if ($this->getParameter('editPageId') !== null && !$this->isAjax()) {
+        if ($this->isAjax()) { // skip it for a faster handlers
             $this->template->reportConfig = null;
         } else {
             $this->template->reportConfig = $this->azureService->getReportConfig($tile->workspace,$tile->report);
@@ -176,6 +275,20 @@ class ReportPresenter extends BasePresenter {
 
         $this->template->tile = $tile;
         $this->template->navigation = $this->reportService->getNavigationForTile($id);
+
+        // if no page is selected, select the first one
+        if ($this->activePageId === null && count($this->template->navigation) > 0) {
+            $this->activePageId = Arrays::first($this->template->navigation)["id"];
+        }
+
+        if ($this->activePageId !== null && $page = $this->reportService->getPages()->get($this->activePageId)) {
+            $this->template->activePageData = $page;
+            $this->payload->activePageData = $page->toArray();
+        } else {
+            $this->template->activePageData = null;
+        }
+
+
         /*[
             'ReportSectioncce5b109d49fdbf042c3' => [
                 'name' => 'Contracts by Categories',

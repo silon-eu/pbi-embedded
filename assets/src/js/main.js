@@ -14,6 +14,7 @@ import * as najaSystemModal from './naja.systemModal.js';
 import * as najaConfirm from './naja.confirm.js';
 import * as najaNotification from './naja.notification.js';
 import * as netteFormsDependency from './netteForms.dependency.js';
+import * as najaSetReportPage from './naja.setReportPage.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     Naja.initialize();

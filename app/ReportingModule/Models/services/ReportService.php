@@ -32,10 +32,11 @@ class ReportService extends BaseService
 
         $navigation = [];
         foreach ($pages as $page) {
-            $navigation[$page->page] = [
+            $navigation[] = [
                 'id' => $page->id,
                 'name' => $page->name,
                 'page' => $page->page,
+                'filters' => $page->filters,
             ];
         }
 
@@ -45,9 +46,7 @@ class ReportService extends BaseService
     public function addPage(object $values): int
     {
         // get max position from pages
-        $maxPosition = $this->getPagesForTile($values->rep_tiles_id)
-            ->select('MAX(position) AS max')
-            ->fetch()->max;
+        $maxPosition = $this->getPagesForTile($values->rep_tiles_id)->max('position');
 
         $tile = $this->getPages()->insert([
             'name' => $values->name,
@@ -67,6 +66,7 @@ class ReportService extends BaseService
                 'description' => $values->description,
                 'page' => $values->page,
                 'rep_tiles_id' => $values->rep_tiles_id,
+                'filters' => $values->filters,
             ]);
     }
 
@@ -97,6 +97,14 @@ class ReportService extends BaseService
                 $prevTile->update(['position' => $page->position]);
                 $page->update(['position' => $page->position - 1]);
             }
+        }
+    }
+
+    public function updatePageFilters(int $id, string $filters): void
+    {
+        $page = $this->getPages()->get($id);
+        if ($page) {
+            $page->update(['filters' => $filters]);
         }
     }
 }

@@ -19,8 +19,15 @@
             {snippet reportUserMenu}
                 <ul id="left-report-nav" class="nav flex-column">
                     <li class="nav-item mb-1 position-relative" n:foreach="$navigation as $navItemKey => $navItem">
-                        <a n:class="$iterator->first ? 'active', 'nav-link'" href="#" data-page="{$navItemKey}">
+                        <a n:class="$activePageData && $activePageData->id === $navItem['id'] ? 'active', 'nav-link ajax'" n:href="changePage!, activePageId => $navItem['id']" data-page="{$navItem['page']}">
                             {$navItem['name']}
+                            <i
+                                n:if="$presenter->userIsAdmin() && empty($navItem['filters'])"
+                                class="bi bi-exclamation-triangle-fill text-warning ms-1"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="right"
+                                data-bs-title="This page doesn't have saved filters configuration."
+                            ></i>
                         </a>
                         {if $presenter->userIsAdmin()}
                             <a class="dropdown-toggle item-menu" data-bs-toggle="dropdown"></a>
@@ -38,15 +45,29 @@
                                         Move down
                                     </a>
                                 </li>
+                                {*{if $activePageData && $activePageData->id === $navItem['id']}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" id="capture-state">
+                                            Save filters
+                                        </a>
+                                    </li>
+                                    <li n:if="!empty($activePageData->configuration)">
+                                        <a class="dropdown-item" n:href="clearPageConfiguration!">
+                                            Clear filters
+                                        </a>
+                                    </li>
+                                {/if}*}
                             </ul>
                         {/if}
+                        {* SUBMENU - TODO copy everything from main item *}
                         <ul
                             n:if="isset($navItem['items']) && count($navItem['items']) > 0"
                             n:inner-foreach="$navItem['items'] as $subNavItemKey => $subNavItem"
                             class="nav flex-column"
                         >
                             <li class="nav-item">
-                                <a n:class="$iterator->parent->first && $iterator->first ? 'active', 'nav-link'" href="#" data-page="{$subNavItemKey}">
+                                <a n:class="$iterator->parent->first && $iterator->first ? 'active', 'nav-link ajax'" n:href="changePage!, activePageId => $navItem['id']" data-page="{$subNavItemKey}">
                                     {$subNavItem}
                                 </a>
 
@@ -118,10 +139,14 @@
         <div class="col-10 position-relative">
             <div id="report-container" class="with-sidebar"></div>
             <div id="report-toolbar" class="d-flex flex-column justify-content-between align-items-center position-absolute pt-3 pe-3" style="top:0;right:0;">
-                <button type="button" id="set-default-filters" class="btn btn-secondary"
+                <button type="button" id="set-default-filters" class="btn btn-secondary mb-1"
                         data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Reset filters">
                     <i class="bi bi-arrow-counterclockwise"></i>
                 </button>
+                <a n:if="$presenter->userIsAdmin()" n:href="showReportFilterForm!" class="btn btn-secondary ajax mb-1"
+                        data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Report filters">
+                    <i class="bi bi-funnel"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -129,11 +154,13 @@
 
     <script src="{$basePath}/assets/js/powerbi.min.js"></script>
     <script>
-        let defaultFilters = [];
+        //let defaultFilters = [];
         let defaultSlicers = [];
         let report = null;
         let models = window["powerbi-client"].models;
         let reportContainer = document.getElementById("report-container");
+        let reportFilters = [];
+        let pageFilters = [];
 
         document.addEventListener("DOMContentLoaded", function() {
 
@@ -168,7 +195,7 @@
                         },
                         filters: {
                             expanded: false,
-                            visible: false
+                            visible: {$presenter->userIsAdmin()}
                         },
                         pageNavigation: {
                             visible: false
@@ -198,6 +225,9 @@
 
                     /*Initial page*/
                     //pageName: 'ReportSection3',
+                    {if $activePageData}
+                        pageName: {$activePageData->page},
+                    {/if}
 
                     //filters: [...], // https://learn.microsoft.com/en-us/javascript/api/overview/powerbi/control-report-filters
                     //slicers: slicerArray, // https://learn.microsoft.com/en-us/javascript/api/overview/powerbi/control-report-slicers
@@ -235,7 +265,7 @@
             report.off("loaded");
 
             // Triggers when a report schema is successfully loaded
-            report.on("loaded", function () {
+            report.on("loaded", async function () {
                 console.log("Report load successful");
                 /*report.getPages().then(function (pages) {
                     console.log(pages);
@@ -246,10 +276,10 @@
                 });*/
 
                 report.getFilters().then(function(filters) {
-                    console.log('Report filters',filters);
+                    reportFilters = filters;
                 });
 
-                const navigation = document.querySelectorAll("#left-report-nav .nav-link");
+                const navigation = document.querySelectorAll("#left-admin-nav .nav-link");
                 navigation.forEach(function (link) {
                     link.addEventListener("click", function (e) {
                         e.preventDefault();
@@ -267,7 +297,7 @@
                 });
 
                 // Get all pages in the report
-                report.getPages().then(function (pages) {
+                /*report.getPages().then(function (pages) {
                     // foreach page save filters
                     pages.forEach(async function (page) {
                         // save filters
@@ -275,10 +305,22 @@
                             defaultFilters[page.name] = filters;
                         });
                     });
-                });
+                });*/
 
                 // Set the first page as active
-                report.setPage({key($navigation)});
+                {if $activePageData}
+                    await report.setPage({$activePageData->page});
+                    let activePage = await report.getActivePage();
+                    console.log(activePage);
+
+                    // set default filters
+                    {if !empty($activePageData->filters)}
+                        let pageFilter = JSON.parse({$activePageData->filters});
+                        console.log(pageFilter);
+                        activePage.setFilters(pageFilter);
+                    {/if}
+
+                {/if}
 
             });
 
@@ -288,12 +330,6 @@
             // Triggers when a report is successfully embedded in UI
             report.on("rendered", function () {
                 console.log("Report render successful");
-                // Get the last refresh date
-                /*let lastRefreshDate = getLastRefreshDate({$reportConfig->datasetId}, {$reportConfig->embedToken});
-                lastRefreshDate.then(function (date) {
-                    console.log(date);
-                    document.getElementById("last-refresh-date").innerHTML = date;
-                });*/
             });
 
             // Clear any other error handler events
@@ -313,7 +349,6 @@
                 let page = event.detail.newPage;
                 // save slicers
                 const visuals = await page.getVisuals();
-                console.log(visuals);
 
                 let slicers = visuals.filter(function (visual) {
                     return visual.type === "slicer" || visual.type === "advancedSlicerVisual";
@@ -325,6 +360,15 @@
                     if (defaultSlicers[slicer.name] === undefined) {
                         defaultSlicers[slicer.name] = state;
                     }
+                });
+
+                // save filters
+                page.getFilters().then(function (filters) {
+                    pageFilters = filters;
+                    // save filters
+                    /*if (defaultFilters[page.name] === undefined) {
+                        defaultFilters[page.name] = filters;
+                    }*/
                 });
 
             });
@@ -354,7 +398,7 @@
                         let page = pages.filter(function (page) {
                             return page.isActive
                         })[0];
-                        await page.updateFilters(models.FiltersOperations.Replace, defaultFilters[page.name]);
+                        //await page.updateFilters(models.FiltersOperations.Replace, defaultFilters[page.name]);
 
                         const visuals = await page.getVisuals();
 
@@ -362,11 +406,11 @@
                             return visual.type === "slicer" || visual.type === "advancedSlicerVisual";
                         });
 
-                        slicers.forEach(async function(slicer) {
+                        slicers.forEach(function(slicer) {
                             if (defaultSlicers[slicer.name] !== undefined) {
-                                await slicer.setSlicerState(defaultSlicers[slicer.name]);
+                                slicer.setSlicerState(defaultSlicers[slicer.name]);
                             } else {
-                                await slicer.setSlicerState({ filters: [] });
+                                slicer.setSlicerState({ filters: [] });
                             }
                         });
 
@@ -378,46 +422,66 @@
             }
         });
 
-        /* async function getLastRefreshDate(datasetId,accessToken) {
-
-            const apiUrl = 'https://api.powerbi.com/v1.0/myorg/datasets/'+datasetId+'/refreshes';
-
-            try {
-                const response = await fetch(apiUrl, {
-                    headers: {
-                        'Authorization': 'Bearer '+accessToken,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    console.error('Error fetching refresh history: '+response.status);
-                    return null;
-                }
-
-                const data = await response.json();
-
-                if (data.value && data.value.length > 0) {
-                    // Sort refresh history by end time in descending order
-                    data.value.sort((a, b) => new Date(b.endTime) - new Date(a.endTime));
-
-                    // Find the last successful refresh
-                    const lastSuccessfulRefresh = data.value.find(refresh => refresh.status === 'Completed');
-
-                    if (lastSuccessfulRefresh) {
-                        return new Date(lastSuccessfulRefresh.endTime).toLocaleString(); // Format as needed
-                    } else {
-                        return "No successful refreshes found.";
+        async function loadReportFilters(button, target = 'formElement', selector = 'textarea[name=\'filters\']') {
+            let currentReportFilters = report.getFilters();
+            if (target === 'formElement') {
+                // get form of the button which triggered this function
+                let form = button.closest("form");
+                let formElement = form.querySelector(selector);
+                if (formElement) {
+                    try {
+                        formElement.value = JSON.stringify(currentReportFilters, null, 2);
+                    } catch (e) {
+                        console.error("Error parsing filters: ", e);
                     }
                 } else {
-                    return "No refresh history available.";
+                    console.error("Form element with selector "+ selector +" not found");
+                }
+            } else if (target === 'clipboard') {
+                navigator.clipboard.writeText(JSON.stringify(currentReportFilters, null, 2)).then(function() {
+                    console.log("Filters copied to clipboard: " + JSON.stringify(currentReportFilters, null, 2));
+                }, function(err) {
+                    console.error("Could not copy text: ", err);
+                });
+            } else {
+                console.error("Unknown target: " + target);
+            }
+        }
+
+        async function loadPageFilters(button, target = 'formElement', selector = 'textarea[name=\'filters\']') {
+            // get form of the button which triggered this function
+            let form = button.closest("form");
+            // get value of  form select with name = page
+            let pageName = form.querySelector("select[name='page']").value;
+
+            // set report Page
+            if (report.getActivePage() !== pageName) {
+                await report.setPage(pageName)
+            }
+
+            let filtersString = JSON.stringify(pageFilters, null, 2);
+
+            if (target === 'formElement') {
+                if (!confirm("Do you really want to replace current filter settings for this page?")) {
+                    return;
                 }
 
-            } catch (error) {
-                console.error("Error:", error);
-                return null;
+                let formElement = form.querySelector(selector);
+                if (formElement) {
+                    formElement.value = filtersString;
+                } else {
+                    console.error("Form element with selector "+ selector +" not found");
+                }
+            } else if (target === 'clipboard') {
+                navigator.clipboard.writeText(filtersString).then(function() {
+                    console.log("Filters copied to clipboard: " + filtersString);
+                }, function(err) {
+                    console.error("Could not copy text: ", err);
+                });
+            } else {
+                console.error("Unknown target: " + target);
             }
-        }*/
+        }
 
     </script>
 {/block}
