@@ -94,7 +94,14 @@
                                     </div>
                                     <div class="col-8">
                                         <div class="card-body">
-                                            <h5 class="card-title">{$tabTile->name}</h5>
+                                            <h5 class="card-title">{$tabTile->name}
+                                                <i
+                                                        n:if="$presenter->userIsAdmin() && empty($tabTile->filters)"
+                                                        class="bi bi-exclamation-triangle-fill text-warning ms-1"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="left"
+                                                        data-bs-title="No filters are set for this report"
+                                                ></i></h5>
                                             <p class="card-text">{$tabTile->description}</p>
                                         </div>
                                     </div>

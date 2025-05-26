@@ -26,7 +26,7 @@
                                 class="bi bi-exclamation-triangle-fill text-warning ms-1"
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="right"
-                                data-bs-title="This page doesn't have saved filters configuration."
+                                data-bs-title="No filters are set for this page"
                             ></i>
                         </a>
                         {if $presenter->userIsAdmin()}
@@ -145,6 +145,13 @@
                 </button>
                 <a n:if="$presenter->userIsAdmin()" n:href="showReportFilterForm!" class="btn btn-secondary ajax mb-1"
                         data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Report filters">
+                    <i
+                            n:if="empty($tile->filters)"
+                            class="bi bi-exclamation-triangle-fill text-warning me-1"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="left"
+                            data-bs-title="No filters are set for this report"
+                    ></i>
                     <i class="bi bi-funnel"></i>
                 </a>
             </div>
@@ -311,15 +318,16 @@
                 {if $activePageData}
                     await report.setPage({$activePageData->page});
                     let activePage = await report.getActivePage();
-                    console.log(activePage);
 
                     // set default filters
                     {if !empty($activePageData->filters)}
-                        let pageFilter = JSON.parse({$activePageData->filters});
-                        console.log(pageFilter);
-                        activePage.setFilters(pageFilter);
+                        await activePage.updateFilters(models.FiltersOperations.ReplaceAll,JSON.parse({$activePageData->filters}));
                     {/if}
 
+                {/if}
+
+                {if !empty($tile->filters)}
+                    await report.updateFilters(models.FiltersOperations.ReplaceAll, JSON.parse({$tile->filters}));
                 {/if}
 
             });
@@ -423,7 +431,7 @@
         });
 
         async function loadReportFilters(button, target = 'formElement', selector = 'textarea[name=\'filters\']') {
-            let currentReportFilters = report.getFilters();
+            let currentReportFilters = await report.getFilters();
             if (target === 'formElement') {
                 // get form of the button which triggered this function
                 let form = button.closest("form");
