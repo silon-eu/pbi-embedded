@@ -57,7 +57,8 @@ body {
 
 /* Report left menu */
 
-#toggleAdminMenu {
+#toggleAdminMenu,
+#toggleFilterSubstitutions {
   border-top: 1px solid rgba(var(--bs-body-color-rgb), var(--bs-text-opacity));
 
   &[aria-expanded="true"] {

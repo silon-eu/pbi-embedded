@@ -130,6 +130,22 @@
                     </div>
                 </div>
 
+
+                <div class="mt-2 mb-1">
+                    <a id="toggleFilterSubstitutions" class="text-body text-uppercase text-decoration-none fw-bold d-block pt-1" data-bs-toggle="collapse" href="#collapseFilterSubstitutions" role="button" aria-expanded="false" aria-controls="collapseFilterSubstitutions">
+                        Filter substitutions <i class="bi bi-chevron-down float-end"></i><i class="bi bi-chevron-up float-end"></i>
+                    </a>
+                </div>
+                <div class="collapse" id="collapseFilterSubstitutions">
+                    <div style="max-height: 400px; overflow: auto;">
+                        <table class="table table-bordered table-sm table-striped" n:inner-foreach="$filterSubstitutions as $fsubKey => $fsubValue">
+                            <tr>
+                                <td>{$fsubKey}</td><td>{$fsubValue}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
             {/if}
 
             <div class="position-absolute" style="bottom: 0; left: calc(var(--bs-gutter-x) * .5);">
@@ -150,8 +166,8 @@
                         data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Reset filters">
                     <i class="bi bi-arrow-counterclockwise"></i>
                 </button>
-                <a n:if="$presenter->userIsAdmin()" n:href="showReportFilterForm!" class="btn btn-secondary ajax mb-1"
-                        data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Report filters">
+                <a n:if="$presenter->userIsAdmin()" n:href="showReportFilterForm!" class="btn btn-outline-secondary ajax mb-1"
+                        data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" data-bs-title="Report filters setup<br><i>(admin only)</i>">
                     <i
                             n:if="empty($tile->filters)"
                             class="bi bi-exclamation-triangle-fill text-warning me-1"
