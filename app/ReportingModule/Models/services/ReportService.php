@@ -37,6 +37,7 @@ class ReportService extends BaseService
                 'name' => $page->name,
                 'page' => $page->page,
                 'filters' => $page->filters,
+                'slicers' => $page->slicers,
             ];
         }
 
@@ -67,6 +68,7 @@ class ReportService extends BaseService
                 'page' => $values->page,
                 'rep_tiles_id' => $values->rep_tiles_id,
                 'filters' => $values->filters,
+                'slicers' => $values->slicers,
             ]);
     }
 

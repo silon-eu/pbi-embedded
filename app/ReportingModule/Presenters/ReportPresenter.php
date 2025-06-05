@@ -36,6 +36,12 @@ class ReportPresenter extends BasePresenter {
     public function beforeRender(): void
     {
         parent::beforeRender();
+
+        $this->template->filterSubstitutions = $this->getFilterSubstitutions();
+
+        $this->template->addFilter('applyDynamicProperties', function (string $json): string {
+            return str_replace(array_keys($this->getFilterSubstitutions()), array_values($this->getFilterSubstitutions()), $json);
+        });
     }
 
     protected function createComponentPageForm(): Form {
@@ -50,12 +56,12 @@ class ReportPresenter extends BasePresenter {
 
 
         $row1 = $form->addRow();
-        $row1->addCell(4)
+        $row1->addCell(6)
             ->addText('name', 'Name')
             ->setRequired('Please enter a name');
 
         $row2 = $form->addRow();
-        $row2->addCell(12)
+        $row2->addCell(6)
             ->addTextArea('description', 'Description');
 
         $form->addGroup('Power BI');
@@ -74,17 +80,30 @@ class ReportPresenter extends BasePresenter {
         if ($this->getParameter('editPageId')) {
 
             $row5 = $form->addRow();
-            $row5->addCell(10)
-                ->addTextArea('filters', 'Filters')
-                ->setHtmlAttribute('rows', 5)
+            $row5->addCell(5)
+                ->addTextArea('filters', 'Page level filters')
+                ->setHtmlAttribute('rows', 25)
                 ->setHtmlAttribute('placeholder', 'JSON filters configuration for the page');
-            $filterButtonsCell = $row5->addCell(2);
-            $filterButtonsCell->addButton('load_page_filters', 'Get filters')
+            $filterButtonsCell = $row5->addCell(1);
+            $filterButtonsCell->getElementPrototype()->appendAttribute('class','pt-1');
+            $filterButtonsCell->addButton('load_page_filters', '<i class="bi bi-input-cursor-text"></i>')
+                ->setHtmlAttribute('class', 'btn-sm mt-4')
+                ->setHtmlAttribute('onclick', 'loadPageFilters(this)')
+                ->setHtmlAttribute('data-bs-toggle', 'tooltip')
+                ->setHtmlAttribute('data-bs-placement', 'right')
+                ->setHtmlAttribute('data-bs-title', 'Load filters that are currently set on page into the field');
+
+            $filterButtonsCell->addButton('copy_page_filters', '<i class="bi bi-copy"></i>')
                 ->setHtmlAttribute('class', 'btn-sm')
-                ->setHtmlAttribute('onclick', 'loadPageFilters(this)');
-            $filterButtonsCell->addButton('copy_page_filters', 'Copy filters')
-                ->setHtmlAttribute('class', 'btn-sm')
-                ->setHtmlAttribute('onclick', 'loadPageFilters(this,"clipboard")');
+                ->setHtmlAttribute('onclick', 'loadPageFilters(this,"clipboard")')
+                ->setHtmlAttribute('data-bs-toggle', 'tooltip')
+                ->setHtmlAttribute('data-bs-placement', 'right')
+                ->setHtmlAttribute('data-bs-title', 'Copy filters that are currently set on report to clipboard');
+
+            $row5->addCell(6)
+                ->addTextArea('slicers', 'Visual slicers')
+                ->setHtmlAttribute('rows', 25)
+                ->setHtmlAttribute('placeholder', 'JSON slicers configuration for visuals on this page');
 
             $pageData = $this->reportService->getPages()->get($this->getParameter('editPageId'));
             $form->setDefaults([
@@ -94,6 +113,7 @@ class ReportPresenter extends BasePresenter {
                 'description' => $pageData->description,
                 'page' => $pageData->page,
                 'filters' => $pageData->filters,
+                'slicers' => $pageData->slicers,
             ]);
         }
 
@@ -135,6 +155,7 @@ class ReportPresenter extends BasePresenter {
         $this->allowOnlyRoles(['admin']);
 
         $this->payload->modalTitle = 'Add or edit page';
+        $this->template->systemModalSize = 'xl';
         $this->template->systemModalControl = 'pageForm';
         if ($this->isAjax()) {
             $this->redrawControl('flashes');
@@ -152,17 +173,26 @@ class ReportPresenter extends BasePresenter {
         $form->addHidden('id',$this->id);
 
         $row1 = $form->addRow();
-        $row1->addCell(10)
-            ->addTextArea('filters', 'Filters')
+        $row1->addCell(11)
+            ->addTextArea('filters', 'Report level filters')
             ->setDefaultValue($this->dashboardService->getTiles()->get($this->id)->filters)
-            ->setHtmlAttribute('rows', 5);
-        $filterButtonsCell = $row1->addCell(2);
-        $filterButtonsCell->addButton('load_report_filters', 'Get filters')
+            ->setHtmlAttribute('rows', 25);
+
+        $filterButtonsCell = $row1->addCell(1);
+        $filterButtonsCell->getElementPrototype()->appendAttribute('class','pt-1');
+        $filterButtonsCell->addButton('load_report_filters', '<i class="bi bi-input-cursor-text"></i>')
+            ->setHtmlAttribute('class', 'btn-sm mt-4')
+            ->setHtmlAttribute('onclick', 'loadReportFilters(this)')
+            ->setHtmlAttribute('data-bs-toggle', 'tooltip')
+            ->setHtmlAttribute('data-bs-placement', 'right')
+            ->setHtmlAttribute('data-bs-title', 'Load filters that are currently set on report into the field');
+
+        $filterButtonsCell->addButton('copy_page_filters', '<i class="bi bi-copy"></i>')
             ->setHtmlAttribute('class', 'btn-sm')
-            ->setHtmlAttribute('onclick', 'loadReportFilters(this)');
-        $filterButtonsCell->addButton('copy_page_filters', 'Copy filters')
-            ->setHtmlAttribute('class', 'btn-sm')
-            ->setHtmlAttribute('onclick', 'loadReportFilters(this,"clipboard")');
+            ->setHtmlAttribute('onclick', 'loadReportFilters(this,"clipboard")')
+            ->setHtmlAttribute('data-bs-toggle', 'tooltip')
+            ->setHtmlAttribute('data-bs-placement', 'right')
+            ->setHtmlAttribute('data-bs-title', 'Copy filters that are currently set on report to clipboard');
 
         $form->addSubmit('send', 'Save');
         $form->onSubmit[] = [$this, 'processReportFilterForm'];
@@ -194,6 +224,7 @@ class ReportPresenter extends BasePresenter {
         $this->allowOnlyRoles(['admin']);
 
         $this->payload->modalTitle = 'Report filters';
+        $this->template->systemModalSize = 'xl';
         $this->template->systemModalControl = 'reportFilterForm';
         if ($this->isAjax()) {
             $this->redrawControl('flashes');
@@ -283,7 +314,9 @@ class ReportPresenter extends BasePresenter {
 
         if ($this->activePageId !== null && $page = $this->reportService->getPages()->get($this->activePageId)) {
             $this->template->activePageData = $page;
-            $this->payload->activePageData = $page->toArray();
+            if ($this->isAjax()) {
+                $this->payload->activePageData = $page->toArray();
+            }
         } else {
             $this->template->activePageData = null;
         }
@@ -312,6 +345,25 @@ class ReportPresenter extends BasePresenter {
         ];*/
 
         $this->template->adminNavigation = $this->azureService->getPages($tile->workspace, $tile->report);
+    }
+
+    public function getFilterSubstitutions(): array
+    {
+        return [
+            '%DATE.CURRENT.YEAR%' => date('Y'),
+            '%DATE.CURRENT.MONTH%' => date('n'),
+            '%DATE.CURRENT.MONTH.LEADING_ZERO%' => date('m'),
+            '%DATE.CURRENT.DAY%' => date('j'),
+            '%DATE.CURRENT.DAY.LEADING_ZERO%' => date('d'),
+            '%DATE.PREVIOUS.YEAR%' => date('Y', strtotime('-1 year')),
+            '%DATE.PREVIOUS.MONTH%' => date('n', strtotime('-1 month')),
+            '%DATE.PREVIOUS.MONTH.LEADING_ZERO%' => date('m', strtotime('-1 month')),
+            '%DATE.PREVIOUS.DAY%' => date('j', strtotime('-1 day')),
+            '%DATE.PREVIOUS.DAY.LEADING_ZERO%' => date('d', strtotime('-1 day')),
+            '%USER.USERNAME%' => $this->getUser()->getIdentity()->getData()['username'] ?? '',
+            '%USER.NAME%' => $this->getUser()->getIdentity()->getData()['name'] ?? '',
+            '%USER.SURNAME%' => $this->getUser()->getIdentity()->getData()['surname'] ?? '',
+        ];
     }
 
 }

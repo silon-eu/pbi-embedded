@@ -5,6 +5,11 @@ Naja.addEventListener('complete', function (event) {
 });
 
 export function initTooltips() {
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    // select only tooltips that are not initalized
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]:not([data-tooltip-initialized])');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    // mark tooltips as initialized
+    tooltipTriggerList.forEach(el => {
+        el.setAttribute('data-tooltip-initialized', 'true');
+    });
 }

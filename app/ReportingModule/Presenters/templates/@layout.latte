@@ -65,7 +65,7 @@
                   </ul>
               </li>
               {* lang *}
-              <li n:if="count($translator->getAvailableLocales()) > 1" class="nav-item dropdown">
+              {*<li n:if="count($translator->getAvailableLocales()) > 1" class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <i class="bi bi-globe"></i> {$translator->getLocale()|upper}
                   </a>
@@ -76,7 +76,7 @@
                           </a>
                       </li>
                   </ul>
-              </li>
+              </li>*}
           </ul>
   </nav>
     <div class="container-fluid">
@@ -112,7 +112,7 @@
       <!-- System Modal -->
       <div n:snippet="systemModal">
         <div class="modal fade" id="systemModal" tabindex="-1">
-          <div class="modal-dialog modal-dialog-scrollable modal-lg">
+          <div n:class="'modal-dialog modal-dialog-scrollable', isset($systemModalSize) ? 'modal-'.$systemModalSize : 'modal-lg'">
               <div class="modal-content">
                   <div class="modal-header">
                       <h5 class="modal-title">Loading ...</h5>

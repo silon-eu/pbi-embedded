@@ -28,6 +28,13 @@
                                 data-bs-placement="right"
                                 data-bs-title="No filters are set for this page"
                             ></i>
+                            <i
+                                n:if="$presenter->userIsAdmin() && empty($navItem['slicers'])"
+                                class="bi bi-exclamation-triangle-fill text-warning ms-1"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="right"
+                                data-bs-title="No defaults are set for visuals"
+                            ></i>
                         </a>
                         {if $presenter->userIsAdmin()}
                             <a class="dropdown-toggle item-menu" data-bs-toggle="dropdown"></a>
@@ -164,9 +171,9 @@
         //let defaultFilters = [];
         let defaultSlicers = [];
         let report = null;
-        let models = window["powerbi-client"].models;
         let reportContainer = document.getElementById("report-container");
-        let reportFilters = [];
+        let models = window["powerbi-client"].models;
+        //let reportFilters = [];
         let pageFilters = [];
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -231,32 +238,52 @@
                     hideErrors: false,
 
                     /*Initial page*/
-                    //pageName: 'ReportSection3',
                     {if $activePageData}
                         pageName: {$activePageData->page},
                     {/if}
 
                     //filters: [...], // https://learn.microsoft.com/en-us/javascript/api/overview/powerbi/control-report-filters
+
                     //slicers: slicerArray, // https://learn.microsoft.com/en-us/javascript/api/overview/powerbi/control-report-slicers
+                    {*if !empty($tile->slicers)}
+                        slicers: {$tile->slicers|noescape|applyDynamicProperties},
+                    {/if*}
 
                     // onload bookmark - https://learn.microsoft.com/en-us/javascript/api/overview/powerbi/configure-report-settings#on-load-bookmark
-
-                    extensions: [
-                        {
-                            command: {
-                                name: "copyVisualId",
-                                title: "Copy visual ID",
-                                extend: {
-                                    // Define visualContextMenu to extend context menu.
-                                    visualContextMenu: {
-                                        // Define title to override default title.
-                                        //You can override default icon as well.
-                                        title: "Copy visual ID",
+                    {if $presenter->userIsAdmin()}
+                        extensions: {
+                            commands: [
+                                {
+                                    name: "copySlicerSettings",
+                                    title: "Copy slicer settings",
+                                    extend: {
+                                        visualOptionsMenu: {
+                                            title: "Copy slicer settings",
+                                            groupName: "silon-pbie-admin"
+                                        }
+                                    }
+                                },
+                                {
+                                    name: "copyVisualId",
+                                    title: "Copy visual ID",
+                                    extend: {
+                                        visualOptionsMenu: {
+                                            title: "Copy visual ID",
+                                            groupName: "silon-pbie-admin"
+                                        }
                                     }
                                 }
-                            }
+                            ],
+                            groups: [
+                                {
+                                    name: "silon-pbie-admin",
+                                    title: "Silon admin",
+                                    menuLocation: models.MenuLocation.Top
+                                }
+                            ]
                         }
-                    ]
+                    {/if}
+
                 }
 
             };
@@ -274,45 +301,25 @@
             // Triggers when a report schema is successfully loaded
             report.on("loaded", async function () {
                 console.log("Report load successful");
-                /*report.getPages().then(function (pages) {
-                    console.log(pages);
-                });
 
-                report.getSlicers().then(function(slicers) {
-                    console.log(slicers);
-                });*/
-
-                report.getFilters().then(function(filters) {
-                    reportFilters = filters;
-                });
-
-                const navigation = document.querySelectorAll("#left-admin-nav .nav-link");
-                navigation.forEach(function (link) {
-                    link.addEventListener("click", function (e) {
-                        e.preventDefault();
-                        let page = e.target.getAttribute("data-page");
-                        if(page) {
-                            report.setPage(page);
-                            // set all link to inactive
-                            navigation.forEach(function (link) {
-                                link.classList.remove("active");
-                            });
-                            // set clicked link to active
-                            e.target.classList.add("active");
-                        }
-                    });
-                });
-
-                // Get all pages in the report
-                /*report.getPages().then(function (pages) {
-                    // foreach page save filters
-                    pages.forEach(async function (page) {
-                        // save filters
-                        page.getFilters().then(function (filters) {
-                            defaultFilters[page.name] = filters;
+                {if $presenter->userIsAdmin()}
+                    const navigation = document.querySelectorAll("#left-admin-nav .nav-link");
+                    navigation.forEach(function (link) {
+                        link.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            let page = e.target.getAttribute("data-page");
+                            if(page) {
+                                report.setPage(page);
+                                // set all link to inactive
+                                navigation.forEach(function (link) {
+                                    link.classList.remove("active");
+                                });
+                                // set clicked link to active
+                                e.target.classList.add("active");
+                            }
                         });
                     });
-                });*/
+                {/if}
 
                 // Set the first page as active
                 {if $activePageData}
@@ -321,13 +328,17 @@
 
                     // set default filters
                     {if !empty($activePageData->filters)}
-                        await activePage.updateFilters(models.FiltersOperations.ReplaceAll,JSON.parse({$activePageData->filters}));
+                        await activePage.updateFilters(models.FiltersOperations.ReplaceAll,JSON.parse({$activePageData->filters|applyDynamicProperties}));
                     {/if}
 
+
+                    {if !empty($activePageData->slicers)}
+                        await setDefaultSlicersForPage(JSON.parse({$activePageData->slicers|applyDynamicProperties}));
+                    {/if}
                 {/if}
 
                 {if !empty($tile->filters)}
-                    await report.updateFilters(models.FiltersOperations.ReplaceAll, JSON.parse({$tile->filters}));
+                    await report.updateFilters(models.FiltersOperations.ReplaceAll, JSON.parse({$tile->filters|applyDynamicProperties}));
                 {/if}
 
             });
@@ -362,13 +373,17 @@
                     return visual.type === "slicer" || visual.type === "advancedSlicerVisual";
                 });
 
-                slicers.forEach(async function(slicer) {
-                    const state = await slicer.getSlicerState();
-                    // save slicer state
-                    if (defaultSlicers[slicer.name] === undefined) {
-                        defaultSlicers[slicer.name] = state;
+                for (const slicer of slicers) {
+                    try {
+                        const state = await slicer.getSlicerState();
+                        // save slicer state
+                        if (defaultSlicers[slicer.name] === undefined) {
+                            defaultSlicers[slicer.name] = state;
+                        }
+                    } catch (error) {
+                        //console.error("Error getting slicer state for visual " + slicer.name + ": ", error);
                     }
-                });
+                }
 
                 // save filters
                 page.getFilters().then(function (filters) {
@@ -381,7 +396,7 @@
 
             });
 
-            report.on("commandTriggered", function (event) {
+            report.on("commandTriggered", async function (event) {
                 let commandDetails = event.detail;
                 console.log("Event - commandTriggered:\n", commandDetails);
                 if (commandDetails.command === "copyVisualId") {
@@ -391,6 +406,29 @@
                     }, function(err) {
                         console.error("Could not copy text: ", err);
                     });
+                } else if (commandDetails.command === "copySlicerSettings") {
+                    if (commandDetails.visual.type === "slicer" || commandDetails.visual.type === "advancedSlicerVisual") {
+                        let activePage = await report.getActivePage();
+                        let activeVisuals = await activePage.getVisuals();
+                        let visualObject = activeVisuals.filter(function (filter) {
+                            return filter.name === commandDetails.visual.name;
+                        })[0];
+                        let result = {
+                            slicerName: commandDetails.visual.name,
+                            slicerState: await visualObject.getSlicerState()
+                        }
+                        // Copy the slicer state to clipboard
+                        navigator.clipboard.writeText(JSON.stringify(result, null, 2)).then(function() {
+                            console.log("Slicer state copied to clipboard: ", result);
+                        }, function(err) {
+                            console.error("Could not copy text: ", err);
+                        });
+                    } else {
+                        console.error('Selected visual in not of type slicer')
+                    }
+                    //console.log(commandDetails.visual);
+                    //let visual await report.getVisuals();
+                    //console.log(commandDetails.visual.getSlicerState());
                 }
             });
 
@@ -489,6 +527,36 @@
             } else {
                 console.error("Unknown target: " + target);
             }
+        }
+
+        async function setDefaultSlicersForPage(slicerStates = [], pageName = null) {
+            // get all visuals on the page
+            let page = null;
+            if (!pageName) {
+                page = await report.getActivePage();
+            } else {
+                const pages = await report.getPages();
+                page = pages.find(p => p.name === pageName);
+                if (!page) {
+                    console.error(`Page with name ${ pageName} not found`);
+                    return;
+                }
+            }
+            const visuals = await page.getVisuals();
+
+            // set slicer state from visualFilters
+            visuals.forEach(function (visual) {
+                if (visual.type === "slicer" || visual.type === "advancedSlicerVisual") {
+                    let filter = slicerStates.find(function (filter) {
+                        return filter.slicerName === visual.name;
+                    });
+                    if (filter) {
+                        visual.setSlicerState(filter.slicerState);
+                    } else {
+                        visual.setSlicerState({ filters: [] });
+                    }
+                }
+            });
         }
 
     </script>

@@ -11,7 +11,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 // set filters first
                 if (activePageData.filters !== '') {
                     let pageFilter = JSON.parse(activePageData.filters);
-                    newPage.updateFilters(models.FiltersOperations.ReplaceAll, pageFilter);
+                    await newPage.updateFilters(models.FiltersOperations.ReplaceAll, pageFilter);
+                }
+
+                // set slicer states
+                if (activePageData.slicers !== '') {
+                    let slicerStates = JSON.parse(activePageData.slicers);
+                    await setDefaultSlicersForPage(slicerStates, newPage.name);
                 }
 
                 // if needed change page
