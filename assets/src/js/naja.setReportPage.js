@@ -9,13 +9,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 let newPage = await report.getPageByName(activePageData.page);
 
                 // set filters first
-                if (activePageData.filters !== '') {
+                if (activePageData.filters !== null && activePageData.filters !== '') {
                     let pageFilter = JSON.parse(activePageData.filters);
                     await newPage.updateFilters(models.FiltersOperations.ReplaceAll, pageFilter);
                 }
 
                 // set slicer states
-                if (activePageData.slicers !== '') {
+                if (activePageData.slicers !== null && activePageData.slicers !== '') {
                     let slicerStates = JSON.parse(activePageData.slicers);
                     await setDefaultSlicersForPage(slicerStates, newPage.name);
                 }

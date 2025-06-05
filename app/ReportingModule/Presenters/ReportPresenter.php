@@ -39,8 +39,8 @@ class ReportPresenter extends BasePresenter {
 
         $this->template->filterSubstitutions = $this->getFilterSubstitutions();
 
-        $this->template->addFilter('applyDynamicProperties', function (string $json): string {
-            return str_replace(array_keys($this->getFilterSubstitutions()), array_values($this->getFilterSubstitutions()), $json);
+        $this->template->addFilter('applyDynamicProperties', function (?string $json): ?string {
+            return $this->applyDynamicProperties($json);
         });
     }
 
@@ -258,7 +258,8 @@ class ReportPresenter extends BasePresenter {
         if ($this->isAjax()) {
             if ($page = $this->reportService->getPages()->get($activePageId)) {
                 $this->activePageId = $activePageId;
-                $this->template->activePage = $page;
+                $this->template->activePage = (object) $page->toArray();
+                $this->template->activePage->slicers = $this->applyDynamicProperties($this->template->activePage->slicers);
             } else {
                 $this->flashMessage('Page not found', 'danger');
                 $this->template->activePage = null;
@@ -316,6 +317,7 @@ class ReportPresenter extends BasePresenter {
             $this->template->activePageData = $page;
             if ($this->isAjax()) {
                 $this->payload->activePageData = $page->toArray();
+                $this->payload->activePageData['slicers'] = $this->applyDynamicProperties($page->slicers);
             }
         } else {
             $this->template->activePageData = null;
@@ -364,6 +366,14 @@ class ReportPresenter extends BasePresenter {
             '%USER.NAME%' => $this->getUser()->getIdentity()->getData()['name'] ?? '',
             '%USER.SURNAME%' => $this->getUser()->getIdentity()->getData()['surname'] ?? '',
         ];
+    }
+
+    public function applyDynamicProperties(?string $json): ?string
+    {
+        if (empty($json)) {
+            return null;
+        }
+        return str_replace(array_keys($this->getFilterSubstitutions()), array_values($this->getFilterSubstitutions()), $json);
     }
 
 }

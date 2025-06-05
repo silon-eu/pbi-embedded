@@ -484,7 +484,7 @@
             }
         });
 
-        async function loadReportFilters(button, target = 'formElement', selector = 'textarea[name=\'filters\']') {
+        async function loadReportFilters(button, target = 'formElement', selector = '#frm-reportFilterForm-filters') {
             let currentReportFilters = await report.getFilters();
             if (target === 'formElement') {
                 // get form of the button which triggered this function
@@ -510,7 +510,7 @@
             }
         }
 
-        async function loadPageFilters(button, target = 'formElement', selector = 'textarea[name=\'filters\']') {
+        async function loadPageFilters(button, target = 'formElement', selector = '#frm-pageForm-filters') {
             // get form of the button which triggered this function
             let form = button.closest("form");
             // get value of  form select with name = page
