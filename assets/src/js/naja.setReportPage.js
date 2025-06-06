@@ -14,15 +14,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     await newPage.updateFilters(models.FiltersOperations.ReplaceAll, pageFilter);
                 }
 
+                // if needed change page
+                if (reportActivePage.name !== newPage.name) {
+                    await report.setPage(newPage.name);
+                }
+
                 // set slicer states
                 if (activePageData.slicers !== null && activePageData.slicers !== '') {
                     let slicerStates = JSON.parse(activePageData.slicers);
                     await setDefaultSlicersForPage(slicerStates, newPage.name);
-                }
-
-                // if needed change page
-                if (reportActivePage.name !== newPage.name) {
-                    await report.setPage(newPage.name);
                 }
             }
         }

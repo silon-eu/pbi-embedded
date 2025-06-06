@@ -546,6 +546,10 @@
         }
 
         async function setDefaultSlicersForPage(slicerStates = [], pageName = null) {
+            if (!Array.isArray(slicerStates) || slicerStates.length === 0) {
+                return;
+            }
+
             // get all visuals on the page
             let page = null;
             if (!pageName) {
@@ -561,18 +565,18 @@
             const visuals = await page.getVisuals();
 
             // set slicer state from visualFilters
-            visuals.forEach(function (visual) {
+            for (const visual of visuals) {
                 if (visual.type === "slicer" || visual.type === "advancedSlicerVisual") {
                     let filter = slicerStates.find(function (filter) {
                         return filter.slicerName === visual.name;
                     });
                     if (filter) {
-                        visual.setSlicerState(filter.slicerState);
-                    } else {
-                        visual.setSlicerState({ filters: [] });
-                    }
+                        await visual.setSlicerState(filter.slicerState);
+                    }/* else {
+                        await visual.setSlicerState({ filters: [] });
+                    }*/
                 }
-            });
+            }
         }
 
     </script>
