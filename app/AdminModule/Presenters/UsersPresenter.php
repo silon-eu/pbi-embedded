@@ -69,7 +69,7 @@ class UsersPresenter extends BasePresenter {
             $this->flashMessage($e->getMessage(),'danger');
         }
 
-        $this->redirect('Dashboard:');
+        $this->redirect(':Reporting:Dashboard:default');
     }
 
     public function renderEdit(?int $id = null) {

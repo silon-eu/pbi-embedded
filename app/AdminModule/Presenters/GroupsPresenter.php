@@ -32,7 +32,7 @@ class GroupsPresenter extends BasePresenter {
             case 'groupsDatagrid':
                 return new \App\AdminModule\Controls\GroupsDatagrid($this, $name, $this->groupsService);
             case 'editForm':
-                return new \App\AdminModule\Controls\DashboardTile($this, $name, $this->groupsService, $this->rolesService, $this->cache);
+                return new \App\AdminModule\Controls\GroupEditForm($this, $name, $this->groupsService, $this->rolesService, $this->cache);
             default:
                 return parent::createComponent($name);
         }
