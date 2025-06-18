@@ -341,7 +341,12 @@ class ReportPresenter extends BasePresenter {
         $this->template->tile = $tile;
         $this->template->navigation = $this->reportService->getNavigationForTile($id, $this->getUser()->getId(), $this->userIsAdmin());
 
-        // if user is not admin and navigation does not contain the activePageId in subarray with id key, throw error
+        // if user is not admin and has no navigation items, throw an error
+        if (!$this->userIsAdmin() && count($this->template->navigation) === 0) {
+            throw new BadRequestException('You do not have access to this report');
+        }
+
+        // if user is not admin and navigation does not contain the activePageId in subarray with id key, throw an error
         if (!$this->userIsAdmin() && $this->activePageId !== null && !Arrays::some($this->template->navigation, fn($item) => $item['id'] === $this->activePageId)) {
             throw new BadRequestException('You do not have access to this page');
         }

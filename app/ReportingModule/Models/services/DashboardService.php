@@ -3,6 +3,7 @@
 namespace App\ReportingModule\Models\Service;
 
 use Nette\Database\Explorer;
+use Nette\Database\ResultSet;
 use Nette\Database\Table\Selection;
 use Tracy\Debugger;
 
@@ -19,6 +20,40 @@ class DashboardService extends BaseService
     {
         return $this->database->table('rep_tabs')
             ->order('position');
+    }
+
+    public function getUserAccess(int $userId): Selection
+    {
+        return $this->database->table('rep_pages_permissions')
+            ->where('rep_pages_permissions.users_id = ? OR rep_pages_permissions.groups_id IN (SELECT groups_id FROM users WHERE id = ?)', $userId, $userId);
+    }
+
+    public function getUserTabs(int $userId): array
+    {
+        $access = $this->getUserAccess($userId);
+        $tabs = [];
+        foreach ($access as $item) {
+            $tab = $item->rep_pages->rep_tiles->rep_tabs;
+            $tabs[$tab->position] = $tab;
+        }
+        Debugger::barDump($tabs,'tabs');
+        return $tabs;
+    }
+
+    public function getUserTilesForAllTabs(int $userId): array
+    {
+        $access = $this->getUserAccess($userId);
+        $tiles = [];
+        foreach ($access as $item) {
+            $tile = $item->rep_pages->rep_tiles;
+            $tiles[$tile->rep_tabs_id][$tile->position] = $tile;
+        }
+        // Sort tiles by position within each tab
+        foreach ($tiles as $tabId => $tabTiles) {
+            ksort($tiles[$tabId]);
+        }
+        Debugger::barDump($tiles,'tiles');
+        return $tiles;
     }
 
     public function addTab(string $name): int

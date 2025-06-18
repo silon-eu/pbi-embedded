@@ -312,7 +312,7 @@ class DashboardPresenter extends BasePresenter {
     }
 
     public function actionDefault() {
-        $this->template->tabs = $this->dashboardService->getTabs();
-        $this->template->tiles = $this->dashboardService->getTilesForAllTabs();
+        $this->template->tabs = $this->userIsAdmin() ? $this->dashboardService->getTabs() : $this->dashboardService->getUserTabs($this->getUser()->getId());
+        $this->template->tiles = $this->userIsAdmin() ? $this->dashboardService->getTilesForAllTabs() : $this->dashboardService->getUserTilesForAllTabs($this->getUser()->getId());
     }
 }
