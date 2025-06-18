@@ -1,5 +1,6 @@
 // Import our custom CSS
-import '../scss/styles.scss'
+import '../scss/styles.scss';
+import "multi.js/dist/multi.min.css";
 
 // Import all of Bootstrap's JS
 import * as bootstrap from 'bootstrap'

@@ -43,4 +43,10 @@ class UsersService extends BaseService
         return $this->database->table('users')->get($id)?->delete();
     }
 
+    public function getFullNameListForSelect($selectArg = 'name, \' \', surname ,\'(\',username,\')\'') {
+        return $this->database->table('users')
+            ->select('id, ?',Connection::literal('concat('.$selectArg.') as name'))
+            ->order('surname, name')->fetchPairs('id', 'name');
+    }
+
 }

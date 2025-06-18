@@ -1,6 +1,8 @@
 import Naja from 'naja';
 import * as bootstrap from 'bootstrap';
 import * as netteFormsDependency from './netteForms.dependency.js';
+import multi from "multi.js/dist/multi-es6.min";
+
 document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelectorAll('[data-toggle="systemModal"]').forEach(function(element) {
@@ -40,6 +42,15 @@ document.addEventListener('DOMContentLoaded', function() {
             modalInstance.hide();
         } else if (event.detail.payload && ('modalTitle' in event.detail.payload || 'modalBody' in event.detail.payload || ('openModal' in event.detail.payload && event.detail.payload.openModal))) {
             netteFormsDependency.initFormsDependecies();
+            document.querySelectorAll('.dual-listbox').forEach(function(element) {
+                multi(element, {
+                    enable_search: true,
+                    search_placeholder: 'Search...',
+                    non_selected_header: 'Available items',
+                    selected_header: 'Selected items',
+                    hide_empty_groups: true
+                });
+            });
             modalInstance.show();
         }
     });

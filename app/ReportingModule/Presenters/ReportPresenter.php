@@ -2,6 +2,8 @@
 
 namespace App\ReportingModule\Presenters;
 
+use App\AdminModule\Models\Service\GroupsService;
+use App\AdminModule\Models\Service\UsersService;
 use App\Models\Service\AzureService;
 use App\ReportingModule\Models\Service\DashboardService;
 use App\ReportingModule\Models\Service\ReportService;
@@ -25,6 +27,8 @@ class ReportPresenter extends BasePresenter {
         protected AzureService $azureService,
         protected DashboardService $dashboardService,
         protected ReportService $reportService,
+        protected UsersService $usersService,
+        protected GroupsService $groupsService,
     )
     {
         parent::__construct();
@@ -62,7 +66,8 @@ class ReportPresenter extends BasePresenter {
 
         $row2 = $form->addRow();
         $row2->addCell(6)
-            ->addTextArea('description', 'Description');
+            ->addTextArea('description', 'Description')
+            ->getControlPrototype()->appendAttribute('class','rich-text-editor');
 
         $form->addGroup('Power BI');
 
@@ -80,6 +85,12 @@ class ReportPresenter extends BasePresenter {
         if ($this->getParameter('editPageId')) {
 
             $row5 = $form->addRow();
+
+            $row5->addCell(6)
+                ->addTextArea('slicers', 'Visual slicers')
+                ->setHtmlAttribute('rows', 25)
+                ->setHtmlAttribute('placeholder', 'JSON slicers configuration for visuals on this page');
+
             $row5->addCell(5)
                 ->addTextArea('filters', 'Page level filters')
                 ->setHtmlAttribute('rows', 25)
@@ -98,12 +109,17 @@ class ReportPresenter extends BasePresenter {
                 ->setHtmlAttribute('onclick', 'loadPageFilters(this,"clipboard")')
                 ->setHtmlAttribute('data-bs-toggle', 'tooltip')
                 ->setHtmlAttribute('data-bs-placement', 'right')
-                ->setHtmlAttribute('data-bs-title', 'Copy filters that are currently set on report to clipboard');
+                ->setHtmlAttribute('data-bs-title', 'Copy filters that are currently set on page to clipboard');
 
-            $row5->addCell(6)
-                ->addTextArea('slicers', 'Visual slicers')
-                ->setHtmlAttribute('rows', 25)
-                ->setHtmlAttribute('placeholder', 'JSON slicers configuration for visuals on this page');
+            $form->addGroup('Permissions');
+
+            $row6 = $form->addRow();
+            $row6->addCell(6)
+                ->addMultiSelect('group_permissions', 'Groups', $this->groupsService->getDatasource()->order('name')->fetchPairs('id', 'name'))
+                ->setHtmlAttribute('class', 'dual-listbox');
+            $row6->addCell(6)
+                ->addMultiSelect('user_permissions', 'Users',$this->usersService->getFullNameListForSelect())
+                ->setHtmlAttribute('class', 'dual-listbox');
 
             $pageData = $this->reportService->getPages()->get($this->getParameter('editPageId'));
             $form->setDefaults([
@@ -114,7 +130,10 @@ class ReportPresenter extends BasePresenter {
                 'page' => $pageData->page,
                 'filters' => $pageData->filters,
                 'slicers' => $pageData->slicers,
+                'group_permissions' => $this->reportService->getGroupPermissionsForPage($pageData->id)->fetchPairs('groups_id', 'groups_id'),
+                'user_permissions' => $this->reportService->getUserPermissionsForPage($pageData->id)->fetchPairs('users_id', 'users_id'),
             ]);
+
         }
 
         $form->addSubmit('send', 'Save');
@@ -135,7 +154,7 @@ class ReportPresenter extends BasePresenter {
                 $this->reportService->addPage($values);
                 $this->flashMessage('Page added successfully', 'success');
             }
-            $this->template->navigation = $this->reportService->getNavigationForTile($this->id);
+            $this->template->navigation = $this->reportService->getNavigationForTile($this->id, $this->getUser()->getId(), $this->userIsAdmin());
         } catch (\Exception $e) {
             Debugger::log($e, Debugger::EXCEPTION);
             $this->flashMessage('Error occurred while saving the page', 'danger');
@@ -234,12 +253,25 @@ class ReportPresenter extends BasePresenter {
         }
     }
 
+    public function handleShowPageDescription() {
+        if ($page = $this->reportService->getPages()->wherePrimary($this->activePageId)->fetch()) {
+            $this->payload->modalTitle = 'Description for page ' . $page->name;
+            $this->payload->modalBody = $page->description;
+        }
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->redrawControl('systemModal');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
     public function handleDeletePage(int $editPageId) {
         $this->allowOnlyRoles(['admin']);
 
         try {
             $this->reportService->deletePage($editPageId);
-            $this->template->navigation = $this->reportService->getNavigationForTile($this->id);
+            $this->template->navigation = $this->reportService->getNavigationForTile($this->id, $this->getUser()->getId(), $this->userIsAdmin());
             $this->flashMessage('Page deleted successfully', 'success');
         } catch (\Exception $e) {
             Debugger::log($e, Debugger::EXCEPTION);
@@ -266,6 +298,7 @@ class ReportPresenter extends BasePresenter {
                 $this->redrawControl('flashes');
             }
             $this->redrawControl('reportUserMenu');
+            $this->redrawControl('pageInfoButton');
         } else {
             $this->redirect('this');
         }
@@ -276,7 +309,7 @@ class ReportPresenter extends BasePresenter {
 
         try {
             $this->reportService->changePagePosition($editPageId, $direction);
-            $this->template->navigation = $this->reportService->getNavigationForTile($this->id);
+            $this->template->navigation = $this->reportService->getNavigationForTile($this->id, $this->getUser()->getId(), $this->userIsAdmin());
             $this->flashMessage('Page position changed successfully', 'success');
         } catch (\Exception $e) {
             Debugger::log($e, Debugger::EXCEPTION);
@@ -306,7 +339,12 @@ class ReportPresenter extends BasePresenter {
         }
 
         $this->template->tile = $tile;
-        $this->template->navigation = $this->reportService->getNavigationForTile($id);
+        $this->template->navigation = $this->reportService->getNavigationForTile($id, $this->getUser()->getId(), $this->userIsAdmin());
+
+        // if user is not admin and navigation does not contain the activePageId in subarray with id key, throw error
+        if (!$this->userIsAdmin() && $this->activePageId !== null && !Arrays::some($this->template->navigation, fn($item) => $item['id'] === $this->activePageId)) {
+            throw new BadRequestException('You do not have access to this page');
+        }
 
         // if no page is selected, select the first one
         if ($this->activePageId === null && count($this->template->navigation) > 0) {

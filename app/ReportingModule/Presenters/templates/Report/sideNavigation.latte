@@ -35,6 +35,13 @@
                                 data-bs-placement="right"
                                 data-bs-title="No defaults are set for visuals"
                             ></i>
+                            <i
+                                n:if="$presenter->userIsAdmin() && $navItem['hasPermissions'] === false"
+                                class="bi bi-shield-lock-fill text-warning ms-1"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="right"
+                                data-bs-title="No permissions are set for this page"
+                            ></i>
                         </a>
                         {if $presenter->userIsAdmin()}
                             <a class="dropdown-toggle item-menu" data-bs-toggle="dropdown"></a>
@@ -166,6 +173,12 @@
                         data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Reset filters">
                     <i class="bi bi-arrow-counterclockwise"></i>
                 </button>
+                {snippet pageInfoButton}
+                    <a n:if="isset($activePageData) && !empty($activePageData) && !empty($activePageData->description)" n:href="showPageDescription!" class="btn btn-secondary mb-1 ajax"
+                            data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="About this report page">
+                        <i class="bi bi-info-circle"></i>
+                    </a>
+                {/snippet}
                 <a n:if="$presenter->userIsAdmin()" n:href="showReportFilterForm!" class="btn btn-outline-secondary ajax mb-1"
                         data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" data-bs-title="Report filters setup<br><i>(admin only)</i>">
                     <i
