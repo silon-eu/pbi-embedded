@@ -195,14 +195,15 @@ class ReportService extends BaseService
             throw new \Exception("Page with ID {$values->id} not found.");
         }
 
+        $targetPosition = $this->getPagesForTile($values->target_tile)->max('position') + 1;
+
         if ($values->operation === 'move') {
             // Move the page to a new tile
-            $page->update(['rep_tiles_id' => $values->target_tile]);
+            $page->update(['rep_tiles_id' => $values->target_tile,'position' => $targetPosition]);
         } elseif ($values->operation === 'copy') {
-
             $data = [
                 'name' => $values->name,
-                'position' => $this->getPagesForTile($values->target_tile)->max('position') + 1,
+                'position' => $targetPosition,
                 'description' => $page->description,
                 'page' => $page->page,
                 'rep_tiles_id' => $values->target_tile, // Use the new tile ID,
