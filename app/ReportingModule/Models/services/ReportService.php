@@ -188,4 +188,49 @@ class ReportService extends BaseService
         $this->updatePagePermissions($pageId, 'users_id', $users);
     }
 
+    public function copyOrMovePage(object $values): void
+    {
+        $page = $this->getPages()->get($values->id);
+        if (!$page) {
+            throw new \Exception("Page with ID {$values->id} not found.");
+        }
+
+        if ($values->operation === 'move') {
+            // Move the page to a new tile
+            $page->update(['rep_tiles_id' => $values->target_tile]);
+        } elseif ($values->operation === 'copy') {
+
+            $data = [
+                'name' => $values->name,
+                'position' => $this->getPagesForTile($values->target_tile)->max('position') + 1,
+                'description' => $page->description,
+                'page' => $page->page,
+                'rep_tiles_id' => $values->target_tile, // Use the new tile ID,
+            ];
+
+            if ($values->copy_filters === 'yes') {
+                $data['filters'] = $page->filters;
+            }
+            if ($values->copy_slicers === 'yes') {
+                $data['slicers'] = $page->slicers;
+            }
+
+            // Create a new page with the same properties
+            $newPage = $this->getPages()->insert($data);
+
+            // Copy permissions
+            if ($values->copy_permissions === 'yes') {
+                foreach ($this->getPermissionsForPage($page->id) as $permission) {
+                    $this->getPermissions()->insert([
+                        'rep_pages_id' => $newPage->id,
+                        'groups_id' => $permission->groups_id,
+                        'users_id' => $permission->users_id,
+                    ]);
+                }
+            }
+        } else {
+            throw new \Exception("Invalid operation: {$values->oparation}. Use 'move' or 'copy'.");
+        }
+    }
+
 }

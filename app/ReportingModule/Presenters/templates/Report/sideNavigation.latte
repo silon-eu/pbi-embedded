@@ -47,6 +47,7 @@
                             <a class="dropdown-toggle item-menu" data-bs-toggle="dropdown"></a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item ajax" n:href="showPageForm!,editPageId=>$navItem['id']" data-naja-history="off">Edit</a></li>
+                                <li><a class="dropdown-item ajax" n:href="showCopyOrMovePageForm!,editPageId=>$navItem['id']" data-naja-history="off">Copy or move</a></li>
                                 <li><a class="dropdown-item ajax" data-confirm="Do you really want to delete this page?" n:href="deletePage!,editPageId=>$navItem['id']" data-naja-history="off">Delete</a></li>
                                 <li n:if="count($navigation)>1"><hr class="dropdown-divider"></li>
                                 <li n:if="!$iterator->isFirst()">

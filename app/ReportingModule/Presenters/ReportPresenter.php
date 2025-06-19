@@ -253,6 +253,97 @@ class ReportPresenter extends BasePresenter {
         }
     }
 
+    protected function createComponentCopyOrMovePageForm(): Form {
+        $form = new BootstrapForm();
+        $form->setTranslator($this->translator);
+        $form->setAjax();
+
+        $pageId = $this->getParameter('editPageId');
+        $form->addHidden('id',$pageId);
+
+        $tile = $this->dashboardService->getTiles()->get($this->id);
+        $page = $pageId ? $this->reportService->getPages()->get($this->getParameter('editPageId')) : false;
+
+        $general = $form->addRow()->addCell(12);
+        $general->addRadioList('operation', 'Operation', [
+                'copy' => 'Copy',
+                'move' => 'Move',
+            ])->setRequired()
+            ->setDefaultValue('copy');
+
+        $general->addSelect('target_tile', 'Target tile', $this->dashboardService->getSimilarTiles($tile->id))
+            ->setDefaultValue($tile->id);
+
+        $form->addGroup('Copy settings');
+        $copySettings = $form->addRow();
+
+        $copySettings->addCell(12)->addText('name', 'Page name')
+            ->setRequired('Please enter a name for the new page')
+            ->setDefaultValue(($page ? $page->name : 'not-found') . ' - Copy');
+
+        $copySettings2 = $form->addRow();
+
+        $copySettings2->addCell(4)->addRadioList('copy_filters', 'Copy filters', [
+            'yes' => 'Yes',
+            'no' => 'No',
+        ])->setRequired()
+        ->setDefaultValue('yes');
+
+        $copySettings2->addCell(4)->addRadioList('copy_slicers', 'Copy slicers', [
+            'yes' => 'Yes',
+            'no' => 'No',
+        ])->setRequired()
+        ->setDefaultValue('yes');
+
+        $copySettings2->addCell(4)->addRadioList('copy_permissions', 'Copy permissions', [
+            'yes' => 'Yes',
+            'no' => 'No',
+        ])->setRequired()
+        ->setDefaultValue('no');
+
+        $form->addRow()->addCell(12)
+            ->addSubmit('send', 'Save');
+        $form->onSubmit[] = [$this, 'processCopyOrMovePageForm'];
+
+        return $form;
+    }
+
+    public function processCopyOrMovePageForm(Form $form): void {
+        $this->allowOnlyRoles(['admin']);
+
+        try {
+            $values = $form->getValues();
+            $this->reportService->copyOrMovePage($values);
+            $this->flashMessage('Page '.($values->operation === 'copy' ? 'copied' : 'moved').' successfully', 'success');
+            $this->template->navigation = $this->reportService->getNavigationForTile($this->id, $this->getUser()->getId(), $this->userIsAdmin());
+        } catch (\Exception $e) {
+            Debugger::log($e, Debugger::EXCEPTION);
+            $this->flashMessage('Error occurred while copying/movíng page', 'danger');
+        }
+
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->redrawControl('reportUserMenu');
+            $this->payload->closeModal = true;
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleShowCopyOrMovePageForm(int $editPageId) {
+        $this->allowOnlyRoles(['admin']);
+
+        $this->payload->modalTitle = 'Copy or move page';
+        //$this->template->systemModalSize = 'xl';
+        $this->template->systemModalControl = 'copyOrMovePageForm';
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->redrawControl('systemModal');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
     public function handleShowPageDescription() {
         if ($page = $this->reportService->getPages()->wherePrimary($this->activePageId)->fetch()) {
             $this->payload->modalTitle = 'Description for page ' . $page->name;

@@ -213,4 +213,19 @@ class DashboardService extends BaseService
             $tile->update(['filters' => $filters]);
         }
     }
+
+    public function getSimilarTiles(int $id): array
+    {
+        $tile = $this->getTiles()->get($id);
+        $tiles = $this->getTiles()
+            ->where('report = ? AND workspace = ?', $tile->report, $tile->workspace)
+            ->fetchAll();
+
+        $similarTiles = [];
+        foreach ($tiles as $tile) {
+            $similarTiles[$tile->id] = $tile->rep_tabs->name .' / '. $tile->name. ($id === $tile->id ? ' (current)' : '');
+        }
+
+        return $similarTiles;
+    }
 }
