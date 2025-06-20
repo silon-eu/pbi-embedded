@@ -33,7 +33,10 @@ class UserEditForm extends \Nette\Application\UI\Control {
         $form->addText('username', 'Username')->setRequired();
         $form->addText('name', 'Name');
         $form->addText('surname', 'Surname');
-        $form->addSelect('groups_id', 'Group', $this->groupsService->getKeyPairs())->setRequired()->setPrompt('Select group');
+        $form->addSelect('groups_id', 'Group', $this->groupsService->getKeyPairs())->setRequired()->setPrompt('Select group')
+            ->getControlPrototype()
+            ->appendAttribute('class', 'selectpicker')
+            ->appendAttribute('data-live-search', 'true');
 
         $form->addSubmit('submit', 'Save');
 
