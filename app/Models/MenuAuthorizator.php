@@ -16,7 +16,7 @@ final class MenuAuthorizator implements \Contributte\MenuControl\Security\IAutho
         $itemRoles = $item->getData()['roles'] ?? [];
         if ($this->user->isInRole('admin')) {
             return true;
-        } else if (!is_null($itemRoles)) {
+        } else if (!empty($itemRoles)) {
             return count(array_intersect($this->user->getRoles(),$itemRoles)) > 0;
         } else {
             return true;

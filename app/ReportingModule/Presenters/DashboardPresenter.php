@@ -264,15 +264,15 @@ class DashboardPresenter extends BasePresenter {
         $form->addGroup('General');
 
         $row1 = $form->addRow();
-        $row1->addCell(12)
+        $row1->addCell(4)
             ->addRadioList('operation', 'Operation', [
             'copy' => 'Copy',
             'move' => 'Move',
         ])->setRequired()
             ->setDefaultValue('copy');
 
-        $row1->addCell(4)
-            ->addSelect('rep_tabs_id', 'Tab', $this->dashboardService->getTabs()->fetchPairs('id', 'name'))
+        $row1->addCell(8)
+            ->addSelect('rep_tabs_id', 'Target tab', $this->dashboardService->getTabs()->fetchPairs('id', 'name'))
             ->setPrompt('Select tab')
             ->setRequired('Please select a tab');
 

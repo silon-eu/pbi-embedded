@@ -72,10 +72,10 @@ menu:
                 action: Reporting:Dashboard:default
                 data:
                     icon: house
-            Favorites:
-                action: Reporting:Dashboard:default
-                data:
-                    icon: star
+            #Favorites:
+            #    action: Reporting:Dashboard:default
+            #    data:
+            #        icon: star
             Administration:
                 action: Admin:Dashboard:default
                 data:

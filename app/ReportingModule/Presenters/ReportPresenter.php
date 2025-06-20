@@ -264,14 +264,14 @@ class ReportPresenter extends BasePresenter {
         $tile = $this->dashboardService->getTiles()->get($this->id);
         $page = $pageId ? $this->reportService->getPages()->get($this->getParameter('editPageId')) : false;
 
-        $general = $form->addRow()->addCell(12);
-        $general->addRadioList('operation', 'Operation', [
+        $general = $form->addRow();
+        $general->addCell(4)->addRadioList('operation', 'Operation', [
                 'copy' => 'Copy',
                 'move' => 'Move',
             ])->setRequired()
             ->setDefaultValue('copy');
 
-        $general->addSelect('target_tile', 'Target tile', $this->dashboardService->getSimilarTiles($tile->id))
+        $general->addCell(8)->addSelect('target_tile', 'Target tile', $this->dashboardService->getSimilarTiles($tile->id))
             ->setDefaultValue($tile->id);
 
         $form->addGroup('Copy settings');
