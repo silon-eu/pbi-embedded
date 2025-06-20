@@ -387,7 +387,11 @@
             // Triggers when a report is successfully embedded in UI
             report.on("rendered", function () {
                 console.log("Report render successful");
-                hideReportPlaceholder();
+                setTimeout(function () {
+                    // Hide the placeholder after 1 second
+                    hideReportPlaceholder();
+                }, 200);
+                //hideReportPlaceholder();
             });
 
             // Clear any other error handler events
