@@ -1,6 +1,15 @@
 import Naja from 'naja';
 document.addEventListener('DOMContentLoaded', function() {
 
+    Naja.addEventListener('before', (event) => {
+        if (event.detail.url.includes('do=changePage')) {
+            const placeholder = document.getElementById("report-placeholder");
+            if (placeholder) {
+                placeholder.style.display = "block";
+            }
+        }
+    });
+
     Naja.addEventListener('success', async function (event) {
         if (event.detail.payload) {
             if (report !== undefined && 'activePageData' in event.detail.payload) {

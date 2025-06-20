@@ -55,6 +55,20 @@ body {
   border: 0;
 }
 
+/* Report placeholder */
+#report-placeholder {
+  top: 0;
+  left: 0;
+
+  .rp-filter {
+    height: 5vh;
+  }
+
+  .rp-table {
+    height: 40vh;
+  }
+}
+
 /* Report left menu */
 
 #toggleAdminMenu,
