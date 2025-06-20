@@ -17,6 +17,7 @@ services:
 	- App\AdminModule\Models\Service\UsersService(@database.default.explorer)
 	- App\AdminModule\Models\Service\RolesService(@database.default.explorer)
 	- App\AdminModule\Models\Service\GroupsService(@database.default.explorer)
+	- App\AdminModule\Models\Service\ReportingService(@database.default.explorer)
 
 	- App\Models\Service\AzureService(%azure%, @cache)
 

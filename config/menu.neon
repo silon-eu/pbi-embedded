@@ -17,6 +17,20 @@ menu:
                     roles:
                         - admin
                     icon: bar-chart-line
+            Reporting:
+                action: Admin:Reporting:default
+                data:
+                    roles:
+                        - admin
+                    icon: chart-bar
+                items:
+                    Permissions:
+                        action: Admin:Reporting:permissions
+                        include: '^Admin\:Reporting\:[a-zA-Z\:]+$'
+                        data:
+                            roles:
+                                - admin
+                            icon: lock
             Settings:
                 action: Admin:Settings:default
                 data:
