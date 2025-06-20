@@ -254,6 +254,98 @@ class DashboardPresenter extends BasePresenter {
         }
     }
 
+    protected function createComponentCopyOrMoveTileForm(): Form {
+        $form = new BootstrapForm();
+        $form->setTranslator($this->translator);
+        $form->setAjax();
+
+        $form->addHidden('id');
+
+        $form->addGroup('General');
+
+        $row1 = $form->addRow();
+        $row1->addCell(12)
+            ->addRadioList('operation', 'Operation', [
+            'copy' => 'Copy',
+            'move' => 'Move',
+        ])->setRequired()
+            ->setDefaultValue('copy');
+
+        $row1->addCell(4)
+            ->addSelect('rep_tabs_id', 'Tab', $this->dashboardService->getTabs()->fetchPairs('id', 'name'))
+            ->setPrompt('Select tab')
+            ->setRequired('Please select a tab');
+
+        $form->addGroup('Copy settings');
+        $row2 = $form->addRow();
+        $row2->addCell(8)
+            ->addText('name', 'Name')
+            ->setRequired('Please enter a name');
+
+        $row3 = $form->addRow();
+        $row3->addCell(4)
+            ->addRadioList('copy_filters', 'Report filters', [
+                'yes' => 'Yes',
+                'no' => 'No',
+            ])->setDefaultValue('yes');
+
+        $row3->addCell(4)
+            ->addRadioList('copy_pages', 'Pages', [
+                'yes' => 'Yes',
+                'no' => 'No',
+            ])->setDefaultValue('yes');
+
+        if ($this->getParameter('editTileId')) {
+            $tile = $this->dashboardService->getTiles()->get($this->getParameter('editTileId'));
+            $form->setDefaults([
+                'rep_tabs_id' => $tile->rep_tabs_id,
+                'id' => $tile->id,
+                'name' => $tile->name.' - Copy',
+            ]);
+        }
+
+        $form->addSubmit('send', 'Save');
+        $form->onSubmit[] = [$this, 'processCopyOrMoveTileForm'];
+
+        return $form;
+    }
+
+    public function processCopyOrMoveTileForm(Form $form): void {
+        $this->allowOnlyRoles(['admin']);
+
+        try {
+            $values = ArrayHash::from($form->getHttpData());
+            $this->activeTab = $values->rep_tabs_id;
+            $this->dashboardService->copyOrMoveTile($values);
+            $this->flashMessage('Tile '.($values->operation === 'copy' ? 'copied' : 'moved').' successfully', 'success');
+        } catch (\Exception $e) {
+            Debugger::log($e, Debugger::EXCEPTION);
+            $this->flashMessage('Error occurred while copying/movíng the tile', 'danger');
+        }
+
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->redrawControl('dashboard');
+            $this->payload->closeModal = true;
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleShowCopyOrMoveTileForm(?int $editTileId) {
+        $this->allowOnlyRoles(['admin']);
+
+        $this->template->editTileId = $editTileId;
+        $this->payload->modalTitle = 'Copy or move tile';
+        $this->template->systemModalControl = 'copyOrMoveTileForm';
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->redrawControl('systemModal');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
     /* This action is used to load reports to tile form */
     public function actionFormReports(string $workspace): void
     {

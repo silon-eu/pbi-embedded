@@ -228,4 +228,56 @@ class DashboardService extends BaseService
 
         return $similarTiles;
     }
+
+    public function copyOrMoveTile(object $values): void
+    {
+        $tile = $this->getTiles()->get($values->id);
+        if (!$tile) {
+            throw new \Exception("Tile with ID $values->id not found.");
+        }
+
+        $targetPosition = $this->getTilesForTab($values->rep_tabs_id)->max('position') + 1;
+
+        if ($values->operation === 'move') {
+            // Move the tile to a new tab
+            $tile->update([
+                'rep_tabs_id' => $values->rep_tabs_id,
+                'position' => $targetPosition,
+            ]);
+        } elseif ($values->operation === 'copy') {
+            // Copy the tile to a new tab
+            $newTileData = [
+                'name' => $values->name,
+                'description' => $tile->description,
+                'icon' => $tile->icon,
+                'workspace' => $tile->workspace,
+                'report' => $tile->report,
+                'rep_tabs_id' => $values->rep_tabs_id,
+                'position' => $targetPosition,
+            ];
+            if ($values->copy_filters === 'yes') {
+                $newTileData['filters'] = $tile->filters;
+            }
+            $newTile = $this->database->table('rep_tiles')->insert($newTileData);
+
+            // Copy pages
+            if ($values->copy_pages === 'yes') {
+                foreach ($tile->related('rep_pages','rep_tiles_id') as $page) {
+                    $newPageData = [
+                        'name' => $page->name,
+                        'description' => $page->description,
+                        'page' => $page->page,
+                        'rep_tiles_id' => $newTile->id,
+                        'position' => $page->position,
+                        'filters' => $page->filters,
+                        'slicers' => $page->slicers,
+                    ];
+                    $this->database->table('rep_pages')->insert($newPageData);
+                }
+            }
+        } else {
+            throw new \Exception("Invalid operation: {$values->operation}. Use 'move' or 'copy'.");
+        }
+    }
+
 }

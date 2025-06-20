@@ -113,6 +113,7 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item ajax" n:href="showTilesForm!,editTabId=>$tab->id,editTileId=>$tabTile->id" data-naja-history="off">Edit</a></li>
+                                    <li><a class="dropdown-item ajax" n:href="showCopyOrMoveTileForm!,editTabId=>$tab->id,editTileId=>$tabTile->id" data-naja-history="off">Copy or move</a></li>
                                     <li><a class="dropdown-item ajax" data-confirm="Do you really want to delete this tile?" n:href="deleteTile!,editTileId=>$tabTile->id" data-naja-history="off">Delete</a></li>
                                     <li n:if="count($tiles[$tab->id])>1"><hr class="dropdown-divider"></li>
                                     <li n:if="!$iterator->isFirst()">
