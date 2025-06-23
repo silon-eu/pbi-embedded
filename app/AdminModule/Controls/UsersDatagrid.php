@@ -22,10 +22,14 @@ class UsersDatagrid extends \Ublaboo\DataGrid\DataGrid
             ->setClass('btn btn-sm btn-primary');
 
 
-        $this->addColumnLink('username', 'Username',':Admin:Users:edit', params:['id'])->setSortable('username');
-        $this->addColumnText('name', 'Name');
-        $this->addColumnText('surname', 'Surname');
-        $this->addColumnLink('group', 'Group',':Admin:Groups:edit','groups.name',params:['id'=>'groups_id']);
+        $this->addColumnLink('username', 'Username',':Admin:Users:edit', params:['id'])
+            ->setSortable('username');
+        $this->addColumnText('name', 'Name')
+            ->setSortable();
+        $this->addColumnText('surname', 'Surname')
+            ->setSortable();
+        $this->addColumnLink('group', 'Group',':Admin:Groups:edit','groups.name',params:['id'=>'groups_id'])
+            ->setSortable();
 
         $this->addAction('this', 'Sign in', 'signInAsUser!', ['id' => 'id'])
             ->setIcon('lock')
