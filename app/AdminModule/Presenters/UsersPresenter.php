@@ -11,6 +11,7 @@ class UsersPresenter extends BasePresenter {
         protected \App\AdminModule\Models\Service\UsersService $usersService,
         protected \App\AdminModule\Models\Service\GroupsService $groupsService,
         protected \App\AdminModule\Models\Service\RolesService $rolesService,
+        protected \App\AdminModule\Models\Service\ReportingService $reportingService,
         protected \Nette\Caching\Cache $cache)
     {
 
@@ -24,6 +25,8 @@ class UsersPresenter extends BasePresenter {
         switch($name) {
             case 'usersDatagrid':
                 return new \App\AdminModule\Controls\UsersDatagrid($this, $name, $this->usersService, $this->groupsService);
+            case 'permissionsDatagrid':
+                return new \App\AdminModule\Controls\PermissionsDatagrid($this, $name, $this->reportingService);
             case 'editForm':
                 return new \App\AdminModule\Controls\UserEditForm($this, $name, $this->usersService, $this->groupsService, $this->cache);
             default:

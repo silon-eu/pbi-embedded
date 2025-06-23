@@ -6,21 +6,13 @@ use App\AdminModule\Models\Service\RolesService;
 
 class GroupsPresenter extends BasePresenter {
 
-    protected \App\AdminModule\Models\Service\AdminService $service;
-    protected \App\AdminModule\Models\Service\GroupsService $groupsService;
-    protected RolesService $rolesService;
-    protected \Nette\Caching\Cache $cache;
-
-    public function __construct(\App\AdminModule\Models\Service\AdminService $service,
-                                \App\AdminModule\Models\Service\GroupsService $groupsService,
-                                RolesService $rolesService,
-                                \Nette\Caching\Cache $cache)
+    public function __construct(protected \App\AdminModule\Models\Service\AdminService $service,
+                                protected \App\AdminModule\Models\Service\GroupsService $groupsService,
+                                protected RolesService $rolesService,
+                                protected \App\AdminModule\Models\Service\ReportingService $reportingService,
+                                protected \Nette\Caching\Cache $cache)
     {
         parent::__construct();
-        $this->service = $service;
-        $this->groupsService = $groupsService;
-        $this->rolesService = $rolesService;
-        $this->cache = $cache;
     }
 
     /**
@@ -31,6 +23,8 @@ class GroupsPresenter extends BasePresenter {
         switch($name) {
             case 'groupsDatagrid':
                 return new \App\AdminModule\Controls\GroupsDatagrid($this, $name, $this->groupsService);
+            case 'permissionsDatagrid':
+                return new \App\AdminModule\Controls\PermissionsDatagrid($this, $name, $this->reportingService);
             case 'editForm':
                 return new \App\AdminModule\Controls\GroupEditForm($this, $name, $this->groupsService, $this->rolesService, $this->cache);
             default:

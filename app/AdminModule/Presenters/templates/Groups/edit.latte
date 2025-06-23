@@ -12,8 +12,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-6">
+        <div class="col-4">
+            <h2 class="h4">Settings</h2>
             {control editForm}
+        </div>
+        <div class="col-8" n:if="$group">
+            <h2 class="h4">Permissions</h2>
+            {control permissionsDatagrid:group, $group->id}
         </div>
     </div>
 {/block}

@@ -16,13 +16,13 @@ menu:
                 data:
                     roles:
                         - admin
-                    icon: bar-chart-line
+                    icon: cloud
             Reporting:
                 action: Admin:Reporting:default
                 data:
                     roles:
                         - admin
-                    icon: chart-bar
+                    icon: clipboard-data
                 items:
                     Permissions:
                         action: Admin:Reporting:permissions
@@ -30,7 +30,7 @@ menu:
                         data:
                             roles:
                                 - admin
-                            icon: lock
+                            icon: shield-lock
             Settings:
                 action: Admin:Settings:default
                 data:

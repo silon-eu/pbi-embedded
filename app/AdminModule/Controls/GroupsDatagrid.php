@@ -20,7 +20,8 @@ class GroupsDatagrid extends \Ublaboo\DataGrid\DataGrid
             ->setTitle('Create')
             ->setClass('btn btn-sm btn-primary');
 
-        $this->addColumnText('name', 'Name');
+        $this->addColumnLink('name', 'Name', ':Admin:Groups:edit', params: ['id'])
+            ->setSortable('name');
 
         $this->addAction('edit', 'Edit', 'edit', ['id' => 'id'])
             ->setIcon('pencil')
