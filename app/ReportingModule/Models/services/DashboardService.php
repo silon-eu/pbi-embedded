@@ -36,6 +36,8 @@ class DashboardService extends BaseService
             $tab = $item->rep_pages->rep_tiles->rep_tabs;
             $tabs[$tab->position] = $tab;
         }
+        // Sort tabs by position
+        ksort($tabs);
         Debugger::barDump($tabs,'tabs');
         return $tabs;
     }
