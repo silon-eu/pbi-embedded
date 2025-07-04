@@ -2,16 +2,18 @@
 
 namespace App\AdminModule\Presenters;
 
+use AdminModule\Controls\AccessLogDatagrid;
 use App\AdminModule\Controls\PermissionsDatagrid;
-use App\AdminModule\Models\Service\RolesService;
-use App\AdminModule\Presenters\BasePresenter;
-use Ublaboo\DataGrid\DataGrid;
+use App\AdminModule\Models\Service\ReportingService;
+use App\ReportingModule\Models\Service\AccessLogService;
+use Nette\Caching\Cache;
 
 class ReportingPresenter extends BasePresenter {
 
     public function __construct(
-        protected \App\AdminModule\Models\Service\ReportingService $service,
-        protected \Nette\Caching\Cache $cache
+        protected ReportingService $service,
+        protected AccessLogService $accessLogService,
+        protected Cache $cache
     )
     {
         parent::__construct();
@@ -29,28 +31,15 @@ class ReportingPresenter extends BasePresenter {
                     name: $name,
                     reportingService: $this->service
                 );
+            case 'accessLogDatagrid':
+                return new AccessLogDatagrid(
+                    parent: $this,
+                    name: $name,
+                    reportingService: $this->service,
+                    accessLogService: $this->accessLogService
+                );
             default:
                 return parent::createComponent($name);
         }
-    }
-
-    public function handleDelete(int $id)
-    {
-        if ($this->groupsService->deleteGroup($id)) {
-            $this->flashMessage('Group has been deleted.','success');
-        } else {
-            $this->flashMessage('Group could not be deleted.','danger');
-        }
-
-        if ($this->isAjax()) {
-            $this->redrawControl('flashes');
-            $this['groupsDatagrid']->reload();
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-    public function renderEdit(?int $id = null) {
-        $this->template->group = $id ? $this->groupsService->getGroup($id) : null;
     }
 }

@@ -31,6 +31,13 @@ menu:
                             roles:
                                 - admin
                             icon: shield-lock
+                    Access log:
+                        action: Admin:Reporting:accessLog
+                        include: '^Admin\:Reporting\:[a-zA-Z\:]+$'
+                        data:
+                            roles:
+                                - admin
+                            icon: database-lock
             Settings:
                 action: Admin:Settings:default
                 data:

@@ -60,19 +60,6 @@
                                         Move down
                                     </a>
                                 </li>
-                                {*{if $activePageData && $activePageData->id === $navItem['id']}
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item" href="#" id="capture-state">
-                                            Save filters
-                                        </a>
-                                    </li>
-                                    <li n:if="!empty($activePageData->configuration)">
-                                        <a class="dropdown-item" n:href="clearPageConfiguration!">
-                                            Clear filters
-                                        </a>
-                                    </li>
-                                {/if}*}
                             </ul>
                         {/if}
                         {* SUBMENU - TODO copy everything from main item *}

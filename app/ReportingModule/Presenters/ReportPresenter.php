@@ -5,6 +5,7 @@ namespace App\ReportingModule\Presenters;
 use App\AdminModule\Models\Service\GroupsService;
 use App\AdminModule\Models\Service\UsersService;
 use App\Models\Service\AzureService;
+use App\ReportingModule\Models\Service\AccessLogService;
 use App\ReportingModule\Models\Service\DashboardService;
 use App\ReportingModule\Models\Service\ReportService;
 use Contributte\FormsBootstrap\BootstrapForm;
@@ -29,6 +30,7 @@ class ReportPresenter extends BasePresenter {
         protected ReportService $reportService,
         protected UsersService $usersService,
         protected GroupsService $groupsService,
+        protected AccessLogService $accessLogService,
     )
     {
         parent::__construct();
@@ -459,31 +461,11 @@ class ReportPresenter extends BasePresenter {
         } else {
             $this->template->activePageData = null;
         }
+        $this->accessLogService->logAccess(tabId: $tile->rep_tabs_id, tileId: $tile->id, pageId: $this->activePageId, userId: $this->getUser()->getId());
 
-
-        /*[
-            'ReportSectioncce5b109d49fdbf042c3' => [
-                'name' => 'Contracts by Categories',
-                'items' => [
-                    'ReportSectioncce5b109d49fdbf042c3' => 'All Sales and Credit',
-                    'ced1608670a739039568' => 'Green Invoices',
-                    '7fd37f20db9de97abcba' => 'Credit Notes',
-                    '11e07b900880c0750790' => 'Quality',
-                    'a4a4db5030a10287b8c8' => 'Breakdown by SEG4',
-                ]
-            ],
-            '34d63374b0d45b154e43' => [
-                'name' => 'Contracts by Customers'
-            ],
-            '36518aa9bc041582c699' => [
-                'name' => 'Contracts by Category and Customers'
-            ],
-            '9f8b8fce0de4d389d4d4' => [
-                'name' => 'Yield on waste'
-            ],
-        ];*/
-
-        $this->template->adminNavigation = $this->azureService->getPages($tile->workspace, $tile->report);
+        if ($this->userIsAdmin()) {
+            $this->template->adminNavigation = $this->azureService->getPages($tile->workspace, $tile->report);
+        }
     }
 
     public function getFilterSubstitutions(): array
