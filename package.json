@@ -15,9 +15,11 @@
     "vite": "^6.2.2"
   },
   "dependencies": {
+    "@codemirror/lang-json": "github:codemirror/lang-json",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.13.1",
+    "codemirror": "^6.0.2",
     "live-form-validation": "^1.10.1",
     "multi.js": "^0.5.3",
     "naja": "^3.2.1",

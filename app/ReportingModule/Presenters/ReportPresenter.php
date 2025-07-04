@@ -94,12 +94,14 @@ class ReportPresenter extends BasePresenter {
             $row5->addCell(6)
                 ->addTextArea('slicers', 'Visual slicers')
                 ->setHtmlAttribute('rows', 25)
-                ->setHtmlAttribute('placeholder', 'JSON slicers configuration for visuals on this page');
+                ->setHtmlAttribute('placeholder', 'JSON slicers configuration for visuals on this page')
+                ->setHtmlAttribute('class','codemirror-json');
 
             $row5->addCell(5)
                 ->addTextArea('filters', 'Page level filters')
                 ->setHtmlAttribute('rows', 25)
-                ->setHtmlAttribute('placeholder', 'JSON filters configuration for the page');
+                ->setHtmlAttribute('placeholder', 'JSON filters configuration for the page')
+                ->setHtmlAttribute('class','codemirror-json');
             $filterButtonsCell = $row5->addCell(1);
             $filterButtonsCell->getElementPrototype()->appendAttribute('class','pt-1');
             $filterButtonsCell->addButton('load_page_filters', '<i class="bi bi-input-cursor-text"></i>')
@@ -200,7 +202,8 @@ class ReportPresenter extends BasePresenter {
         $row1->addCell(11)
             ->addTextArea('filters', 'Report level filters')
             ->setDefaultValue($this->dashboardService->getTiles()->get($this->id)->filters)
-            ->setHtmlAttribute('rows', 25);
+            ->setHtmlAttribute('rows', 25)
+            ->setHtmlAttribute('class','codemirror-json');
 
         $filterButtonsCell = $row1->addCell(1);
         $filterButtonsCell->getElementPrototype()->appendAttribute('class','pt-1');

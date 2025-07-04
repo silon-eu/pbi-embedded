@@ -2,6 +2,8 @@ import Naja from 'naja';
 import * as bootstrap from 'bootstrap';
 import * as netteFormsDependency from './netteForms.dependency.js';
 import multi from "multi.js/dist/multi-es6.min";
+import {EditorView, basicSetup} from "codemirror";
+import {json} from "@codemirror/lang-json";
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -51,6 +53,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     hide_empty_groups: true
                 });
             });
+
+            document.querySelectorAll('.codemirror-json').forEach(function(textarea) {
+                let view = new EditorView({doc: textarea.value,extensions:  [basicSetup, json()]})
+                textarea.parentNode.insertBefore(view.dom, textarea)
+                textarea.style.display = "none"
+                if (textarea.form) textarea.form.addEventListener("submit", () => {
+                    textarea.value = view.state.doc.toString()
+                })
+            });
+
             modalInstance.show();
         }
     });
