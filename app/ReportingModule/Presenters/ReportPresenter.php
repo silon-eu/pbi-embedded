@@ -69,6 +69,9 @@ class ReportPresenter extends BasePresenter {
             ->addTextArea('description', 'Description')
             ->getControlPrototype()->appendAttribute('class','rich-text-editor');
 
+        $row2->addCell(6)
+            ->addText('desc_link', 'Wiki link');
+
         $form->addGroup('Power BI');
 
         $row4 = $form->addRow();
@@ -346,7 +349,7 @@ class ReportPresenter extends BasePresenter {
 
     public function handleShowPageDescription() {
         if ($page = $this->reportService->getPages()->wherePrimary($this->activePageId)->fetch()) {
-            $this->payload->modalTitle = 'Description for page ' . $page->name;
+            $this->payload->modalTitle = $page->name;
             $this->payload->modalBody = $page->description;
         }
         if ($this->isAjax()) {

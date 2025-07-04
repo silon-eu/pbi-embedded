@@ -69,6 +69,7 @@ class ReportService extends BaseService
             'description' => $values->description,
             'page' => $values->page,
             'rep_tiles_id' => $values->rep_tiles_id,
+            'desc_link' => $values->desc_link,
         ]);
         return $tile->id;
     }
@@ -83,6 +84,7 @@ class ReportService extends BaseService
                 'rep_tiles_id' => $values->rep_tiles_id,
                 'filters' => $values->filters,
                 'slicers' => $values->slicers,
+                'desc_link' => $values->desc_link,
             ]);
 
         if (isset($values->group_permissions)) {

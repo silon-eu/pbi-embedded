@@ -175,10 +175,22 @@
                     <i class="bi bi-arrow-counterclockwise"></i>
                 </button>
                 {snippet pageInfoButton}
-                    <a n:if="isset($activePageData) && !empty($activePageData) && !empty($activePageData->description)" n:href="showPageDescription!" class="btn btn-secondary mb-1 ajax"
-                            data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="About this report page">
-                        <i class="bi bi-info-circle"></i>
-                    </a>
+                    {if isset($activePageData) && !empty($activePageData)}
+                        <a n:if="!empty($activePageData->description)" n:href="showPageDescription!" class="btn btn-secondary mb-1 ajax"
+                                data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="About this report page">
+                            <i class="bi bi-info-circle"></i>
+                        </a>
+                        <a n:if="!empty($activePageData->desc_link)" href="{$activePageData->desc_link}" target="_blank" class="btn btn-secondary mb-1"
+                                 data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Link to wiki">
+                            <i class="bi bi-book"></i>
+                        </a>
+                        {var $reportProblemSubject = 'Reporting problem - '.$tile->ref(rep_tabs)->name.' / '.$tile->name.' / '.$activePageData->name}
+                        {var $reportProblemBody = "Company: {$tile->ref(rep_tabs)->name}\nReport: {$tile->name}\nPage: {$activePageData->name}\nLink: {$presenter->link('//this')}\n\nPlease describe the problem:\n"}
+                        <a href="mailto:helpdesk@silon.eu?subject={$reportProblemSubject|escapeUrl}&body={$reportProblemBody|escapeUrl}" class="btn btn-secondary mb-1"
+                                 data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Report problem to IT helpdesk">
+                            <i class="bi bi-envelope-exclamation"></i>
+                        </a>
+                    {/if}
                 {/snippet}
                 <a n:if="$presenter->userIsAdmin()" n:href="showReportFilterForm!" class="btn btn-outline-secondary ajax mb-1"
                         data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" data-bs-title="Report filters setup<br><i>(admin only)</i>">
