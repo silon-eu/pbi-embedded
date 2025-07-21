@@ -156,7 +156,7 @@ class DashboardService extends BaseService
             'name' => $values->name,
             'position' => intval($maxPosition) + 1,
             'description' => $values->description,
-            'icon' => $values->icon,
+            'rep_icons_id' => $values->rep_icons_id,
             'workspace' => $values->workspace,
             'report' => $values->report,
             'rep_tabs_id' => $values->rep_tabs_id,
@@ -171,7 +171,7 @@ class DashboardService extends BaseService
             ->update([
                 'name' => $values->name,
                 'description' => $values->description,
-                'icon' => $values->icon,
+                'rep_icons_id' => $values->rep_icons_id,
                 'workspace' => $values->workspace,
                 'report' => $values->report,
                 'rep_tabs_id' => $values->rep_tabs_id,
@@ -251,7 +251,7 @@ class DashboardService extends BaseService
             $newTileData = [
                 'name' => $values->name,
                 'description' => $tile->description,
-                'icon' => $tile->icon,
+                'rep_icons_id' => $tile->rep_icons_id,
                 'workspace' => $tile->workspace,
                 'report' => $tile->report,
                 'rep_tabs_id' => $values->rep_tabs_id,

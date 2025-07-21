@@ -38,6 +38,13 @@ menu:
                             roles:
                                 - admin
                             icon: database-lock
+                    Icons:
+                        action: Admin:Reporting:icons
+                        include: '^Admin\:Reporting\:[a-zA-Z\:]+$'
+                        data:
+                            roles:
+                                - admin
+                            icon: card-image
             Settings:
                 action: Admin:Settings:default
                 data:

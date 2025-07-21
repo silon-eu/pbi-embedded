@@ -2,6 +2,7 @@
 
 namespace App\ReportingModule\Presenters;
 
+use App\AdminModule\Models\Service\IconsService;
 use App\Models\Service\AzureService;
 use App\ReportingModule\Models\Service\DashboardService;
 use Contributte\FormsBootstrap\BootstrapForm;
@@ -17,7 +18,8 @@ class DashboardPresenter extends BasePresenter {
 
     public function __construct(
         protected AzureService $azureService,
-        protected DashboardService $dashboardService
+        protected DashboardService $dashboardService,
+        protected IconsService $iconsService,
     )
     {
         parent::__construct();
@@ -154,10 +156,12 @@ class DashboardPresenter extends BasePresenter {
             ->setDefaultValue($tabId);
 
         $row2 = $form->addRow();
-        $row2->addCell(4)
+        /*$row2->addCell(4)
             ->addText('icon', 'Icon')
             ->setPlaceholder('bar-chart')
-            ->setOption('description','Pick some from <a href="https://icons.getbootstrap.com/" target="_blank">Bootstrap icons</a>');
+            ->setOption('description','Pick some from <a href="https://icons.getbootstrap.com/" target="_blank">Bootstrap icons</a>');*/
+        $row2->addCell(4)
+            ->addSelect('rep_icons_id', 'Icon', $this->iconsService->getIcons()->order('is_deletable ASC, name ASC')->fetchPairs('id', 'name'));
         $row2->addCell(8)
             ->addText('name', 'Name')
             ->setRequired('Please enter a name');
@@ -201,6 +205,7 @@ class DashboardPresenter extends BasePresenter {
                 'name' => $tile->name,
                 'description' => $tile->description,
                 'icon' => $tile->icon,
+                'rep_icons_id' => $tile->rep_icons_id,
                 'workspace' => $tile->workspace,
                 'report' => $tile->report,
             ]);

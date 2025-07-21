@@ -30,6 +30,14 @@
             background-color: #efefea;
         }
 
+        .card-icon img {
+            max-height: 80px;
+            max-width: 80px;
+            object-fit: contain;
+            display: inline-block;
+            margin-top: 12px;
+        }
+
         .card-icon i.bi {
             font-size: 4rem;
         }
@@ -90,7 +98,8 @@
                             <a href="{plink ':Reporting:Report:detail',id=>$tabTile->id}" class="card card-link">
                                 <div class="row g-0">
                                     <div class="col-4 card-icon pt-2 text-secondary">
-                                        <i class="bi bi-{empty($tabTile->icon) ? 'bar-chart' : $tabTile->icon}"></i>
+                                        {*<i class="bi bi-{empty($tabTile->icon) ? 'bar-chart' : $tabTile->icon}"></i>*}
+                                        <img src="{\App\AdminModule\Models\Service\IconsService::ICONS_ASSET_PATH . $tabTile->rep_icons?->filename}" alt="{$tabTile->rep_icons?->name}">
                                     </div>
                                     <div class="col-8">
                                         <div class="card-body">
