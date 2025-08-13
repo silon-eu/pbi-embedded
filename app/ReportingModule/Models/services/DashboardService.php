@@ -160,6 +160,7 @@ class DashboardService extends BaseService
             'workspace' => $values->workspace,
             'report' => $values->report,
             'rep_tabs_id' => $values->rep_tabs_id,
+            'rep_refresh_date_ident' => $values->rep_refresh_date_ident,
         ]);
         return $tile->id;
     }
@@ -175,6 +176,7 @@ class DashboardService extends BaseService
                 'workspace' => $values->workspace,
                 'report' => $values->report,
                 'rep_tabs_id' => $values->rep_tabs_id,
+                'rep_refresh_date_ident' => $values->rep_refresh_date_ident,
             ]);
     }
 
@@ -256,6 +258,7 @@ class DashboardService extends BaseService
                 'report' => $tile->report,
                 'rep_tabs_id' => $values->rep_tabs_id,
                 'position' => $targetPosition,
+                'rep_refresh_date_ident' => $tile->rep_refresh_date_ident,
             ];
             if ($values->copy_filters === 'yes') {
                 $newTileData['filters'] = $tile->filters;

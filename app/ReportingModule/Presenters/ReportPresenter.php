@@ -439,6 +439,7 @@ class ReportPresenter extends BasePresenter {
 
         $this->template->tile = $tile;
         $this->template->navigation = $this->reportService->getNavigationForTile($id, $this->getUser()->getId(), $this->userIsAdmin());
+        $this->template->refreshDates = $this->reportService->getRefreshDates($tile->rep_refresh_date_ident);
 
         // if user is not admin and has no navigation items, throw an error
         if (!$this->userIsAdmin() && count($this->template->navigation) === 0) {

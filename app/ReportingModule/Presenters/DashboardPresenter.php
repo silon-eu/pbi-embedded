@@ -170,16 +170,20 @@ class DashboardPresenter extends BasePresenter {
         $row3->addCell(12)
             ->addTextArea('description', 'Description');
 
+        $row4 = $form->addRow();
+        $row4->addCell(12)
+            ->addText('rep_refresh_date_ident', 'Refresh date ident', maxLength: 100);
+
         $form->addGroup('Power BI');
 
-        $row4 = $form->addRow();
-        $workspace = $row4->addCell(6)
+        $row5 = $form->addRow();
+        $workspace = $row5->addCell(6)
             ->addSelect('workspace', 'Workspace');
         $workspace->setRequired('Please enter a workspace')
             ->setPrompt('Select workspace')
             ->setItems($this->azureService->getGroups(true));
 
-        $report = $row4->addCell(6)
+        $report = $row5->addCell(6)
             ->addSelect('report', 'Report');
 
         $report->setRequired('Please enter a report')
@@ -208,6 +212,7 @@ class DashboardPresenter extends BasePresenter {
                 'rep_icons_id' => $tile->rep_icons_id,
                 'workspace' => $tile->workspace,
                 'report' => $tile->report,
+                'rep_refresh_date_ident' => $tile->rep_refresh_date_ident,
             ]);
         }
 

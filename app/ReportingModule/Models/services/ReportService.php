@@ -236,4 +236,11 @@ class ReportService extends BaseService
         }
     }
 
+    public function getRefreshDates(string $ident): Selection
+    {
+        return $this->database->table('rep_refresh_date')
+            ->where('ident = ?', $ident)
+            ->order('position');
+    }
+
 }

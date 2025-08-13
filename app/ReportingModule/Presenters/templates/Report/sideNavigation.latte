@@ -144,6 +144,11 @@
             {/if}
 
             <div class="position-absolute" style="bottom: 0; left: calc(var(--bs-gutter-x) * .5);">
+                {if $refreshDates->count() > 0}
+                    <p n:foreach="$refreshDates as $refreshDate" class="text-muted mb-0">
+                        {!empty($refreshDate->description) ? $refreshDate->description : 'Dataset refresh'}: {$refreshDate->updated_time|date:'d.m.Y H:i:s'}
+                    </p>
+                {/if}
                 <p class="text-muted">
                     Last refresh:
                     {if $reportConfig->datasetLastRefreshDate instanceof \DateTime}
