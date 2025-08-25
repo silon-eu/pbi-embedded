@@ -403,6 +403,25 @@ class ReportPresenter extends BasePresenter {
         }
     }
 
+    public function handleResetFilters(int $activePageId) {
+        if ($this->isAjax()) {
+            if ($page = $this->reportService->getPages()->get($activePageId)) {
+                $this->activePageId = $activePageId;
+                $this->payload->resetFilters = true;
+                $this->template->activePage = (object) $page->toArray();
+                $this->template->activePage->slicers = $this->applyDynamicProperties($this->template->activePage->slicers);
+            } else {
+                $this->flashMessage('Page not found', 'danger');
+                $this->template->activePage = null;
+                $this->redrawControl('flashes');
+            }
+            $this->redrawControl('reportUserMenu');
+            $this->redrawControl('pageInfoButton');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
     public function handleChangePagePosition(int $editPageId, string $direction) {
         $this->allowOnlyRoles(['admin']);
 
