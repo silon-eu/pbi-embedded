@@ -19,7 +19,7 @@
             {snippet reportUserMenu}
                 <ul id="left-report-nav" class="nav flex-column">
                     <li class="nav-item mb-1 position-relative" n:foreach="$navigation as $navItemKey => $navItem">
-                        <a n:class="$activePageData && $activePageData->id === $navItem['id'] ? 'active', 'nav-link ajax'" n:href="changePage!, activePageId => $navItem['id']" data-page="{$navItem['page']}">
+                        <a n:class="$activePageData && $activePageData->id === $navItem['id'] ? 'active', 'nav-link ajax'" href="{if $activePageData->id !== $navItem['id']}{plink changePage!, activePageId => $navItem['id']}{else}#{/if}" data-page="{$navItem['page']}">
                             {$navItem['name']}
                             <i
                                 n:if="$presenter->userIsAdmin() && empty($navItem['filters'])"
