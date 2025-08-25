@@ -92,10 +92,32 @@
         <div n:inner-foreach="$tabs as $tab" class="tab-content" id="dashboardTabsContent">
             {* DEMO *}
             <div n:class="($activeTab === null && $iterator->isFirst()) || $activeTab === $tab->id ? 'show active','tab-pane'" id="content-{$tab->id}" role="tabpanel" aria-labelledby="tab-{$tab->id}">
-                <div class="row mb-4">
+                <div class="row mt-2 mb-4">
+                    <p class="fw-semibold mb-1 text-muted">Topics:</p>
+                    <div class="col">
+                        <ul id="topics-filter" class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="btn btn-sm me-1 btn-primary" href="#">All</a>
+                            </li>
+                            {if isset($tags[$tab->id])}
+                                <li n:foreach="$tags[$tab->id] as $tabTagId => $tabTagName" class="nav-item">
+                                    <a class="btn btn-sm me-1 btn-outline-dark" data-tag-id="{$tabTagId}" href="#">{$tabTagName}</a>
+                                </li>
+                            {/if}
+                        </ul>
+                    </div>
+                </div>
+                <div id="tiles-container" class="row mb-4">
+                    <p class="fw-semibold mb-1 text-muted">Reports:</p>
                     {if isset($tiles[$tab->id])}
-                        <div class="col-4 position-relative mb-4" n:foreach="$tiles[$tab->id] as $tabTile">
+                        {foreach $tiles[$tab->id] as $tabTile}
+                            {var $topics = []}
+                            {foreach $tabTile->related('rep_tiles_tags') as $tileTag}
+                                {var $topics[$tileTag->rep_tags_id] = $tileTag->rep_tags->name}
+                            {/foreach}
+                        <div class="col-4 position-relative mb-4" data-topics="{array_keys($topics)|join(',')}">
                             <a href="{plink ':Reporting:Report:detail',id=>$tabTile->id}" class="card card-link">
+                                {*<a href="{plink ':Reporting:Report:detail',id=>$tabTile->id}" class="card card-link">*}
                                 <div class="row g-0">
                                     <div class="col-4 card-icon pt-2 text-secondary">
                                         {*<i class="bi bi-{empty($tabTile->icon) ? 'bar-chart' : $tabTile->icon}"></i>*}
@@ -111,7 +133,10 @@
                                                         data-bs-placement="left"
                                                         data-bs-title="No filters are set for this report"
                                                 ></i></h5>
-                                            <p class="card-text">{$tabTile->description}</p>
+                                            <p class="card-text mb-1">{$tabTile->description}</p>
+                                            <p class="card-tags" n:inner-foreach="$topics as $topic">
+                                                <span class="badge text-bg-dark opacity-50 fw-normal">{$topic}</span>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -138,6 +163,7 @@
                                 </ul>
                             {/if}
                         </div>
+                        {/foreach}
                     {/if}
 
                     <div n:if="$presenter->userIsAdmin()" class="col-4 opacity-75 mb-4">
@@ -174,5 +200,43 @@
 
         });
     </script>*}
+
+    <script>
+        // setup event listener which filters tiles by topics
+        document.addEventListener("DOMContentLoaded", function() {
+            const topicsFilter = document.getElementById('topics-filter');
+            const tilesContainer = document.getElementById('tiles-container');
+
+            topicsFilter.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                    event.preventDefault();
+
+                    // remove active class from all buttons
+                    const buttons = topicsFilter.querySelectorAll('a');
+                    buttons.forEach(button => {
+                        button.classList.remove('btn-primary');
+                        button.classList.add('btn-outline-dark');
+                    });
+
+                    // add active class to clicked button
+                    event.target.classList.remove('btn-outline-dark');
+                    event.target.classList.add('btn-primary');
+
+                    const selectedTopic = event.target.dataset.tagId || 'All';
+                    console.log('Selected topic:', selectedTopic);
+                    const tiles = tilesContainer.querySelectorAll('.col-4');
+
+                    tiles.forEach(tile => {
+                        const tileTopics = tile.dataset.topics;
+                        if (selectedTopic === 'All' || (tileTopics !== undefined && tileTopics.split(',').includes(selectedTopic)) ) {
+                            tile.style.display = '';
+                        } else {
+                            tile.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 
 {/block}

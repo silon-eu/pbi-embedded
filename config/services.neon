@@ -19,6 +19,7 @@ services:
 	- App\AdminModule\Models\Service\GroupsService(@database.default.explorer)
 	- App\AdminModule\Models\Service\ReportingService(@database.default.explorer)
 	- App\AdminModule\Models\Service\IconsService(@database.default.explorer)
+	- App\AdminModule\Models\Service\TagsService(@database.default.explorer)
 
 	- App\Models\Service\AzureService(%azure%, @cache)
 

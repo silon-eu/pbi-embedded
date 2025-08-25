@@ -4,6 +4,7 @@ import * as netteFormsDependency from './netteForms.dependency.js';
 import multi from "multi.js/dist/multi-es6.min";
 import {EditorView, basicSetup} from "codemirror";
 import {json} from "@codemirror/lang-json";
+import * as multiSelect from './multiSelectDropdown.js';
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -62,6 +63,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     textarea.value = view.state.doc.toString()
                 })
             });
+
+            multiSelect.initMultiSelect();
 
             modalInstance.show();
         }

@@ -3,6 +3,7 @@
 namespace App\ReportingModule\Presenters;
 
 use App\AdminModule\Models\Service\IconsService;
+use App\AdminModule\Models\Service\TagsService;
 use App\Models\Service\AzureService;
 use App\ReportingModule\Models\Service\DashboardService;
 use Contributte\FormsBootstrap\BootstrapForm;
@@ -20,6 +21,7 @@ class DashboardPresenter extends BasePresenter {
         protected AzureService $azureService,
         protected DashboardService $dashboardService,
         protected IconsService $iconsService,
+        protected TagsService $tagsService,
     )
     {
         parent::__construct();
@@ -171,8 +173,11 @@ class DashboardPresenter extends BasePresenter {
             ->addTextArea('description', 'Description');
 
         $row4 = $form->addRow();
-        $row4->addCell(12)
+        $row4->addCell(6)
             ->addText('rep_refresh_date_ident', 'Refresh date ident', maxLength: 100);
+        $row4->addCell(6)
+            ->addMultiSelect('tags', 'Topics', $this->tagsService->getTags()->order('name ASC')->fetchPairs('id', 'name'))
+            ->setHtmlAttribute('data-multi-select', 'true');
 
         $form->addGroup('Power BI');
 
@@ -213,6 +218,7 @@ class DashboardPresenter extends BasePresenter {
                 'workspace' => $tile->workspace,
                 'report' => $tile->report,
                 'rep_refresh_date_ident' => $tile->rep_refresh_date_ident,
+                'tags' => $tile->related('rep_tiles_tags')->fetchPairs('rep_tags_id', 'rep_tags_id'),
             ]);
         }
 
@@ -243,6 +249,8 @@ class DashboardPresenter extends BasePresenter {
 
         if ($this->isAjax()) {
             $this->redrawControl('flashes');
+            $this->template->tiles = $this->userIsAdmin() ? $this->dashboardService->getTilesForAllTabs() : $this->dashboardService->getUserTilesForAllTabs($this->getUser()->getId());
+            $this->template->tags = $this->tagsService->getTagsForTabTiles($this->template->tiles);
             $this->redrawControl('dashboard');
             $this->payload->closeModal = true;
         } else {
@@ -416,5 +424,6 @@ class DashboardPresenter extends BasePresenter {
     public function actionDefault() {
         $this->template->tabs = $this->userIsAdmin() ? $this->dashboardService->getTabs() : $this->dashboardService->getUserTabs($this->getUser()->getId());
         $this->template->tiles = $this->userIsAdmin() ? $this->dashboardService->getTilesForAllTabs() : $this->dashboardService->getUserTilesForAllTabs($this->getUser()->getId());
+        $this->template->tags = $this->tagsService->getTagsForTabTiles($this->template->tiles);
     }
 }

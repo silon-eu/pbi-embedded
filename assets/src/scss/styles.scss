@@ -6,6 +6,9 @@ $light: #efefea;
 // Import all of Bootstrap's CSS
 @import "bootstrap/scss/bootstrap";
 
+// import multiselect styles
+@import "./multiSelectDropdown.scss";
+
 
 /* datagrid fix */
 .bi-cog::before {
@@ -151,8 +154,6 @@ body {
     margin-right: 1px;
   }
 }
-
-
 
 
 

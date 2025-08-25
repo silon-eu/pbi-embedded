@@ -5,6 +5,7 @@ namespace App\ReportingModule\Models\Service;
 use Nette\Database\Explorer;
 use Nette\Database\ResultSet;
 use Nette\Database\Table\Selection;
+use Nette\Utils\ArrayHash;
 use Tracy\Debugger;
 
 class DashboardService extends BaseService
@@ -38,7 +39,6 @@ class DashboardService extends BaseService
         }
         // Sort tabs by position
         ksort($tabs);
-        Debugger::barDump($tabs,'tabs');
         return $tabs;
     }
 
@@ -54,7 +54,6 @@ class DashboardService extends BaseService
         foreach ($tiles as $tabId => $tabTiles) {
             ksort($tiles[$tabId]);
         }
-        Debugger::barDump($tiles,'tiles');
         return $tiles;
     }
 
@@ -162,6 +161,11 @@ class DashboardService extends BaseService
             'rep_tabs_id' => $values->rep_tabs_id,
             'rep_refresh_date_ident' => $values->rep_refresh_date_ident,
         ]);
+
+        if (isset($values->tags)) {
+            $this->updateTagsForTile($tile->id, $values->tags);
+        }
+
         return $tile->id;
     }
 
@@ -178,6 +182,13 @@ class DashboardService extends BaseService
                 'rep_tabs_id' => $values->rep_tabs_id,
                 'rep_refresh_date_ident' => $values->rep_refresh_date_ident,
             ]);
+
+        if (isset($values->tags)) {
+            $this->updateTagsForTile($values->id, $values->tags);
+        } else {
+            // If no tags are provided, remove all existing tags
+            $this->updateTagsForTile($values->id, []);
+        }
     }
 
     public function deleteTile(int $id): void
@@ -282,6 +293,22 @@ class DashboardService extends BaseService
             }
         } else {
             throw new \Exception("Invalid operation: {$values->operation}. Use 'move' or 'copy'.");
+        }
+    }
+
+    protected function updateTagsForTile(int $tileId, array|ArrayHash $tags): void
+    {
+        // Delete existing tags for the tile
+        $this->database->table('rep_tiles_tags')
+            ->where('rep_tiles_id = ?', $tileId)
+            ->delete();
+
+        // Insert new tags
+        foreach ($tags as $tagId) {
+            $this->database->table('rep_tiles_tags')->insert([
+                'rep_tiles_id' => $tileId,
+                'rep_tags_id' => $tagId,
+            ]);
         }
     }
 

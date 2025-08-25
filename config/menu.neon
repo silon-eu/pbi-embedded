@@ -45,6 +45,13 @@ menu:
                             roles:
                                 - admin
                             icon: card-image
+                    Tags:
+                        action: Admin:Reporting:tags
+                        include: '^Admin\:Reporting\:[a-zA-Z\:]+$'
+                        data:
+                            roles:
+                                - admin
+                            icon: tags
             Settings:
                 action: Admin:Settings:default
                 data:

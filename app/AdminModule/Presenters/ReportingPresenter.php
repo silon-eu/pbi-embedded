@@ -4,9 +4,11 @@ namespace App\AdminModule\Presenters;
 
 use AdminModule\Controls\AccessLogDatagrid;
 use AdminModule\Controls\IconsDatagrid;
+use AdminModule\Controls\TagsDatagrid;
 use App\AdminModule\Controls\PermissionsDatagrid;
 use App\AdminModule\Models\Service\IconsService;
 use App\AdminModule\Models\Service\ReportingService;
+use App\AdminModule\Models\Service\TagsService;
 use App\ReportingModule\Models\Service\AccessLogService;
 use Nette\Caching\Cache;
 
@@ -16,6 +18,7 @@ class ReportingPresenter extends BasePresenter {
         protected ReportingService $service,
         protected AccessLogService $accessLogService,
         protected IconsService $iconsService,
+        protected TagsService $tagsService,
         protected Cache $cache
     )
     {
@@ -53,6 +56,18 @@ class ReportingPresenter extends BasePresenter {
                     name: $name,
                     iconsService: $this->iconsService
                 );
+            case 'tagsDatagrid':
+                return new TagsDatagrid(
+                    parent: $this,
+                    name: $name,
+                    tagsService: $this->tagsService
+                );
+            case 'tagsEditForm':
+                return new \AdminModule\Controls\TagEditForm(
+                    container: $this,
+                    name: $name,
+                    tagsService: $this->tagsService
+                );
             default:
                 return parent::createComponent($name);
         }
@@ -81,5 +96,23 @@ class ReportingPresenter extends BasePresenter {
             $this->flashMessage('Icon not found', 'danger');
         }
         $this->redirect('icons');
+    }
+
+    public function actionDeleteTag($id): void
+    {
+        $this->allowOnlyRoles(['admin']);
+        $tag = $this->tagsService->getTagById($id);
+        if ($tag) {
+            try {
+                $tag->delete();
+                $this->flashMessage('Tag deleted', 'success');
+            } catch (\Nette\Database\ForeignKeyConstraintViolationException $e) {
+                $this->flashMessage('This tag cannot be deleted due to usage at some tile.', 'danger');
+            }
+
+        } else {
+            $this->flashMessage('Tag not found', 'danger');
+        }
+        $this->redirect('tags');
     }
 }
