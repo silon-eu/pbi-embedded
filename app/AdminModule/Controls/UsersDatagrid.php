@@ -16,11 +16,14 @@ class UsersDatagrid extends \Ublaboo\DataGrid\DataGrid
         $this->setDataSource($usersService->getDatasource());
         $this->setAutoSubmit(true);
 
+        $this->addToolbarButton('syncUsers', 'Sync users with AD')
+            ->setIcon('arrow-clockwise')
+            ->setClass('btn btn-sm btn-secondary me-1');
+
         $this->addToolbarButton('edit', 'Create')
             ->setIcon('plus')
             ->setTitle('Create')
             ->setClass('btn btn-sm btn-primary');
-
 
         $this->addColumnLink('username', 'Username',':Admin:Users:edit', params:['id'])
             ->setSortable('username');
@@ -30,6 +33,18 @@ class UsersDatagrid extends \Ublaboo\DataGrid\DataGrid
             ->setSortable();
         $this->addColumnLink('group', 'Group',':Admin:Groups:edit','groups.name',params:['id'=>'groups_id'])
             ->setSortable();
+        $this->addColumnText('email', 'Email')
+            ->setSortable()
+            ->setFilterText();
+        $this->addColumnText('employeeid', 'Personal number')
+            ->setSortable()
+            ->setFilterText();
+        $this->addColumnText('active','Status')
+            ->setRenderer(function($item) {
+                return $item->active ? 'Active' : 'Inactive';
+            })
+            ->setSortable('status')
+            ->setFilterSelect([1 => 'Active', 0 => 'Inactive']);
 
         $this->addAction('this', 'Sign in', 'signInAsUser!', ['id' => 'id'])
             ->setIcon('lock')

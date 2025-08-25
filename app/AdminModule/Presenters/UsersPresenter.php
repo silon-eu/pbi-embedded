@@ -78,4 +78,14 @@ class UsersPresenter extends BasePresenter {
     public function renderEdit(?int $id = null) {
         $this->template->userData = $id ? $this->usersService->getUser($id) : null;
     }
+
+    public function actionSyncUsers() {
+        $this->usersService->sync();
+        if (PHP_SAPI === 'cli') {
+            $this->terminate();
+        } else {
+            $this->flashMessage('Users have been synchronized.','success');
+            $this->redirect('Users:default');
+        }
+    }
 }

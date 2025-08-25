@@ -38,6 +38,11 @@ class UserEditForm extends \Nette\Application\UI\Control {
             ->appendAttribute('class', 'selectpicker')
             ->appendAttribute('data-live-search', 'true');
 
+        $form->addGroup('Details (will be synchronized from AD)');
+        $form->addEmail('email', 'Email')->setDisabled();
+        $form->addText('employeeid', 'Personal number')->setDisabled();
+        $form->addCheckbox('active', 'Active')->setDefaultValue(1)->setDisabled();
+
         $form->addSubmit('submit', 'Save');
 
         if ($this->getPresenter()->getParameter('id')) {

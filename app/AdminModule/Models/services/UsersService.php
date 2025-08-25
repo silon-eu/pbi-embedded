@@ -49,4 +49,40 @@ class UsersService extends BaseService
             ->order('surname, name')->fetchPairs('id', 'name');
     }
 
+    protected function getUsersFromManager(): array
+    {
+        return $this->database->query('
+            select
+                e.name,
+                e.surname,
+                e.username,
+                e.department,
+                e.title,
+                e.email,
+                e.ad_enabled,
+                e.employeeid
+            from
+                user_management.employees e
+        ')->fetchAll();
+    }
+
+    public function sync()
+    {
+        $adUsers = $this->getUsersFromManager();
+        foreach ($adUsers as $adUser) {
+            $usr = $this->database->table('users')->where('username = ?',$adUser->username)->fetch();
+            if ($usr) {
+                $data = [
+                    'name' => $adUser->name,
+                    'surname' => $adUser->surname,
+                    'active' => $adUser->ad_enabled == 1 ? 1 : 0,
+                    'email' => $adUser->email,
+                    'employeeid' => $adUser->employeeid,
+                ];
+
+                $usr->update($data);
+            }
+        }
+    }
+
 }
