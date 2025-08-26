@@ -58,7 +58,7 @@ class Authenticator implements Nette\Security\Authenticator, \Nette\Security\Ide
         if (!$row) {
             throw new Nette\Security\AuthenticationException('Account is not created.');
         } else {
-            if ($row->status != 1) {
+            if ($row->active != 1) {
                 throw new Nette\Security\AuthenticationException('Account is not active.');
             }
             return new SimpleIdentity(
