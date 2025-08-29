@@ -182,11 +182,12 @@ class DashboardPresenter extends BasePresenter {
         $form->addGroup('Power BI');
 
         $row5 = $form->addRow();
+        $workspaceList = $this->azureService->getGroups(true);
         $workspace = $row5->addCell(6)
             ->addSelect('workspace', 'Workspace');
         $workspace->setRequired('Please enter a workspace')
             ->setPrompt('Select workspace')
-            ->setItems($this->azureService->getGroups(true))
+            ->setItems($workspaceList)
             ->checkDefaultValue(false);
 
         $report = $row5->addCell(6)
@@ -209,7 +210,8 @@ class DashboardPresenter extends BasePresenter {
 
         if ($this->getParameter('editTileId')) {
             $tile = $this->dashboardService->getTiles()->get($this->getParameter('editTileId'));
-            $report->setItems($this->azureService->getReports($tile->workspace, true));
+            $reportsList = $this->azureService->getReports($tile->workspace, true);
+            $report->setItems($reportsList);
             $form->setDefaults([
                 'rep_tabs_id' => $tile->rep_tabs_id,
                 'id' => $tile->id,
@@ -222,6 +224,14 @@ class DashboardPresenter extends BasePresenter {
                 'rep_refresh_date_ident' => $tile->rep_refresh_date_ident,
                 'tags' => $tile->related('rep_tiles_tags')->fetchPairs('rep_tags_id', 'rep_tags_id'),
             ]);
+
+            if (!array_key_exists($workspace->getValue(),$workspaceList)) {
+                $workspace->addError('Currently selected workspace is not available.');
+            }
+
+            if (!array_key_exists($report->getValue(),$reportsList)) {
+                $report->addError('Currently selected report is not available in the selected workspace.');
+            }
         }
 
         $form->addSubmit('send', 'Save');
