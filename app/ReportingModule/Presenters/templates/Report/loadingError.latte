@@ -1,0 +1,46 @@
+{block title}{$tile->ref(rep_tabs)->name} / {$tile->name}{/block}
+{block header_tmpl}
+{/block}
+
+{block pageHeading}
+    <span class="text-light d-inline-block px-2">/</span>
+    <a n:href=":Reporting:Dashboard:default, activeTab => $tile->rep_tabs_id" class="text-white">{$tile->ref(rep_tabs)->name}</a>
+    <span class="text-light d-inline-block px-2">/</span>
+    {$tile->name}
+{/block}
+
+{block header}
+{/block}
+
+{block content}
+    {var $today = new DateTime()}
+    <div class="row">
+        <div class="col-12 pt-3">
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">Error loading report</h4>
+                <p>There was an error loading the report. Please try again later.</p>
+                <hr>
+                <p class="mb-0">If the problem persists, please <a href="mailto:helpdesk@silon.eu">contact support</a>.</p>
+            </div>
+
+            {if $presenter->userIsAdmin()}
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Debug Information</h5>
+                    </div>
+                    <div class="card-body">
+                        {dump $exception}
+                        {dump $tile}
+                        <h6 class="card-subtitle mb-2 text-muted">Error Details</h6>
+                        <pre>{$exception->getMessage()}</pre>
+
+                        <h6 class="card-subtitle mb-2 text-muted">Report Configuration</h6>
+                        <pre>{print_r($tile->toArray())}</pre>
+                    </div>
+                </div>
+            {/if}
+        </div>
+
+    </div>
+{/block}

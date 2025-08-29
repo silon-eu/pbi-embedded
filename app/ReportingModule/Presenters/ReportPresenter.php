@@ -447,16 +447,22 @@ class ReportPresenter extends BasePresenter {
         if (!$tile) {
             throw new BadRequestException('Report not found');
         }
-
+        $this->template->tile = $tile;
         $this->setView('sideNavigation');
 
         if ($this->isAjax()) { // skip it for a faster handlers
             $this->template->reportConfig = null;
         } else {
-            $this->template->reportConfig = $this->azureService->getReportConfig($tile->workspace,$tile->report);
+            try {
+                $this->template->reportConfig = $this->azureService->getReportConfig($tile->workspace,$tile->report);
+            } catch (\Exception $e) {
+                //Debugger::log($e, Debugger::EXCEPTION);
+                $this->template->exception = $e;
+                $this->setView('loadingError');
+                return;
+            }
         }
 
-        $this->template->tile = $tile;
         $this->template->navigation = $this->reportService->getNavigationForTile($id, $this->getUser()->getId(), $this->userIsAdmin());
         $this->template->refreshDates = $this->reportService->getRefreshDates(strval($tile->rep_refresh_date_ident));
 
@@ -487,7 +493,7 @@ class ReportPresenter extends BasePresenter {
         $this->accessLogService->logAccess(tabId: $tile->rep_tabs_id, tileId: $tile->id, pageId: $this->activePageId, userId: $this->getUser()->getId());
 
         if ($this->userIsAdmin()) {
-            $this->template->adminNavigation = $this->azureService->getPages($tile->workspace, $tile->report);
+            $this->template->adminNavigation = $this->template->reportConfig ? $this->azureService->getPages($tile->workspace, $tile->report) : null;
         }
     }
 

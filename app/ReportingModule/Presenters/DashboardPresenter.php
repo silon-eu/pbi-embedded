@@ -186,10 +186,12 @@ class DashboardPresenter extends BasePresenter {
             ->addSelect('workspace', 'Workspace');
         $workspace->setRequired('Please enter a workspace')
             ->setPrompt('Select workspace')
-            ->setItems($this->azureService->getGroups(true));
+            ->setItems($this->azureService->getGroups(true))
+            ->checkDefaultValue(false);
 
         $report = $row5->addCell(6)
-            ->addSelect('report', 'Report');
+            ->addSelect('report', 'Report')
+            ->checkDefaultValue(false);
 
         $report->setRequired('Please enter a report')
             ->setPrompt('Select report')
