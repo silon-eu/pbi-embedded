@@ -78,12 +78,14 @@ class ReportPresenter extends BasePresenter {
 
         $row4 = $form->addRow();
         $page = $row4->addCell(6)
-            ->addSelect('page', 'Report page');
+            ->addSelect('page', 'Report page')
+            ->checkDefaultValue(false);
 
         $tile = $this->dashboardService->getTiles()->get($this->id);
+        $pagesList = $this->azureService->getPages($tile->workspace, $tile->report, true);
         $page->setRequired('Please select a report page')
             ->setPrompt('Select page')
-            ->setItems($this->azureService->getPages($tile->workspace, $tile->report, true));
+            ->setItems($pagesList);
 
 
 
@@ -140,6 +142,10 @@ class ReportPresenter extends BasePresenter {
                 'group_permissions' => $this->reportService->getGroupPermissionsForPage($pageData->id)->fetchPairs('groups_id', 'groups_id'),
                 'user_permissions' => $this->reportService->getUserPermissionsForPage($pageData->id)->fetchPairs('users_id', 'users_id'),
             ]);
+
+            if (!array_key_exists($pageData->page, $pagesList)) {
+                $page->addError('Currently selected page is not available.');
+            }
 
         }
 
