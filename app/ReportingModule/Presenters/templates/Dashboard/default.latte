@@ -95,7 +95,7 @@
                 <div class="row mt-2 mb-4">
                     <p class="fw-semibold mb-1 text-muted">Topics:</p>
                     <div class="col">
-                        <ul id="topics-filter" class="nav nav-pills">
+                        <ul id="topics-filter" data-tab-id="{$tab->id}" class="nav nav-pills">
                             <li class="nav-item">
                                 <a class="btn btn-sm me-1 btn-primary" href="#">All</a>
                             </li>
@@ -107,13 +107,14 @@
                         </ul>
                     </div>
                 </div>
-                <div id="tiles-container" class="row mb-4">
+                <div id="tiles-container" data-tab-id="{$tab->id}" class="row mb-4">
                     <p class="fw-semibold mb-1 text-muted">Reports:</p>
                     {if isset($tiles[$tab->id])}
                         {foreach $tiles[$tab->id] as $tabTile}
                             {var $topics = []}
                             {foreach $tabTile->related('rep_tiles_tags') as $tileTag}
-                                {var $topics[$tileTag->rep_tags_id] = $tileTag->rep_tags->name}
+                                {var $topics[$tileTag->rep_tags->position] = $tileTag->rep_tags->name}
+                                {php ksort($topics)}
                             {/foreach}
                         <div class="col-4 position-relative mb-4" data-topics="{array_keys($topics)|join(',')}">
                             <a href="{plink ':Reporting:Report:detail',id=>$tabTile->id}" class="card card-link">
