@@ -25,21 +25,32 @@ class TagEditForm extends \Nette\Application\UI\Control {
 
         $form->addHidden('id', 'ID');
         $form->addText('name', 'Name')->setRequired();
+        $form->addInteger('position', 'Position');
         $form->addSubmit('submit', 'Save');
 
         if ($this->getPresenter()->getParameter('id')) {
             $form->setDefaults($this->tagsService->getTagById($this->getPresenter()->getParameter('id'))->toArray());
+        } else {
+            $form->setDefaults(['position' => $this->tagsService->getNextPosition()]);
         }
 
+        $form->onValidate[] = [$this, 'validate'];
         $form->onSuccess[] = [$this, 'save'];
 
         return $form;
     }
 
-    public function save($form, $values) {
+    public function validate(BootstrapForm $form, $values) {
+        if ($this->tagsService->tagWithPositionExists($values->position,is_numeric($values->id) ? $values->id : null)) {
+            $form['position']->addError('Tag with this position already exists.');
+        }
+    }
+
+    public function save(BootstrapForm $form, $values) {
 
         $data = [
-            'name' => $values->name
+            'name' => $values->name,
+            'position' => $values->position,
         ];
 
         if (!empty($values->id) && is_numeric($values->id)) {

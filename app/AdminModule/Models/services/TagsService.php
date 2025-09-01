@@ -47,11 +47,30 @@ class TagsService extends BaseService
             foreach ($tiles as $tile) {
                 $tags = $tile->related('rep_tiles_tags')->fetchAll();
                 foreach ($tags as $tag) {
-                    $tagsForTabs[$tabId][$tag->rep_tags_id] = $tag->rep_tags->name;
+                    $tagsForTabs[$tabId][$tag->rep_tags->position] = $tag->rep_tags->name;
+                }
+                // Sort tags by position
+                if (isset($tagsForTabs[$tabId])) {
+                    ksort($tagsForTabs[$tabId]);
                 }
             }
         }
         return $tagsForTabs;
+    }
+
+    public function getNextPosition(): int
+    {
+        $maxPosition = $this->database->table('rep_tags')->max('position');
+        return $maxPosition !== null ? floor($maxPosition/10) * 10 + 10 : 1;
+    }
+
+    public function tagWithPositionExists(int $position, ?int $excludeId = null): bool
+    {
+        $q = $this->getTags()->where('position', $position);
+        if ($excludeId) {
+            $q->where('id != ?', $excludeId);
+        }
+        return $q->count() > 0;
     }
 
 }

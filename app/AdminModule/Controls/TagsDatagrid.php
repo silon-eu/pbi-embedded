@@ -31,7 +31,7 @@ class TagsDatagrid extends \Ublaboo\DataGrid\DataGrid
             ->setConfirmation(new StringConfirmation('Are you sure you want to delete this tag?'));
 
         $this->setPrimaryKey('id');
-        $this->setDefaultSort(['name' => 'ASC']);
+        $this->setDefaultSort(['position' => 'ASC']);
 
         $this->addColumnNumber('id', 'Id')
             ->setSortable();
@@ -39,6 +39,9 @@ class TagsDatagrid extends \Ublaboo\DataGrid\DataGrid
         $this->addColumnText('name', 'Name')
             ->setSortable()
             ->setFilterText();
+
+        $this->addColumnText('position', 'Position')
+            ->setSortable();
 
         $this->setItemsPerPageList([10, 20, 50, 100, 500]);
         $this->setDefaultPerPage(100);

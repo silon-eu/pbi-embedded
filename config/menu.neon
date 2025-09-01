@@ -26,28 +26,26 @@ menu:
                 items:
                     Permissions:
                         action: Admin:Reporting:permissions
-                        include: '^Admin\:Reporting\:[a-zA-Z\:]+$'
                         data:
                             roles:
                                 - admin
                             icon: shield-lock
                     Access log:
                         action: Admin:Reporting:accessLog
-                        include: '^Admin\:Reporting\:[a-zA-Z\:]+$'
                         data:
                             roles:
                                 - admin
                             icon: database-lock
                     Icons:
                         action: Admin:Reporting:icons
-                        include: '^Admin\:Reporting\:[a-zA-Z\:]+$'
+                        include: '^Admin\:Reporting\:icons[a-zA-Z\:]+$'
                         data:
                             roles:
                                 - admin
                             icon: card-image
                     Tags:
                         action: Admin:Reporting:tags
-                        include: '^Admin\:Reporting\:[a-zA-Z\:]+$'
+                        include: '^Admin\:Reporting\:tags[a-zA-Z\:]+$'
                         data:
                             roles:
                                 - admin
