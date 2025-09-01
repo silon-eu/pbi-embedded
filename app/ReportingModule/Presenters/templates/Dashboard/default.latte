@@ -202,11 +202,11 @@
         });
     </script>*}
 
-    <script>
+    <script n:foreach ="$tabs as $tab">
         // setup event listener which filters tiles by topics
         document.addEventListener("DOMContentLoaded", function() {
-            const topicsFilter = document.getElementById('topics-filter');
-            const tilesContainer = document.getElementById('tiles-container');
+            const topicsFilter = document.querySelector({="#topics-filter[data-tab-id='$tab->id']"});
+            const tilesContainer = document.querySelector({="#tiles-container[data-tab-id='$tab->id']"});
 
             topicsFilter.addEventListener('click', function(event) {
                 if (event.target.tagName === 'A') {
