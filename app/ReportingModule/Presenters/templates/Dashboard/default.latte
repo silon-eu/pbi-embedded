@@ -116,7 +116,7 @@
                                 {var $topics[$tileTag->rep_tags->position] = $tileTag->rep_tags->name}
                                 {php ksort($topics)}
                             {/foreach}
-                        <div class="col-4 position-relative mb-4" data-topics="{array_keys($topics)|join(',')}">
+                        <div class="col-4 tile position-relative mb-4" data-topics="{array_keys($topics)|join(',')}">
                             <a href="{plink ':Reporting:Report:detail',id=>$tabTile->id}" class="card card-link">
                                 {*<a href="{plink ':Reporting:Report:detail',id=>$tabTile->id}" class="card card-link">*}
                                 <div class="row g-0">
@@ -225,7 +225,7 @@
 
                     const selectedTopic = event.target.dataset.tagId || 'All';
                     console.log('Selected topic:', selectedTopic);
-                    const tiles = tilesContainer.querySelectorAll('.col-4');
+                    const tiles = tilesContainer.querySelectorAll('.tile');
 
                     tiles.forEach(tile => {
                         const tileTopics = tile.dataset.topics;
