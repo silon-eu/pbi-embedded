@@ -162,11 +162,11 @@
         <div class="col-10 position-relative">
             <div id="report-container" class="with-sidebar"></div>
             <div id="report-toolbar" class="d-flex flex-column justify-content-between align-items-center position-absolute pt-3 pe-3" style="top:0;right:0;">
-                <a n:href="resetFilters!,activePageId => $activePageData->id" class="btn btn-secondary mb-1 ajax"
-                        data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Reset filters">
-                    <i class="bi bi-arrow-counterclockwise"></i>
-                </a>
-                {snippet pageInfoButton}
+                {snippet pageToolbarButtons}
+                    <a n:href="resetFilters!,activePageId => $activePageData->id" class="btn btn-secondary mb-1 ajax"
+                            data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Reset filters">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
                     {if isset($activePageData) && !empty($activePageData)}
                         <a n:if="!empty($activePageData->description)" n:href="showPageDescription!" class="btn btn-secondary mb-1 ajax"
                                 data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="About this report page">
@@ -183,18 +183,18 @@
                             <i class="bi bi-envelope-exclamation"></i>
                         </a>
                     {/if}
+                    <a n:if="$presenter->userIsAdmin()" n:href="showReportFilterForm!" class="btn btn-outline-secondary ajax mb-1"
+                            data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" data-bs-title="Report filters setup<br><i>(admin only)</i>">
+                        <i
+                                n:if="empty($tile->filters)"
+                                class="bi bi-exclamation-triangle-fill text-warning me-1"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="left"
+                                data-bs-title="No filters are set for this report"
+                        ></i>
+                        <i class="bi bi-funnel"></i>
+                    </a>
                 {/snippet}
-                <a n:if="$presenter->userIsAdmin()" n:href="showReportFilterForm!" class="btn btn-outline-secondary ajax mb-1"
-                        data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" data-bs-title="Report filters setup<br><i>(admin only)</i>">
-                    <i
-                            n:if="empty($tile->filters)"
-                            class="bi bi-exclamation-triangle-fill text-warning me-1"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="left"
-                            data-bs-title="No filters are set for this report"
-                    ></i>
-                    <i class="bi bi-funnel"></i>
-                </a>
             </div>
             <p id="report-placeholder" class="placeholder-wave bg-white position-absolute w-100 h-100">
                 <span class="placeholder bg-sil-placeholder rp-filter col-2 mx-3 mt-3"></span>

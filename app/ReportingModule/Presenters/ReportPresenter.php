@@ -395,15 +395,16 @@ class ReportPresenter extends BasePresenter {
         if ($this->isAjax()) {
             if ($page = $this->reportService->getPages()->get($activePageId)) {
                 $this->activePageId = $activePageId;
-                $this->template->activePage = (object) $page->toArray();
-                $this->template->activePage->slicers = $this->applyDynamicProperties($this->template->activePage->slicers);
+                $this->template->activePageData = (object) $page->toArray();
+                $this->template->activePageData->slicers = $this->applyDynamicProperties($this->template->activePageData->slicers);
             } else {
                 $this->flashMessage('Page not found', 'danger');
-                $this->template->activePage = null;
+                $this->template->activePageData = null;
                 $this->redrawControl('flashes');
             }
             $this->redrawControl('reportUserMenu');
-            $this->redrawControl('pageInfoButton');
+
+            $this->redrawControl('pageToolbarButtons');
         } else {
             $this->redirect('this');
         }
@@ -414,15 +415,15 @@ class ReportPresenter extends BasePresenter {
             if ($page = $this->reportService->getPages()->get($activePageId)) {
                 $this->activePageId = $activePageId;
                 $this->payload->resetFilters = true;
-                $this->template->activePage = (object) $page->toArray();
-                $this->template->activePage->slicers = $this->applyDynamicProperties($this->template->activePage->slicers);
+                $this->template->activePageData = (object) $page->toArray();
+                $this->template->activePageData->slicers = $this->applyDynamicProperties($this->template->activePageData->slicers);
             } else {
                 $this->flashMessage('Page not found', 'danger');
-                $this->template->activePage = null;
+                $this->template->activePageData = null;
                 $this->redrawControl('flashes');
             }
             $this->redrawControl('reportUserMenu');
-            $this->redrawControl('pageInfoButton');
+            $this->redrawControl('pageToolbarButtons');
         } else {
             $this->redirect('this');
         }
