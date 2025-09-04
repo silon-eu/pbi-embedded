@@ -413,6 +413,7 @@ class DashboardPresenter extends BasePresenter {
                 $tile = $this->dashboardService->getTiles()->get($editTileId);
                 $this->activeTab = $tile->rep_tabs_id;
                 $this->dashboardService->changeTilePosition($editTileId, $direction);
+                $this->template->tiles = $this->userIsAdmin() ? $this->dashboardService->getTilesForAllTabs() : $this->dashboardService->getUserTilesForAllTabs($this->getUser()->getId());
             } catch (\Exception $e) {
                 Debugger::log($e, Debugger::EXCEPTION);
                 $this->flashMessage('Error occurred while changing the tab position', 'danger');
@@ -420,6 +421,7 @@ class DashboardPresenter extends BasePresenter {
         }
 
         if ($this->isAjax()) {
+
             $this->redrawControl('flashes');
             $this->redrawControl('dashboard');
         } else {
