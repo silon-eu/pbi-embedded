@@ -149,7 +149,7 @@ class ReportPresenter extends BasePresenter {
 
         }
 
-        $form->addSubmit('send', 'Save');
+        //$form->addSubmit('send', 'Save');
         $form->onSubmit[] = [$this, 'processPageForm'];
 
         return $form;
@@ -189,6 +189,7 @@ class ReportPresenter extends BasePresenter {
         $this->payload->modalTitle = 'Add or edit page';
         $this->template->systemModalSize = 'xl';
         $this->template->systemModalControl = 'pageForm';
+        $this->template->systemModalFormId = 'frm-pageForm';
         if ($this->isAjax()) {
             $this->redrawControl('flashes');
             $this->redrawControl('systemModal');
@@ -227,7 +228,7 @@ class ReportPresenter extends BasePresenter {
             ->setHtmlAttribute('data-bs-placement', 'right')
             ->setHtmlAttribute('data-bs-title', 'Copy filters that are currently set on report to clipboard');
 
-        $form->addSubmit('send', 'Save');
+        //$form->addSubmit('send', 'Save');
         $form->onSubmit[] = [$this, 'processReportFilterForm'];
 
         return $form;
@@ -259,6 +260,7 @@ class ReportPresenter extends BasePresenter {
         $this->payload->modalTitle = 'Report filters';
         $this->template->systemModalSize = 'xl';
         $this->template->systemModalControl = 'reportFilterForm';
+        $this->template->systemModalFormId = 'frm-reportFilterForm';
         if ($this->isAjax()) {
             $this->redrawControl('flashes');
             $this->redrawControl('systemModal');
@@ -315,8 +317,8 @@ class ReportPresenter extends BasePresenter {
         ])->setRequired()
         ->setDefaultValue('no');
 
-        $form->addRow()->addCell(12)
-            ->addSubmit('send', 'Save');
+        /*$form->addRow()->addCell(12)
+            ->addSubmit('send', 'Save');*/
         $form->onSubmit[] = [$this, 'processCopyOrMovePageForm'];
 
         return $form;
@@ -350,6 +352,7 @@ class ReportPresenter extends BasePresenter {
         $this->payload->modalTitle = 'Copy or move page';
         //$this->template->systemModalSize = 'xl';
         $this->template->systemModalControl = 'copyOrMovePageForm';
+        $this->template->systemModalFormId = 'frm-copyOrMovePageForm';
         if ($this->isAjax()) {
             $this->redrawControl('flashes');
             $this->redrawControl('systemModal');

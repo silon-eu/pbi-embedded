@@ -49,7 +49,7 @@ class DashboardPresenter extends BasePresenter {
             ]);
         }
 
-        $form->addSubmit('send', 'Save');
+        //$form->addSubmit('send', 'Save');
         $form->onSuccess[] = [$this, 'processTabForm'];
 
         return $form;
@@ -87,6 +87,7 @@ class DashboardPresenter extends BasePresenter {
         $this->template->editTabId = $editTabId;
         $this->payload->modalTitle = 'Add or edit tab';
         $this->template->systemModalControl = 'tabForm';
+        $this->template->systemModalFormId = 'frm-tabForm';
         if ($this->isAjax()) {
             $this->redrawControl('flashes');
             $this->redrawControl('systemModal');
@@ -234,7 +235,7 @@ class DashboardPresenter extends BasePresenter {
             }
         }
 
-        $form->addSubmit('send', 'Save');
+        //$form->addSubmit('send', 'Save');
         $form->onSubmit[] = [$this, 'processTileForm'];
 
         return $form;
@@ -276,6 +277,7 @@ class DashboardPresenter extends BasePresenter {
         $this->template->editTileId = $editTileId;
         $this->payload->modalTitle = 'Add or edit tile';
         $this->template->systemModalControl = 'tileForm';
+        $this->template->systemModalFormId = 'frm-tileForm';
         if ($this->isAjax()) {
             $this->redrawControl('flashes');
             $this->redrawControl('systemModal');
@@ -334,7 +336,7 @@ class DashboardPresenter extends BasePresenter {
             ]);
         }
 
-        $form->addSubmit('send', 'Save');
+        //$form->addSubmit('send', 'Save');
         $form->onSubmit[] = [$this, 'processCopyOrMoveTileForm'];
 
         return $form;
@@ -368,6 +370,7 @@ class DashboardPresenter extends BasePresenter {
         $this->template->editTileId = $editTileId;
         $this->payload->modalTitle = 'Copy or move tile';
         $this->template->systemModalControl = 'copyOrMoveTileForm';
+        $this->template->systemModalFormId = 'frm-copyOrMoveTileForm';
         if ($this->isAjax()) {
             $this->redrawControl('flashes');
             $this->redrawControl('systemModal');
