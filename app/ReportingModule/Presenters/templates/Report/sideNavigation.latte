@@ -15,7 +15,7 @@
 {block content}
     {var $today = new DateTime()}
     <div class="row">
-        <div class="col-2 pt-3 position-relative">
+        <div id="left-report-container" class="col-2 pt-3 position-relative">
             {snippet reportUserMenu}
                 <ul id="left-report-nav" class="nav flex-column">
                     <li class="nav-item mb-1 position-relative" n:foreach="$navigation as $navItemKey => $navItem">
