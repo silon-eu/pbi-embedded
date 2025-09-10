@@ -92,13 +92,6 @@ body {
   }
 }
 
-@media (max-aspect-ratio: 16/10) {
-  /* Styly pro displeje s poměrem stran 16:10 a užší (např. 4:3, 5:4) */
-  #left-report-container {
-    width: 13%
-  }
-}
-
 #left-report-nav,
 #left-admin-nav {
   .nav-item {
