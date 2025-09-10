@@ -460,6 +460,13 @@ class ReportPresenter extends BasePresenter {
         $this->template->tile = $tile;
         $this->setView('sideNavigation');
 
+        $this->template->navigation = $this->reportService->getNavigationForTile($id, $this->getUser()->getId(), $this->userIsAdmin());
+
+        // if no page is selected, select the first one
+        if ($this->activePageId === null && count($this->template->navigation) > 0) {
+            $this->forward('this', ['id' => $id, 'activePageId' => Arrays::first($this->template->navigation)["id"]]);
+        }
+
         if ($this->isAjax()) { // skip it for a faster handlers
             $this->template->reportConfig = null;
         } else {
@@ -473,7 +480,6 @@ class ReportPresenter extends BasePresenter {
             }
         }
 
-        $this->template->navigation = $this->reportService->getNavigationForTile($id, $this->getUser()->getId(), $this->userIsAdmin());
         $this->template->refreshDates = $this->reportService->getRefreshDates(strval($tile->rep_refresh_date_ident));
 
         // if user is not admin and has no navigation items, throw an error
@@ -484,11 +490,6 @@ class ReportPresenter extends BasePresenter {
         // if user is not admin and navigation does not contain the activePageId in subarray with id key, throw an error
         if (!$this->userIsAdmin() && $this->activePageId !== null && !Arrays::some($this->template->navigation, fn($item) => $item['id'] === $this->activePageId)) {
             throw new BadRequestException('You do not have access to this page');
-        }
-
-        // if no page is selected, select the first one
-        if ($this->activePageId === null && count($this->template->navigation) > 0) {
-            $this->activePageId = Arrays::first($this->template->navigation)["id"];
         }
 
         if ($this->activePageId !== null && $page = $this->reportService->getPages()->get($this->activePageId)) {

@@ -147,7 +147,7 @@
                 {* TOOLBAR *}
 
                 {snippet pageToolbarButtons}
-                    <div class="list-group">
+                    <div class="list-group mb-3">
                         {if isset($activePageData) && !empty($activePageData)}
                             <a n:href="resetFilters!,activePageId => $activePageData->id" class="list-group-item list-group-item-action ajax">
                                 <i class="bi bi-arrow-counterclockwise d-inline-block me-2"></i>Reset filters
@@ -176,8 +176,6 @@
                         </a>
                     </div>
                 {/snippet}
-
-                <hr>
 
                 {* REFRESHES *}
                 {if $refreshDates->count() > 0}

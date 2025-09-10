@@ -40,14 +40,18 @@ class AzureService extends BaseService
 
     public function getReportConfig(string $workspaceId, string $reportId): ?object
     {
-        $embedParams = $this->getEmbedParamsForSingleReport($workspaceId, $reportId);
-        $embedToken = $this->getEmbedTokenForSingleReportSingleWorkspace($reportId, [$embedParams->datasetId], $workspaceId);
+        return $this->cache->load('reportConfig_'.$workspaceId.'_'.$reportId, function (& $dependencies) use ($workspaceId, $reportId) {
+            $dependencies[Cache::Expire] = '5 seconds';
 
-        $embedParams->embedToken = $embedToken->token;
-        $embedParams->expiration = $embedToken->expiration;
-        $embedParams->datasetLastRefreshDate = $this->getDatasetLastRefreshDate($embedParams->datasetId, $embedParams->datasetWorkspaceId);
+            $embedParams = $this->getEmbedParamsForSingleReport($workspaceId, $reportId);
+            $embedToken = $this->getEmbedTokenForSingleReportSingleWorkspace($reportId, [$embedParams->datasetId], $workspaceId);
 
-        return $embedParams;
+            $embedParams->embedToken = $embedToken->token;
+            $embedParams->expiration = $embedToken->expiration;
+            $embedParams->datasetLastRefreshDate = $this->getDatasetLastRefreshDate($embedParams->datasetId, $embedParams->datasetWorkspaceId);
+
+            return $embedParams;
+        });
     }
 
     public function getAvailableFeatures(): ?object
