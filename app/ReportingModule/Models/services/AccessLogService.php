@@ -6,6 +6,7 @@ use Nette\Database\Explorer;
 use Nette\Database\Table\Selection;
 use Nette\Utils\ArrayHash;
 use Tracy\Debugger;
+use Tracy\ILogger;
 
 class AccessLogService extends BaseService
 {
@@ -29,6 +30,15 @@ class AccessLogService extends BaseService
             'rep_pages_id' => $pageId,
             'users_id' => $userId,
         ]);
+    }
+
+    public function cleanUp(): void
+    {
+        try {
+            $this->database->query('DELETE FROM rep_access_log WHERE created_at < NOW() - INTERVAL 370 DAY');
+        } catch (\Exception $e) {
+            Debugger::log($e, ILogger::ERROR);
+        }
     }
 
 }

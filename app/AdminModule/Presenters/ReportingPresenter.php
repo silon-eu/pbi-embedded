@@ -115,4 +115,11 @@ class ReportingPresenter extends BasePresenter {
         }
         $this->redirect('tags');
     }
+
+    public function actionLogCleanup(): void
+    {
+        $this->allowOnlyRoles(['admin']);
+        $this->accessLogService->cleanUp();
+        $this->terminate();
+    }
 }

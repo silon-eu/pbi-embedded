@@ -18,7 +18,6 @@ import * as najaTooltips from './naja.tooltips.js';
 import * as netteFormsDependency from './netteForms.dependency.js';
 import * as najaSetReportPage from './naja.setReportPage.js';
 import * as najaResetReportPageFilters from './naja.resetReportPageFilters.js';
-//import * as najaElementLoader from './naja.elementLoader.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     Naja.initialize();

@@ -3,9 +3,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     Naja.addEventListener('before', (event) => {
         if (event.detail.url.includes('do=changePage')) {
-            const placeholder = document.getElementById("report-placeholder");
+            /*const placeholder = document.getElementById("report-placeholder");
             if (placeholder) {
                 placeholder.style.display = "block";
+            }*/
+
+            const placeholder = document.getElementById("loader-overlay");
+            if (placeholder) {
+                placeholder.style.display = "flex";
             }
         }
     });

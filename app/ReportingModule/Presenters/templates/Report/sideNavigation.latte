@@ -14,7 +14,7 @@
 
 {block content}
     {var $today = new DateTime()}
-    <div class="row">
+    <div class="row position-relative">
         <div class="col-2 pt-3 position-relative">
             {snippet reportUserMenu}
                 <ul id="left-report-nav" class="nav flex-column">
@@ -149,7 +149,7 @@
                 {snippet pageToolbarButtons}
                     <div class="list-group mb-3">
                         {if isset($activePageData) && !empty($activePageData)}
-                            <a n:href="resetFilters!,activePageId => $activePageData->id" class="list-group-item list-group-item-action ajax">
+                            <a n:href="resetFilters!,activePageId => $activePageData->id" class="list-group-item list-group-item-action ajax fw-semibold">
                                 <i class="bi bi-arrow-counterclockwise d-inline-block me-2"></i>Reset filters
                             </a>
                             <a n:if="!empty($activePageData->description)" n:href="showPageDescription!" class="list-group-item list-group-item-action ajax">
@@ -198,16 +198,40 @@
             {*<div id="report-toolbar" class="d-flex flex-column justify-content-between align-items-center position-absolute pt-3 pe-3" style="top:0;right:0;">
 
             </div>*}
-            <p id="report-placeholder" class="placeholder-wave bg-white position-absolute w-100 h-100">
+            {*<p id="report-placeholder" class="placeholder-wave bg-white position-absolute w-100 h-100">
                 <span class="placeholder bg-sil-placeholder rp-filter col-2 mx-3 mt-3"></span>
                 <span class="placeholder bg-sil-placeholder rp-filter col-3 mx-3 mt-3"></span>
                 <span class="placeholder bg-sil-placeholder rp-filter col-2 mx-3 mt-3"></span><br>
                 <span class="placeholder bg-sil-placeholder rp-table col-11 mx-3 mt-3"></span><br>
                 <span class="placeholder bg-sil-placeholder rp-table col-5 mx-3 mt-3"></span>
                 <span class="placeholder bg-sil-placeholder rp-table col-6 mx-3 mt-3"></span>
-            </p>
+            </p>*}
+        </div>
+        <div id="loader-overlay">
+            <div class="text-primary text-center" role="status">
+                <span class="spinner-border"></span><br>
+                <span>Loading...</span>
+            </div>
         </div>
     </div>
+
+    <style>
+        #loader-overlay {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            z-index: 10000;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            cursor: wait;
+        }
+    </style>
 
 
     <script src="{$basePath}/assets/js/powerbi.min.js"></script>
@@ -612,7 +636,7 @@
             }
         }
 
-        function hideReportPlaceholder() {
+        /*function hideReportPlaceholder() {
             const placeholder = document.getElementById("report-placeholder");
             if (placeholder) {
                 placeholder.style.display = "none";
@@ -621,6 +645,20 @@
 
         function showReportPlaceholder() {
             const placeholder = document.getElementById("report-placeholder");
+            if (placeholder) {
+                placeholder.style.display = "block";
+            }
+        }*/
+
+        function hideReportPlaceholder() {
+            const placeholder = document.getElementById("loader-overlay");
+            if (placeholder) {
+                placeholder.style.display = "none";
+            }
+        }
+
+        function showReportPlaceholder() {
+            const placeholder = document.getElementById("loader-overlay");
             if (placeholder) {
                 placeholder.style.display = "block";
             }
