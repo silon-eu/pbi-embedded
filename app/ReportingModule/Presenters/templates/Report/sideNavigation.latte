@@ -1,5 +1,8 @@
 {block title}{$tile->ref(rep_tabs)->name} / {$tile->name}{/block}
 {block header_tmpl}
+    <script>
+        const startTime = new Date().getTime();
+    </script>
 {/block}
 
 {block pageHeading}
@@ -368,7 +371,7 @@
 
             // Triggers when a report schema is successfully loaded
             report.on("loaded", async function () {
-                console.log("Report load successful");
+                console.log("Report load successful\ntime elapsed: " + (new Date().getTime() - startTime) + " ms");
 
                 {if $presenter->userIsAdmin()}
                     const navigation = document.querySelectorAll("#left-admin-nav .nav-link");
@@ -392,22 +395,24 @@
                 // Set the first page as active
                 {if $activePageData}
                     await report.setPage({$activePageData->page});
-                    let activePage = await report.getActivePage();
 
-                    // set default filters
-                    {if !empty($activePageData->filters)}
-                        await activePage.updateFilters(models.FiltersOperations.ReplaceAll,JSON.parse({$activePageData->filters|applyDynamicProperties}));
-                    {/if}
-
-
-                    {if !empty($activePageData->slicers)}
-                        await setDefaultSlicersForPage(JSON.parse({$activePageData->slicers|applyDynamicProperties}));
-                    {/if}
+                    await report.getActivePage().then(page => {
+                        // set default filters
+                        {if !empty($activePageData->filters)}
+                            page.updateFilters(models.FiltersOperations.ReplaceAll,JSON.parse({$activePageData->filters|applyDynamicProperties}));
+                        {/if}
+                        {if !empty($activePageData->slicers)}
+                            setDefaultSlicersForPage(JSON.parse({$activePageData->slicers|applyDynamicProperties}));
+                        {/if}
+                    }).catch(error => {
+                        console.error("Error getting active page: ", error);
+                    });
                 {/if}
 
                 {if !empty($tile->filters)}
                     await report.updateFilters(models.FiltersOperations.ReplaceAll, JSON.parse({$tile->filters|applyDynamicProperties}));
                 {/if}
+                console.log("Default report filters applied\ntime elapsed: " + (new Date().getTime() - startTime) + " ms");
             });
 
             // Clear any other rendered handler events
@@ -415,7 +420,7 @@
 
             // Triggers when a report is successfully embedded in UI
             report.on("rendered", function () {
-                console.log("Report render successful");
+                console.log("Report render successful\ntime elapsed: " + (new Date().getTime() - startTime) + " ms");
                 setTimeout(function () {
                     console.log("Hiding report placeholder");
                     hideReportPlaceholder();
@@ -436,7 +441,7 @@
 
             // Save filters on page change
             report.on("pageChanged", async function (event) {
-                let page = event.detail.newPage;
+                /*let page = event.detail.newPage;
                 // save slicers
                 const visuals = await page.getVisuals();
 
@@ -446,7 +451,7 @@
 
                 for (const slicer of slicers) {
                     try {
-                        const state = await slicer.getSlicerState();
+                        //const state = await slicer.getSlicerState();
                         // save slicer state
                         if (defaultSlicers[slicer.name] === undefined) {
                             defaultSlicers[slicer.name] = state;
@@ -460,10 +465,10 @@
                 page.getFilters().then(function (filters) {
                     pageFilters = filters;
                     // save filters
-                    /*if (defaultFilters[page.name] === undefined) {
+                    if (defaultFilters[page.name] === undefined) {
                         defaultFilters[page.name] = filters;
-                    }*/
-                });
+                    }
+                });*/
 
                 //hideReportPlaceholder();
 
@@ -506,7 +511,7 @@
             });
 
             // set default filters for active page on button click
-            const setDefaultFiltersButton = document.getElementById("set-default-filters");
+            /*const setDefaultFiltersButton = document.getElementById("set-default-filters");
             if(setDefaultFiltersButton) {
                 setDefaultFiltersButton.addEventListener("click", async function (e) {
                     e.preventDefault();
@@ -538,7 +543,7 @@
                         console.log(errors);
                     }
                 });
-            }
+            }*/
         });
 
         async function loadReportFilters(button, target = 'formElement', selector = '#frm-reportFilterForm-filters') {
