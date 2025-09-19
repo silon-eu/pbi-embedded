@@ -226,7 +226,7 @@ class DashboardPresenter extends BasePresenter {
                 'tags' => $tile->related('rep_tiles_tags')->fetchPairs('rep_tags_id', 'rep_tags_id'),
             ]);
 
-            if (!array_key_exists($workspace->getValue(),$workspaceList)) {
+            if (!(array_key_exists($workspace->getValue(),$workspaceList[AzureService::IN_CAPACITY]) || array_key_exists($workspace->getValue(),$workspaceList[AzureService::OUT_OF_CAPACITY]))) {
                 $workspace->addError('Currently selected workspace is not available.');
             }
 

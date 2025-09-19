@@ -10,6 +10,9 @@ class AzureService extends BaseService
 {
     protected ?object $accessToken = null;
 
+    const string IN_CAPACITY = 'In capacity';
+    const string OUT_OF_CAPACITY = 'Out of capacity';
+
     public function __construct(
         protected array $config,
         protected Cache $cache
@@ -237,9 +240,9 @@ class AzureService extends BaseService
 
         if (!empty($data) && isset($data->value)) {
             if ($forSelectbox) {
-                $workspaces = [];
+                $workspaces = [self::IN_CAPACITY => [], self::OUT_OF_CAPACITY => []];
                 foreach ($data->value as $workspace) {
-                    $workspaces[$workspace->id] = $workspace->name;
+                    $workspaces[$workspace->isOnDedicatedCapacity ? self::IN_CAPACITY : self::OUT_OF_CAPACITY][$workspace->id] = $workspace->name;
                 }
                 return $workspaces;
             } else {
