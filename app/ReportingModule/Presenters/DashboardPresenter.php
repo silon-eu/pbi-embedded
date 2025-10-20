@@ -327,6 +327,12 @@ class DashboardPresenter extends BasePresenter {
                 'no' => 'No',
             ])->setDefaultValue('yes');
 
+        $row3->addCell(4)
+            ->addRadioList('copy_permissions', 'Page permissions', [
+                'yes' => 'Yes',
+                'no' => 'No',
+            ])->setDefaultValue('no');
+
         if ($this->getParameter('editTileId')) {
             $tile = $this->dashboardService->getTiles()->get($this->getParameter('editTileId'));
             $form->setDefaults([

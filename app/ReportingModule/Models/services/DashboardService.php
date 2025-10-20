@@ -12,7 +12,8 @@ class DashboardService extends BaseService
 {
     public function __construct(
         protected Explorer $database,
-        protected \Nette\Caching\Cache $cache
+        protected \Nette\Caching\Cache $cache,
+        protected ReportService $reportService,
     ) {
 
     }
@@ -288,7 +289,11 @@ class DashboardService extends BaseService
                         'filters' => $page->filters,
                         'slicers' => $page->slicers,
                     ];
-                    $this->database->table('rep_pages')->insert($newPageData);
+                    $newPage = $this->database->table('rep_pages')->insert($newPageData);
+
+                    if ($values->copy_permissions === 'yes') {
+                        $this->reportService->copyPagePermissions($page->id,$newPage->id);
+                    }
                 }
             }
         } else {

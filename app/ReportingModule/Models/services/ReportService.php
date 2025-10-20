@@ -223,16 +223,27 @@ class ReportService extends BaseService
 
             // Copy permissions
             if ($values->copy_permissions === 'yes') {
-                foreach ($this->getPermissionsForPage($page->id) as $permission) {
-                    $this->getPermissions()->insert([
-                        'rep_pages_id' => $newPage->id,
-                        'groups_id' => $permission->groups_id,
-                        'users_id' => $permission->users_id,
-                    ]);
-                }
+                $this->copyPagePermissions($page->id,$newPage->id);
             }
         } else {
             throw new \Exception("Invalid operation: {$values->oparation}. Use 'move' or 'copy'.");
+        }
+    }
+
+    public function copyPagePermissions(int $originPageId, int $targetPageId): void
+    {
+        if (!$this->getPages()->get($originPageId)) {
+            throw new \Exception("Page with ID {$originPageId} not found.");
+        }
+
+        $this->getPermissions()->where('rep_pages_id = ?', $originPageId)->delete();
+
+        foreach ($this->getPermissionsForPage($originPageId) as $permission) {
+            $this->getPermissions()->insert([
+                'rep_pages_id' => $targetPageId,
+                'groups_id' => $permission->groups_id,
+                'users_id' => $permission->users_id,
+            ]);
         }
     }
 
