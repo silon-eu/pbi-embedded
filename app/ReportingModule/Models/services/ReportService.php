@@ -233,10 +233,14 @@ class ReportService extends BaseService
     public function copyPagePermissions(int $originPageId, int $targetPageId): void
     {
         if (!$this->getPages()->get($originPageId)) {
-            throw new \Exception("Page with ID {$originPageId} not found.");
+            throw new \Exception("Origin page with ID {$originPageId} not found.");
         }
 
-        $this->getPermissions()->where('rep_pages_id = ?', $originPageId)->delete();
+        if (!$this->getPages()->get($targetPageId)) {
+            throw new \Exception("Target page with ID {$targetPageId} not found.");
+        }
+
+        $this->getPermissions()->where('rep_pages_id = ?', $targetPageId)->delete();
 
         foreach ($this->getPermissionsForPage($originPageId) as $permission) {
             $this->getPermissions()->insert([
