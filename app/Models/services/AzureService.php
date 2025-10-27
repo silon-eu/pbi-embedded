@@ -2,6 +2,7 @@
 namespace App\Models\Service;
 
 use App\Models\BaseService;
+use DateTimeZone;
 use Nette\Caching\Cache;
 use Nette\Utils\Json;
 use Tracy\Debugger;
@@ -201,7 +202,7 @@ class AzureService extends BaseService
                     foreach ($refreshes->value as $key => $refresh) {
                         if ($refresh->status === 'Completed') {
                             try {
-                                return \DateTime::createFromFormat('Y-m-d\TH:i:s.u\Z', $refresh->endTime);
+                                return \DateTime::createFromFormat('Y-m-d\TH:i:s.u\Z', $refresh->endTime, new DateTimeZone('UTC'));
                             } catch (\Exception $e) {
                                 Debugger::log($e->getMessage(),'error');
                                 return 'error parsing date';

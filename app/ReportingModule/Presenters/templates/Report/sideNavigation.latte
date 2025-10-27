@@ -186,10 +186,10 @@
                         {!empty($refreshDate->description) ? $refreshDate->description : 'Dataset refresh'}: {$refreshDate->updated_time|date:'d.m.Y H:i:s'}
                     </p>
                 {/if}
-                <p class="text-muted">
+                <p class="alert alert-secondary">
                     Last refresh:
                     {if $reportConfig->datasetLastRefreshDate instanceof \DateTime}
-                        {$reportConfig->datasetLastRefreshDate|date:'d.m.Y H:i:s'}
+                        {$reportConfig->datasetLastRefreshDate->setTimezone(new DateTimeZone('Europe/Prague'))|date:'d.m.Y H:i:s'}
                     {else}
                         {$reportConfig->datasetLastRefreshDate}
                     {/if}
