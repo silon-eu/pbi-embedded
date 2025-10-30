@@ -82,7 +82,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 
     public function processLogin(\Nette\Application\UI\Form $form, $values): void {
         try {
-            $identity = $this->authenticator->authenticate($values->username,$values->password);
+            // remove everything after @ in username
+            $username = preg_replace('/@.*/','',$values->username);
+            $identity = $this->authenticator->authenticate($username,$values->password);
             $this->getUser()->login($identity);
             $this->redirect(':Reporting:Dashboard:default');
         } catch (\Nette\Security\AuthenticationException $e) {
