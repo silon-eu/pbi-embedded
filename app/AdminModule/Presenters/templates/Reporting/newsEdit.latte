@@ -1,0 +1,41 @@
+{block header_tmpl}
+{/block}
+
+{block header}
+    <script>
+        /*tinymce.init({
+            selector: 'textarea#frm-newsEditForm-form-text',
+            license_key: 'gpl',
+            plugins: [
+                'a11ychecker', 'accordion', 'advlist', 'anchor', 'autolink', 'autosave',
+                'charmap', 'code', 'codesample', 'directionality', 'emoticons', 'exportpdf',
+                'exportword', 'fullscreen', 'help', 'image', 'importcss', 'importword',
+                'insertdatetime', 'link', 'lists', 'markdown', 'math', 'media', 'nonbreaking',
+                'pagebreak', 'preview', 'quickbars', 'save', 'searchreplace', 'table',
+                'visualblocks', 'visualchars', 'wordcount'
+            ],
+            toolbar: 'undo redo | accordion accordionremove | ' +
+                'importword exportword exportpdf | math | ' +
+                'blocks fontfamily fontsize | bold italic underline strikethrough | ' +
+                'align numlist bullist | link image | table media | ' +
+                'lineheight outdent indent | forecolor backcolor removeformat | ' +
+                'charmap emoticons | code fullscreen preview | save print | ' +
+                'pagebreak anchor codesample | ltr rtl',
+            menubar: 'file edit view insert format tools table help'
+        })*/
+    </script>
+{/block}
+
+{block content}
+    <div class="row mt-3">
+        <div class="col">
+            <h1 class="h3">{_"News edit"}</h1>
+            {control adminMenu:breadcrumbs}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {control newsEditForm}
+        </div>
+    </div>
+{/block}

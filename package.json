@@ -26,6 +26,7 @@
     "nette-forms": "^3.5.3",
     "powerbi-client": "^2.23.1",
     "sass": "^1.86.0",
-    "save-dev": "^0.0.1-security"
+    "save-dev": "^0.0.1-security",
+    "tinymce": "^8.2.1"
   }
 }

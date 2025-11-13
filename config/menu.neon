@@ -50,6 +50,13 @@ menu:
                             roles:
                                 - admin
                             icon: tags
+                    News:
+                        action: Admin:Reporting:news
+                        include: '^Admin\:Reporting\:news[a-zA-Z\:]+$'
+                        data:
+                            roles:
+                                - admin
+                            icon: newspaper
             Settings:
                 action: Admin:Settings:default
                 data:

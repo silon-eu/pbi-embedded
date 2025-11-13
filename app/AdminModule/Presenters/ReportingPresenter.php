@@ -4,9 +4,11 @@ namespace App\AdminModule\Presenters;
 
 use AdminModule\Controls\AccessLogDatagrid;
 use AdminModule\Controls\IconsDatagrid;
+use AdminModule\Controls\NewsDatagrid;
 use AdminModule\Controls\TagsDatagrid;
 use App\AdminModule\Controls\PermissionsDatagrid;
 use App\AdminModule\Models\Service\IconsService;
+use App\AdminModule\Models\Service\NewsService;
 use App\AdminModule\Models\Service\ReportingService;
 use App\AdminModule\Models\Service\TagsService;
 use App\ReportingModule\Models\Service\AccessLogService;
@@ -19,6 +21,7 @@ class ReportingPresenter extends BasePresenter {
         protected AccessLogService $accessLogService,
         protected IconsService $iconsService,
         protected TagsService $tagsService,
+        protected NewsService $newsService,
         protected Cache $cache
     )
     {
@@ -68,6 +71,18 @@ class ReportingPresenter extends BasePresenter {
                     name: $name,
                     tagsService: $this->tagsService
                 );
+            case 'newsDatagrid':
+                return new NewsDatagrid(
+                    parent: $this,
+                    name: $name,
+                    newsService: $this->newsService
+                );
+            case 'newsEditForm':
+                return new \AdminModule\Controls\NewsEditForm(
+                    container: $this,
+                    name: $name,
+                    newsService: $this->newsService
+                );
             default:
                 return parent::createComponent($name);
         }
@@ -114,6 +129,18 @@ class ReportingPresenter extends BasePresenter {
             $this->flashMessage('Tag not found', 'danger');
         }
         $this->redirect('tags');
+    }
+
+    public function actionDeleteNews($id): void
+    {
+        $this->allowOnlyRoles(['admin']);
+        try {
+            $this->newsService->deleteNews($id);
+            $this->flashMessage('News deleted', 'success');
+        } catch (\Nette\Database\ForeignKeyConstraintViolationException $e) {
+            $this->flashMessage('This news cannot be deleted.', 'danger');
+        }
+        $this->redirect('news');
     }
 
     public function actionLogCleanup(): void

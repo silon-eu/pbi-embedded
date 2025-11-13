@@ -3,6 +3,7 @@
 namespace App\ReportingModule\Presenters;
 
 use App\AdminModule\Models\Service\IconsService;
+use App\AdminModule\Models\Service\NewsService;
 use App\AdminModule\Models\Service\TagsService;
 use App\Models\Service\AzureService;
 use App\ReportingModule\Models\Service\DashboardService;
@@ -22,6 +23,7 @@ class DashboardPresenter extends BasePresenter {
         protected DashboardService $dashboardService,
         protected IconsService $iconsService,
         protected TagsService $tagsService,
+        protected NewsService $newsService,
     )
     {
         parent::__construct();
@@ -448,5 +450,20 @@ class DashboardPresenter extends BasePresenter {
         $this->template->tabs = $this->userIsAdmin() ? $this->dashboardService->getTabs() : $this->dashboardService->getUserTabs($this->getUser()->getId());
         $this->template->tiles = $this->userIsAdmin() ? $this->dashboardService->getTilesForAllTabs() : $this->dashboardService->getUserTilesForAllTabs($this->getUser()->getId());
         $this->template->tags = $this->tagsService->getTagsForTabTiles($this->template->tiles);
+
+        $session = $this->getSession()->getSection('reportingDashboard');
+        $news = $this->newsService->getNewsfeed(3);
+        $this->template->showNews = false;
+        $lastNewsId = (clone $news)->limit(1)->fetchField('id');
+
+        if ($news->count() > 0 && (date('Y-m-d') !== $session->lastNewsShown?->format('Y-m-d') || $session->lastNewsId != $lastNewsId)) {
+            Debugger::barDump('show news');
+            $this->template->showNews = true;
+            $this->template->news = $news;
+            $session->lastNewsShown = new \DateTime();
+            $session->lastNewsId = $lastNewsId;
+        } else {
+            Debugger::barDump('lastShown:'.$session->lastNewsShown?->format('Y-m-d').', last ID:'.$session->lastNewsId,'do not show news');
+        }
     }
 }
